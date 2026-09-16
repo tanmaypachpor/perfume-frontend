@@ -495,21 +495,15 @@ function HomePage() {
             <div className="hero-orbit orbit-two"></div>
 
             <div className="hero-bottle">
-              <div className="bottle-top"></div>
-
-              <div className="bottle-neck"></div>
-
-              <div className="bottle-glass">
-                <div className="bottle-label">
-                  <small>MAISON</small>
-
-                  <strong>LUMIÈRE</strong>
-
-                  <span>NOIR</span>
-
-                  <small>EAU DE PARFUM</small>
+              <div className="perfume-display-wrapper">
+                <div className="bottle-container">
+                  <img 
+                  src="src\Images\Perfume_Bottle_Mockup.png" 
+                  alt="Luxury Perfume Bottle" 
+                  />
                 </div>
               </div>
+
             </div>
 
             <div className="floating-note note-one">
