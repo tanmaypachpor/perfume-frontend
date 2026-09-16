@@ -323,7 +323,7 @@ a {
   width: 600px;
   height: 600px;
 
-  right: 5%;
+  right: 10%;
   top: 50%;
 
   transform: translateY(-50%);
@@ -344,116 +344,43 @@ a {
 
   margin-top: 40px;
 
-  filter:
-    drop-shadow(30px 40px 35px rgba(0, 0, 0, 0.6));
+
 }
 
-.bottle-top {
-  width: 95px;
-  height: 70px;
+/* ==========================================================================
+   Luxury Perfume Store - Modern Product Media Component Replacement
+   ========================================================================== */
 
-  margin: auto;
-
-  background:
-    linear-gradient(90deg,
-      #6b5839,
-      #dfc486,
-      #8b7043,
-      #e0c789,
-      #655334);
-
-  border-radius: 4px 4px 0 0;
-}
-
-.bottle-neck {
-  width: 66px;
-  height: 38px;
-
-  margin: auto;
-
-  background:
-    linear-gradient(90deg,
-      #a28148,
-      #e2c681,
-      #896a3e);
-}
-
-.bottle-glass {
-  width: 230px;
-  height: 320px;
-
-  border-radius: 8px 8px 30px 30px;
-
-  background:
-    linear-gradient(90deg,
-      rgba(8, 7, 6, 0.95),
-      rgba(75, 61, 42, 0.95) 45%,
-      rgba(19, 17, 14, 0.98));
-
-  border: 1px solid rgba(219, 190, 132, 0.45);
-
-  position: relative;
-
+/* Outer stage wrapper used to structure the alignment background */
+.perfume-display-wrapper {
   display: flex;
-
-  align-items: center;
-  justify-content: center;
-}
-
-.bottle-glass::before {
-  content: "";
-
-  position: absolute;
-
-  width: 2px;
-  height: 85%;
-
-  left: 24px;
-
-  background:
-    linear-gradient(transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent);
-}
-
-.bottle-label {
-  width: 125px;
-  height: 120px;
-
-  border: 1px solid rgba(211, 189, 140, 0.45);
-
-  display: flex;
-
-  flex-direction: column;
-
   justify-content: center;
   align-items: center;
-
-  gap: 7px;
-
-  color: var(--gold-light);
+  padding: 40px 20px;
+   /* Matching the luxury aesthetic of the store */
 }
 
-.bottle-label small {
-  font-size: 6px;
-  letter-spacing: 3px;
+/* Base structural container matching your exact original width footprint */
+.bottle-container {
+  width: 230px;              /* Preserves the exact 230px width from your source code */
+  height: auto;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.bottle-label strong {
-  font-family: "Cormorant Garamond", serif;
-
-  font-size: 20px;
-
-  letter-spacing: 3px;
+/* Premium fluid image scaling properties */
+.bottle-image {
+  width: 100%;               /* Spans to fill the container layout constraints perfectly */
+  height: auto;              /* Maintains the exact proportional aspect ratio of the image file */
+  display: block;
+  object-fit: contain;       /* Prevents accidental cropping or letterboxing */
+  
+  /* Creates a smooth depth-shadow mapping the natural transparency outline of your bottle .png */
+  filter: drop-shadow(0px 15px 25px rgba(0, 0, 0, 0.65));
 }
 
-.bottle-label span {
-  font-family: "Cormorant Garamond", serif;
-
-  font-size: 13px;
-
-  letter-spacing: 5px;
-}
 
 .hero-orbit {
   position: absolute;
@@ -469,8 +396,8 @@ a {
 }
 
 .orbit-two {
-  width: 680px;
-  height: 680px;
+  width: 750px;
+  height: 750px;
 }
 
 .floating-note {
@@ -490,9 +417,9 @@ a {
 }
 
 .floating-note p {
-  margin-top: 3px;
+  margin-top: 25px;
 
-  font-size: 8px;
+  font-size: 25px;
 
   line-height: 1.5;
 
@@ -503,12 +430,12 @@ a {
 
 .note-one {
   top: 30%;
-  right: 8%;
+  right: 1%;
 }
 
 .note-two {
   bottom: 24%;
-  left: 3%;
+  left: 5%;
 }
 
 
@@ -558,11 +485,11 @@ a {
 
   color: var(--gold);
 
-  font-size: 23px;
+  font-size: 40px;
 }
 
 .trust-bar strong {
-  font-size: 9px;
+  font-size: 15px;
 
   letter-spacing: 1.5px;
 }
@@ -570,7 +497,7 @@ a {
 .trust-bar small {
   color: #888077;
 
-  font-size: 9px;
+  font-size: 12px;
 }
 
 
@@ -599,7 +526,7 @@ a {
 .section-label {
   color: var(--gold);
 
-  font-size: 9px;
+  font-size: 30px;
 
   letter-spacing: 4px;
 }
