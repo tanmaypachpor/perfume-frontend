@@ -179,7 +179,7 @@ function Navbar() {
         className="logo"
         aria-label="Lumière home"
       >
-        LUMIÈRE
+        <img src="src\Images\logo.webp"></img>
       </a>
 
       <nav
@@ -482,7 +482,7 @@ function HomePage() {
                 href="#about"
                 className="secondary-button"
               >
-                DISCOVER LUMIÈRE
+                DISCOVER Keian
               </a>
             </div>
           </div>
@@ -730,8 +730,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "HIM"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("HIM")
@@ -743,8 +743,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "HER"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("HER")
@@ -756,8 +756,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "ATTAR"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("ATTAR")
@@ -769,8 +769,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "GIFTING"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("GIFTING")
@@ -860,9 +860,16 @@ function HomePage() {
           id="about"
         >
           <div className="story-image">
-            <div className="story-frame">
+            <img
+              src="src\Images\story.jpg"
+              alt="Luxury perfume bottle"
+            />
+
+            <div className="story-overlay"></div>
+
+            {/* <div className="story-frame">
               <span>L</span>
-            </div>
+            </div> */}
           </div>
 
           <div className="story-content">
@@ -889,9 +896,8 @@ function HomePage() {
               using exceptional ingredients to create
               something truly unforgettable.
             </p>
-
             <a
-              href="#about"
+              href="/our-story"
               className="text-link"
             >
               OUR STORY

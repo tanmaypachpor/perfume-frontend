@@ -10,9 +10,11 @@ import {
 import App from "./App";
 import ProductPage from "./ProductsPage";
 import ProductDetails from "./ProductDetails";
+import OurStory from "./OurStory";
 import Cart from "./Cart";
 import Checkout from "./Checkout";
 import OrderSuccess from "./OrderSuccess";
+import AdminDashboard from "./admin/AdminDashboard";
 
 import "./index.css";
 
@@ -99,6 +101,15 @@ ReactDOM.createRoot(
         />
 
         {/* =========================
+            OUR STORY
+        ========================= */}
+
+        <Route
+          path="/our-story"
+          element={<OurStory />}
+        />
+
+        {/* =========================
             CART
         ========================= */}
 
@@ -124,6 +135,11 @@ ReactDOM.createRoot(
           path="/order-success"
           element={<OrderSuccess />}
         />
+
+        <Route
+  path="/admin/orders"
+  element={<AdminDashboard />}
+/>
 
       </Routes>
     </BrowserRouter>

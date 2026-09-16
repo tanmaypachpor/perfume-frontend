@@ -1,0 +1,737 @@
+/* =====================================================
+   OUR STORY PAGE
+===================================================== */
+
+.story-page {
+  background: #f5f1ea;
+  color: #211f1b;
+  min-height: 100vh;
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+
+.story-navbar {
+  height: 82px;
+  padding: 0 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f5f1ea;
+  border-bottom: 1px solid rgba(120, 105, 80, 0.12);
+}
+
+.story-logo {
+  border: none;
+  background: none;
+  font-family: Georgia, serif;
+  font-size: 25px;
+  letter-spacing: 7px;
+  color: #171512;
+  cursor: pointer;
+}
+
+.story-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 38px;
+}
+
+.story-nav-links button {
+  border: none;
+  background: none;
+  color: #716b62;
+  cursor: pointer;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: 0.3s;
+}
+
+.story-nav-links button:hover,
+.story-nav-links button.active {
+  color: #9f7b3e;
+}
+
+.story-nav-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.story-nav-actions button {
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: #37332d;
+  font-size: 21px;
+  cursor: pointer;
+}
+
+
+/* =====================================================
+   COMMON
+===================================================== */
+
+.story-label {
+  display: inline-block;
+  color: #a17c3d;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.story-hero {
+  min-height: 680px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(150, 120, 70, 0.18),
+      transparent 35%
+    ),
+    linear-gradient(
+      120deg,
+      #171513,
+      #2b261f 50%,
+      #11100e
+    );
+}
+
+.story-hero::before {
+  content: "";
+  position: absolute;
+  width: 430px;
+  height: 570px;
+  border: 1px solid rgba(207, 176, 111, 0.3);
+  transform: rotate(10deg);
+  opacity: 0.5;
+}
+
+.story-hero::after {
+  content: "L";
+  position: absolute;
+  font-family: Georgia, serif;
+  font-size: 500px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.025);
+  right: 7%;
+  bottom: -70px;
+}
+
+.story-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.25),
+      transparent,
+      rgba(0, 0, 0, 0.3)
+    );
+}
+
+.story-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 850px;
+  padding: 40px 20px;
+}
+
+.story-hero-content .story-label {
+  color: #c9a866;
+  margin-bottom: 25px;
+}
+
+.story-hero-content h1 {
+  margin: 0;
+  color: #f5f0e8;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(48px, 7vw, 92px);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -2px;
+}
+
+.story-hero-content h1 em {
+  color: #c7a465;
+  font-style: italic;
+}
+
+.story-hero-content p {
+  max-width: 590px;
+  margin: 35px auto 0;
+  color: rgba(245, 240, 232, 0.72);
+  font-size: 14px;
+  line-height: 1.9;
+  letter-spacing: 0.3px;
+}
+
+.story-scroll {
+  position: absolute;
+  bottom: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255,255,255,0.55);
+  font-size: 8px;
+  letter-spacing: 2px;
+}
+
+.scroll-line {
+  width: 1px;
+  height: 45px;
+  background: #b18a4b;
+}
+
+
+/* =====================================================
+   INTRO
+===================================================== */
+
+.story-intro {
+  padding: 130px 8%;
+  background: #f7f3ed;
+}
+
+.story-intro-content {
+  max-width: 850px;
+  margin: auto;
+  text-align: center;
+}
+
+.story-intro h2,
+.story-section-heading h2,
+.art-content h2,
+.story-cta h2 {
+  margin: 20px 0 35px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(42px, 5vw, 68px);
+  line-height: 1.05;
+  font-weight: 400;
+  color: #24211c;
+}
+
+.story-intro h2 em,
+.story-section-heading h2 em,
+.art-content h2 em,
+.story-cta h2 em {
+  color: #a37d3e;
+  font-style: italic;
+}
+
+.story-large-text {
+  max-width: 720px;
+  margin: 0 auto 30px;
+  color: #3b362f;
+  font-family: Georgia, serif;
+  font-size: 23px;
+  line-height: 1.7;
+}
+
+.story-intro p:not(.story-large-text) {
+  max-width: 680px;
+  margin: 20px auto;
+  color: #777067;
+  font-size: 14px;
+  line-height: 2;
+}
+
+
+/* =====================================================
+   PHILOSOPHY
+===================================================== */
+
+.story-philosophy {
+  padding: 120px 7%;
+  background: #eee8de;
+}
+
+.story-section-heading {
+  text-align: center;
+  max-width: 750px;
+  margin: 0 auto 70px;
+}
+
+.story-section-heading p {
+  color: #777067;
+  font-size: 14px;
+}
+
+.philosophy-grid {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(130, 105, 70, 0.2);
+}
+
+.philosophy-card {
+  position: relative;
+  min-height: 390px;
+  padding: 50px 40px;
+  background: #f7f3ed;
+  text-align: center;
+}
+
+.philosophy-card.featured {
+  background: #24211c;
+  color: #fff;
+}
+
+.philosophy-number {
+  position: absolute;
+  top: 25px;
+  left: 30px;
+  color: #a37d3e;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+.philosophy-icon {
+  margin: 45px auto 25px;
+  color: #ad8647;
+  font-size: 30px;
+}
+
+.philosophy-card h3 {
+  font-family: Georgia, serif;
+  font-size: 27px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.philosophy-card p {
+  max-width: 280px;
+  margin: 25px auto 0;
+  color: #777067;
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.philosophy-card.featured p {
+  color: rgba(255,255,255,0.6);
+}
+
+
+/* =====================================================
+   ART OF PERFUMERY
+===================================================== */
+
+.art-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 650px;
+}
+
+.art-image {
+  position: relative;
+  min-height: 600px;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(174, 136, 68, 0.3),
+      transparent 45%
+    ),
+    linear-gradient(
+      135deg,
+      #181614,
+      #3a3023
+    );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.art-image::before {
+  content: "";
+  width: 330px;
+  height: 450px;
+  border: 1px solid rgba(205, 170, 100, 0.4);
+  position: absolute;
+  transform: rotate(-7deg);
+}
+
+.art-image::after {
+  content: "";
+  width: 190px;
+  height: 320px;
+  position: absolute;
+  border: 1px solid rgba(205, 170, 100, 0.25);
+  transform: rotate(7deg);
+}
+
+.art-image-content {
+  position: relative;
+  z-index: 2;
+  color: #e8d4ae;
+  text-align: center;
+}
+
+.art-image-content span {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 5px;
+  margin-bottom: 15px;
+}
+
+.art-image-content strong {
+  display: block;
+  font-family: Georgia, serif;
+  font-size: 48px;
+  font-weight: 400;
+  letter-spacing: 3px;
+}
+
+.art-content {
+  padding: 100px 9%;
+  background: #f7f3ed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.art-content h2 {
+  margin-bottom: 25px;
+}
+
+.art-lead {
+  color: #3d382f !important;
+  font-family: Georgia, serif;
+  font-size: 20px !important;
+  line-height: 1.7 !important;
+}
+
+.art-content p {
+  max-width: 550px;
+  color: #777067;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.art-signature {
+  margin-top: 35px;
+  color: #a17c3d;
+  font-family: Georgia, serif;
+  font-size: 25px;
+  letter-spacing: 7px;
+}
+
+
+/* =====================================================
+   QUOTE
+===================================================== */
+
+.story-quote {
+  position: relative;
+  padding: 150px 20px;
+  text-align: center;
+  background: #211e19;
+  overflow: hidden;
+}
+
+.quote-mark {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(194, 155, 86, 0.15);
+  font-family: Georgia, serif;
+  font-size: 220px;
+  line-height: 1;
+}
+
+.story-quote blockquote {
+  position: relative;
+  margin: 0;
+  color: #f3eee6;
+  font-family: Georgia, serif;
+  font-size: clamp(38px, 5vw, 65px);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.story-quote blockquote em {
+  color: #c5a064;
+  font-style: italic;
+}
+
+.story-quote > span {
+  display: block;
+  margin-top: 35px;
+  color: #a8864f;
+  font-size: 9px;
+  letter-spacing: 4px;
+}
+
+
+/* =====================================================
+   VALUES
+===================================================== */
+
+.values-section {
+  padding: 130px 8%;
+  background: #f7f3ed;
+}
+
+.values-section .story-section-heading {
+  margin-bottom: 70px;
+}
+
+.values-list {
+  max-width: 900px;
+  margin: auto;
+  border-top: 1px solid rgba(100, 80, 50, 0.2);
+}
+
+.value-item {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 30px;
+  padding: 38px 0;
+  border-bottom: 1px solid rgba(100, 80, 50, 0.2);
+}
+
+.value-item > span {
+  color: #a37d3e;
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+.value-item h3 {
+  margin: 0 0 10px;
+  font-family: Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+}
+
+.value-item p {
+  max-width: 600px;
+  margin: 0;
+  color: #777067;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+
+/* =====================================================
+   CTA
+===================================================== */
+
+.story-cta {
+  padding: 120px 20px;
+  text-align: center;
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(172, 134, 68, 0.15),
+      transparent 45%
+    ),
+    #25211c;
+}
+
+.story-cta .story-label {
+  color: #c8a568;
+}
+
+.story-cta h2 {
+  color: #f4efe7;
+}
+
+.story-cta p {
+  max-width: 550px;
+  margin: 0 auto 35px;
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.story-cta button {
+  border: 1px solid #b58b4b;
+  background: transparent;
+  color: #d1ae72;
+  padding: 17px 28px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: 0.35s;
+}
+
+.story-cta button span {
+  margin-left: 15px;
+  font-size: 15px;
+}
+
+.story-cta button:hover {
+  background: #b58b4b;
+  color: #fff;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.story-footer {
+  padding: 70px 8% 30px;
+  text-align: center;
+  background: #151411;
+}
+
+.story-footer-logo {
+  color: #e1c18b;
+  font-family: Georgia, serif;
+  font-size: 28px;
+  letter-spacing: 8px;
+}
+
+.story-footer > p {
+  margin: 18px 0 30px;
+  color: #777168;
+  font-family: Georgia, serif;
+  font-style: italic;
+}
+
+.story-footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.story-footer-links button {
+  border: none;
+  background: none;
+  color: #8d867c;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.story-footer-links button:hover {
+  color: #c4a064;
+}
+
+.story-copyright {
+  margin-top: 55px;
+  padding-top: 25px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: #57534d;
+  font-size: 8px;
+  letter-spacing: 2px;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 900px) {
+
+  .story-nav-links {
+    gap: 18px;
+  }
+
+  .philosophy-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .philosophy-card {
+    min-height: auto;
+    padding: 55px 30px;
+  }
+
+  .art-section {
+    grid-template-columns: 1fr;
+  }
+
+  .art-image {
+    min-height: 500px;
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .story-navbar {
+    height: auto;
+    min-height: 75px;
+    padding: 18px 5%;
+  }
+
+  .story-nav-links {
+    display: none;
+  }
+
+  .story-logo {
+    font-size: 20px;
+    letter-spacing: 5px;
+  }
+
+  .story-hero {
+    min-height: 600px;
+  }
+
+  .story-hero-content h1 {
+    font-size: 48px;
+  }
+
+  .story-intro,
+  .story-philosophy,
+  .values-section {
+    padding: 90px 6%;
+  }
+
+  .story-large-text {
+    font-size: 19px;
+  }
+
+  .story-section-heading h2,
+  .story-intro h2,
+  .art-content h2,
+  .story-cta h2 {
+    font-size: 43px;
+  }
+
+  .art-content {
+    padding: 80px 7%;
+  }
+
+  .story-quote {
+    padding: 110px 20px;
+  }
+
+  .story-quote blockquote {
+    font-size: 38px;
+  }
+
+  .value-item {
+    grid-template-columns: 45px 1fr;
+    gap: 15px;
+  }
+
+  .story-cta {
+    padding: 90px 20px;
+  }
+
+}
