@@ -200,7 +200,8 @@ export function Navbar() {
       {/* NEW WRAPPER ROW: Groups your Top Logo and Right Utilities together */}
       <div className="nav-top-row">
         <a href="/" className="logo" aria-label="Keian home">
-          <img src={logo} alt="Keian" />
+          <img src={logo} alt="Keian Logo" />
+          <span className="logo-text">KEIAN</span>
         </a>
 
         <div className="nav-actions">
