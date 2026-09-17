@@ -85,18 +85,19 @@ a {
 
 .logo {
   display: flex !important;
-  align-items: left !important;
+  align-items: center !important; /* Vertically center image and typography text */
+  gap: 12px !important;           /* Control the empty space gap between logo and name */
   text-decoration: none !important;
   flex-shrink: 0 !important;
   background: transparent !important;
-  transform: translateX(-15px); /* Negative values move it left */
+  transform: translateX(-15px);   /* Aligns component properly with outer padding boundaries */
 }
 
 .logo img {
   display: block !important;
-  width: 110px !important;
-  max-height: 75px !important;
-  height: auto !important;
+  width: auto !important;
+  max-height: 52px !important;
+  height: 52 !important;
   transform: translateX(-12px); /* Negative values move it left */
   object-fit: contain !important;
   filter:
@@ -108,6 +109,21 @@ a {
     hue-rotate(8deg)
     brightness(95%)
     contrast(88%) !important;
+}
+
+.logo-text {
+  font-family: "Montserrat", sans-serif !important; /* Luxury signature font look */
+  font-size: 25px !important;                         /* Clean text height */
+  font-weight: 700 !important;
+  text-transform: uppercase !important;               /* Forces sleek professional uniform styling */
+  letter-spacing: 1.5px !important;                     /* High-end breathing room between characters */
+  transform: translate(-35px, 5px);
+  
+  /* Matches the exact luxury gold filter color tint used on your graphic vector logo */
+  color: #d8b362 !important; 
+  
+  line-height: 1 !important;
+  white-space: nowrap !important;                      /* Prevents the brand name from wrapping on tiny devices */
 }
 
 .nav-actions {
