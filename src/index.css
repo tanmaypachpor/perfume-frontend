@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap');
+@import url('https://googleapis.com');
 
 :root {
   font-family: "Montserrat", sans-serif;
@@ -10,29 +10,24 @@
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
   width: 100%;
-  min-height: 100%;
-  margin: 0;
-  padding: 0;
+  scroll-behavior: smooth;
 }
 
 body {
   width: 100%;
   min-width: 320px;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
+  background: #f5f1e9;
+  overflow-x: clip; /* Safely handles horizontal screen bleeding without breaking standard sticky scrolling */
 }
 
 #root {
   width: 100%;
-  min-width: 320px;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
 }
 
 button,

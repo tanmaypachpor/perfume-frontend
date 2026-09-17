@@ -45,41 +45,60 @@ a {
 
 
 /* =========================================================
-   NAVBAR
+   NAVBAR (RESTRUCTURED, FIXED BACKGROUND, STICKY LOOK)
 ========================================================= */
 
 .navbar {
-  height: 82px;
-  width: 100%;
-  padding: 0 6%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #11100f;
-  color: white;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: -webkit-sticky; /* Legacy browser compatibility */
+  position: sticky !important; /* Locks navigation container position relative to viewport */
+  top: 0 !important;           /* Pins the bar flawlessly to the top screen edge */
+  z-index: 9999 !important;    /* Guarantees the component renders on top of all section content */
+  
+  width: 100% !important;
+  height: auto !important;     /* Prevents layout height from getting hard-capped */
+  min-height: 0 !important;
+  box-sizing: border-box !important;
+  padding: 0px 6% 0px 6% !important;   /* Generous padding limits to increase block height naturally */
+  display: flex !important;
+  flex-direction: column !important;
+  
+  /* Solid Unified Background Configuration */
+  background: #11100f !important;
+  background-color: #11100f !important; 
+  color: white !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important; /* Floating elevation shadow drop */
 }
 
-/* =========================
-   NAVBAR LOGO
-========================= */
+/* =========================================================
+   TOP ROW: LOGO & UTILITY ACTIONS
+========================================================= */
+
+.nav-top-row {
+  display: flex !important;
+  width: 100% !important;
+  justify-content: space-between !important; /* Keeps Logo far left, actions far right */
+  align-items: center !important;
+  margin-bottom: 5px !important; /* Separation spacing driving links down uniformly */
+  background: transparent !important;
+}
 
 .logo {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  text-decoration: none;
-  flex-shrink: 0;
+  display: flex !important;
+  align-items: left !important;
+  text-decoration: none !important;
+  flex-shrink: 0 !important;
+  background: transparent !important;
+  transform: translateX(-15px); /* Negative values move it left */
 }
 
 .logo img {
-  display: block;
-  width: 110px;
-  max-height: 75px;
-  height: auto;
-  object-fit: contain;
-
-  /* Premium Golden */
+  display: block !important;
+  width: 110px !important;
+  max-height: 75px !important;
+  height: auto !important;
+  transform: translateX(-12px); /* Negative values move it left */
+  object-fit: contain !important;
   filter:
     brightness(0)
     saturate(100%)
@@ -88,57 +107,65 @@ a {
     saturate(650%)
     hue-rotate(8deg)
     brightness(95%)
-    contrast(88%);
+    contrast(88%) !important;
 }
-
-/* =========================
-   NAVIGATION LINKS
-========================= */
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 42px;
-}
-
-.nav-links a {
-  color: #c9c5be;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.nav-links a:hover {
-  color: var(--gold-light);
-}
-
-/* =========================
-   NAVIGATION ACTIONS
-========================= */
 
 .nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important; 
+  background: transparent !important;
+  transform: translateX(+15px); /* Negative values move it left */
 }
 
 .nav-actions button {
-  width: 38px;
-  height: 38px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-  transition: 0.3s ease;
+  width: 38px !important;
+  height: 38px !important;
+  border: none !important;
+  background: transparent !important;
+  color: white !important;
+  font-size: 25px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: color 0.3s ease !important;
 }
 
 .nav-actions button:hover {
-  border-color: var(--border);
-  color: var(--gold-light);
+  color: var(--gold-light) !important;
 }
+
+/* =========================================================
+   BOTTOM ROW: TEXT NAVIGATION LINKS
+========================================================= */
+
+.nav-links {
+  display: flex !important;
+  align-items: center !important;
+  gap: 42px !important; 
+  width: 100% !important;
+  justify-content: flex-start !important; /* Aligns menu buttons inline under logo */
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.nav-links a {
+  color: #c9c5be !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 2px !important;
+  text-decoration: none !important;
+  padding: 8px 0 !important;
+  transition: color 0.3s ease !important;
+}
+
+.nav-links a:hover {
+  color: var(--gold-light) !important;
+}
+
+
 
 
 /* =========================================================
@@ -187,7 +214,7 @@ a {
 
 .hero-content {
   width: 52%;
-  padding: 130px 0 120px 9%;
+  padding: 180px 0 120px 9%; /* Adjusted top padding value up to 180px so text sits perfectly clear */
   position: relative;
   z-index: 5;
 }
@@ -1980,9 +2007,9 @@ a {
     padding: 0 5%;
   }
 
-  .nav-links {
+  /*.nav-links {
     display: none;
-  }
+  }*/
 
   .hero {
     min-height: auto;
@@ -2071,8 +2098,8 @@ a {
 @media (max-width: 550px) {
 
   .navbar {
-    height: 70px;
-    padding: 0 4%;
+     height: auto !important; /* Removes the 70px limit constraint allowing background to expand */
+     padding: 16px 4% 16px 4% !important; /* Keeps padding balanced on mobile viewports */
   }
 
   /* MOBILE LOGO */
