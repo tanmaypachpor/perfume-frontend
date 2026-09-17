@@ -890,6 +890,7 @@ a {
     box-shadow 0.3s ease;
 }
 
+
 /* Gold shine */
 
 .best-seller-tab::before {
@@ -916,6 +917,7 @@ a {
   left: 100%;
 }
 
+
 /* Hover */
 
 .best-seller-tab:hover {
@@ -927,6 +929,7 @@ a {
   box-shadow:
     0 8px 20px rgba(0, 0, 0, 0.12);
 }
+
 
 /* Active */
 
@@ -987,14 +990,26 @@ a {
     0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
+
+/* =========================================================
+   PRODUCT VISUAL
+========================================================= */
+
 .product-visual {
   height: 420px;
   position: relative;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   overflow: hidden;
 }
+
+
+/* =========================================================
+   PRODUCT CARD BACKGROUNDS
+========================================================= */
 
 .product-noir {
   background:
@@ -1034,6 +1049,42 @@ a {
 
 
 /* =========================================================
+   DATABASE PRODUCT IMAGE
+========================================================= */
+
+.product-image-wrapper {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  position: relative;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  display: block;
+
+  transition:
+    transform 0.5s ease;
+}
+
+
+/* Product image hover */
+
+.product-card:hover .product-image {
+  transform: scale(1.04);
+}
+
+
+/* =========================================================
    BAKHOOR PRODUCT BACKGROUND
 ========================================================= */
 
@@ -1061,9 +1112,12 @@ a {
   top: 18px;
   left: 18px;
   z-index: 4;
+
   padding: 7px 10px;
+
   background: var(--black);
   color: white;
+
   font-size: 7px;
   letter-spacing: 1.5px;
 }
@@ -1077,14 +1131,21 @@ a {
   position: absolute;
   right: 16px;
   top: 15px;
+  z-index: 4;
+
   width: 36px;
   height: 36px;
+
   border: none;
-  background: rgba(255, 255, 255, 0.6);
+
+  background:
+    rgba(255, 255, 255, 0.6);
+
   border-radius: 50%;
+
   font-size: 20px;
   color: #514a42;
-  z-index: 4;
+
   transition: 0.3s;
 }
 
@@ -1095,7 +1156,7 @@ a {
 
 
 /* =========================================================
-   PERFUME BOTTLE
+   PERFUME BOTTLE FALLBACK
 ========================================================= */
 
 .product-bottle {
@@ -1108,7 +1169,8 @@ a {
       15px 20px 20px rgba(0, 0, 0, 0.22)
     );
 
-  transition: transform 0.5s ease;
+  transition:
+    transform 0.5s ease;
 }
 
 .product-card:hover .product-bottle {
@@ -1133,13 +1195,16 @@ a {
 .mini-neck {
   width: 40px;
   height: 25px;
+
   background: #b7975e;
 }
 
 .mini-body {
   width: 120px;
   height: 190px;
-  border-radius: 7px 7px 18px 18px;
+
+  border-radius:
+    7px 7px 18px 18px;
 
   display: flex;
   justify-content: center;
@@ -1153,7 +1218,8 @@ a {
       #1b1815
     );
 
-  border: 1px solid rgba(80, 65, 40, 0.7);
+  border:
+    1px solid rgba(80, 65, 40, 0.7);
 }
 
 .product-rose .mini-body {
@@ -1187,7 +1253,10 @@ a {
 }
 
 .mini-body span {
-  font-family: "Cormorant Garamond", serif;
+  font-family:
+    "Cormorant Garamond",
+    serif;
+
   color: var(--gold-light);
   font-size: 28px;
 }
@@ -1200,6 +1269,7 @@ a {
 .bakhoor-product {
   position: absolute;
   inset: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1207,6 +1277,7 @@ a {
 
 .bakhoor-burner {
   position: relative;
+
   width: 120px;
   height: 220px;
 
@@ -1220,7 +1291,8 @@ a {
       15px 20px 20px rgba(0, 0, 0, 0.25)
     );
 
-  transition: transform 0.5s ease;
+  transition:
+    transform 0.5s ease;
 }
 
 .product-card:hover .bakhoor-burner {
@@ -1230,8 +1302,10 @@ a {
 .burner-top {
   position: relative;
   z-index: 3;
+
   width: 82px;
   height: 34px;
+
   border-radius: 50%;
 
   background:
@@ -1242,7 +1316,8 @@ a {
       #c09a5e
     );
 
-  border: 1px solid rgba(255, 226, 169, 0.5);
+  border:
+    1px solid rgba(255, 226, 169, 0.5);
 
   display: flex;
   align-items: center;
@@ -1263,7 +1338,9 @@ a {
 .burner-body {
   width: 72px;
   height: 82px;
+
   margin-top: -6px;
+
   position: relative;
   z-index: 2;
 
@@ -1303,20 +1380,27 @@ a {
 
 .burner-body::before {
   content: "";
+
   position: absolute;
+
   width: 32px;
   height: 32px;
+
   border:
     1px solid rgba(231, 196, 130, 0.3);
+
   border-radius: 50%;
 }
 
 .burner-base {
   width: 92px;
   height: 17px;
+
   margin-top: -5px;
+
   position: relative;
   z-index: 1;
+
   border-radius: 50%;
 
   background:
@@ -1338,21 +1422,27 @@ a {
 
 .bakhoor-smoke {
   position: absolute;
+
   width: 38px;
   height: 95px;
+
   top: 75px;
 
   border-left:
     2px solid rgba(245, 230, 203, 0.38);
 
   border-radius: 50%;
+
   filter: blur(2px);
+
   opacity: 0.65;
+
   pointer-events: none;
 }
 
 .smoke-one {
   left: calc(50% - 22px);
+
   transform: rotate(10deg);
 
   animation:
@@ -1362,6 +1452,7 @@ a {
 .smoke-two {
   left: calc(50% - 3px);
   top: 62px;
+
   transform: rotate(-12deg);
 
   animation:
@@ -1371,6 +1462,7 @@ a {
 .smoke-three {
   left: calc(50% - 30px);
   top: 82px;
+
   transform: rotate(18deg);
 
   animation:
@@ -1386,13 +1478,17 @@ a {
   0%,
   100% {
     transform:
-      translateY(8px) rotate(10deg);
+      translateY(8px)
+      rotate(10deg);
+
     opacity: 0.2;
   }
 
   50% {
     transform:
-      translateY(-25px) rotate(-7deg);
+      translateY(-25px)
+      rotate(-7deg);
+
     opacity: 0.7;
   }
 }
@@ -1401,13 +1497,17 @@ a {
   0%,
   100% {
     transform:
-      translateY(8px) rotate(-12deg);
+      translateY(8px)
+      rotate(-12deg);
+
     opacity: 0.2;
   }
 
   50% {
     transform:
-      translateY(-30px) rotate(9deg);
+      translateY(-30px)
+      rotate(9deg);
+
     opacity: 0.65;
   }
 }
@@ -1416,13 +1516,17 @@ a {
   0%,
   100% {
     transform:
-      translateY(10px) rotate(18deg);
+      translateY(10px)
+      rotate(18deg);
+
     opacity: 0.15;
   }
 
   50% {
     transform:
-      translateY(-20px) rotate(2deg);
+      translateY(-20px)
+      rotate(2deg);
+
     opacity: 0.55;
   }
 }
@@ -1434,24 +1538,31 @@ a {
 
 .quick-add {
   position: absolute;
+
   bottom: -60px;
   left: 0;
+
   width: 100%;
   height: 52px;
+
   border: none;
 
   background:
     rgba(17, 16, 15, 0.94);
 
   color: white;
+
   font-size: 9px;
   letter-spacing: 2px;
+
   transition: 0.4s ease;
 }
 
 .quick-add span {
   margin-left: 15px;
+
   color: var(--gold-light);
+
   font-size: 16px;
 }
 
@@ -1470,26 +1581,35 @@ a {
 
 .product-details > span {
   color: var(--gold);
+
   font-size: 7px;
   letter-spacing: 2px;
 }
 
 .product-details h3 {
   margin: 7px 0 5px;
-  font-family: "Cormorant Garamond", serif;
+
+  font-family:
+    "Cormorant Garamond",
+    serif;
+
   font-size: 28px;
   font-weight: 500;
 }
 
 .product-details p {
   color: var(--muted);
+
   font-size: 9px;
+
   margin-bottom: 4px;
 }
 
 .product-details strong {
   display: block;
+
   margin-top: 15px;
+
   font-size: 13px;
 }
 
@@ -1500,9 +1620,13 @@ a {
 
 .no-products-message {
   text-align: center;
+
   padding: 60px 20px;
+
   color: var(--muted);
+
   font-size: 12px;
+
   letter-spacing: 0.5px;
 }
 
@@ -1517,26 +1641,41 @@ a {
 
 .view-all-fragrances {
   display: flex;
+
   justify-content: center;
+
   margin-top: 50px;
 }
 
 .view-all-fragrances a {
   position: relative;
+
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
+
   min-width: 215px;
+
   padding: 15px 30px;
 
   background: transparent;
-  border: 1px solid #1c1c1c;
+
+  border:
+    1px solid #1c1c1c;
+
   color: #1c1c1c;
 
-  font-family: "Montserrat", sans-serif;
+  font-family:
+    "Montserrat",
+    sans-serif;
+
   font-size: 9px;
+
   font-weight: 600;
+
   letter-spacing: 2px;
+
   text-transform: uppercase;
 
   overflow: hidden;
@@ -1549,14 +1688,19 @@ a {
 
 .view-all-fragrances a::before {
   content: "";
+
   position: absolute;
   inset: 0;
+
   background: #1c1c1c;
 
   transform: scaleX(0);
+
   transform-origin: right;
 
-  transition: transform 0.4s ease;
+  transition:
+    transform 0.4s ease;
+
   z-index: 0;
 }
 
@@ -1572,6 +1716,7 @@ a {
 
 .view-all-fragrances a:hover {
   color: var(--gold-light);
+
   transform: translateY(-3px);
 
   box-shadow:
@@ -1607,19 +1752,28 @@ a {
 
 .center-button {
   display: flex;
+
   justify-content: center;
+
   margin-top: 55px;
 }
 
 .outline-button {
   display: inline-flex;
+
   align-items: center;
+
   gap: 35px;
+
   padding: 16px 25px;
 
-  border: 1px solid #3a352f;
+  border:
+    1px solid #3a352f;
+
   font-size: 9px;
+
   letter-spacing: 2px;
+
   transition: 0.3s;
 }
 
@@ -1631,8 +1785,6 @@ a {
   background: var(--black);
   color: white;
 }
-
-
 /* =========================================================
    STORY / OUR PHILOSOPHY
 ========================================================= */

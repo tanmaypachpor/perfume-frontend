@@ -9,6 +9,7 @@ import attarImage from "./Images/attar.jpg";
 import perfumeImage from "./Images/perfume.jpg";
 import dhakoonImage from "./Images/dakhoonimages.jpg";
 import storyImage from "./Images/story.jpg";
+
 import {
   FaInstagram,
   FaFacebookF,
@@ -17,6 +18,7 @@ import {
   FaPhone,
   FaMapMarkerAlt,
 } from "react-icons/fa";
+
 interface Product {
   id: number;
   name: string;
@@ -125,17 +127,30 @@ function ProductCard({
           </div>
         ) : (
           /* =================================================
-             PERFUME PRODUCT
+             PERFUME PRODUCT IMAGE FROM DATABASE
           ================================================= */
 
-          <div className="product-bottle">
-            <div className="mini-cap"></div>
+          <div className="product-image-wrapper">
+            {product.imageUrl ? (
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className="product-image"
+                onError={(event) => {
+                  event.currentTarget.style.display = "none";
+                }}
+              />
+            ) : (
+              <div className="product-bottle">
+                <div className="mini-cap"></div>
 
-            <div className="mini-neck"></div>
+                <div className="mini-neck"></div>
 
-            <div className="mini-body">
-              <span>K</span>
-            </div>
+                <div className="mini-body">
+                  <span>K</span>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -190,25 +205,36 @@ function ProductCard({
    NAVBAR
 ========================================================= */
 
-/* =========================================================
-   NAVBAR (RESTRUCTURED TSX)
-========================================================= */
-
 export function Navbar() {
   return (
     <header className="navbar">
-      {/* NEW WRAPPER ROW: Groups your Top Logo and Right Utilities together */}
+
+      {/* TOP ROW */}
+
       <div className="nav-top-row">
-        <a href="/" className="logo" aria-label="Keian home">
-          <img src={logo} alt="Keian Logo" />
-          <span className="logo-text">KEIAN</span>
+
+        <a
+          href="/"
+          className="logo"
+          aria-label="Keian home"
+        >
+          <img
+            src={logo}
+            alt="Keian Logo"
+          />
+
+          <span className="logo-text">
+            KEIAN
+          </span>
         </a>
 
         <div className="nav-actions">
+
           <button
             aria-label="Search"
             onClick={() => {
-              window.location.href = "/products";
+              window.location.href =
+                "/products";
             }}
           >
             ⌕
@@ -217,7 +243,9 @@ export function Navbar() {
           <button
             aria-label="Wishlist"
             onClick={() => {
-              alert("Wishlist feature coming soon.");
+              alert(
+                "Wishlist feature coming soon."
+              );
             }}
           >
             ♡
@@ -226,25 +254,43 @@ export function Navbar() {
           <button
             aria-label="Shopping bag"
             onClick={() => {
-              alert("Shopping bag feature coming soon.");
+              alert(
+                "Shopping bag feature coming soon."
+              );
             }}
           >
             ♧
           </button>
+
         </div>
       </div>
 
-      {/* BOTTOM ROW: Sits independently directly beneath the top row elements */}
-      <nav className="nav-links" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/products">Shop</a>
-        <a href="/#collections">Collections</a>
-        <a href="/#about">Our Story</a>
+      {/* NAVIGATION */}
+
+      <nav
+        className="nav-links"
+        aria-label="Main navigation"
+      >
+        <a href="/">
+          Home
+        </a>
+
+        <a href="/products">
+          Shop
+        </a>
+
+        <a href="/#collections">
+          Collections
+        </a>
+
+        <a href="/#about">
+          Our Story
+        </a>
       </nav>
+
     </header>
   );
 }
-
 
 /* =========================================================
    API HELPER
@@ -441,6 +487,7 @@ function HomePage() {
 
   return (
     <div className="app">
+
       <Navbar />
 
       <main>
@@ -453,9 +500,11 @@ function HomePage() {
           className="hero"
           id="home"
         >
+
           <div className="hero-background-circle"></div>
 
           <div className="hero-content">
+
             <div className="eyebrow">
               <span></span>
 
@@ -479,6 +528,7 @@ function HomePage() {
             </p>
 
             <div className="hero-buttons">
+
               <a
                 href="#shop"
                 className="primary-button"
@@ -494,28 +544,38 @@ function HomePage() {
               >
                 DISCOVER KEIAN
               </a>
+
             </div>
+
           </div>
 
           {/* HERO PRODUCT */}
 
           <div className="hero-product">
+
             <div className="hero-orbit orbit-one"></div>
 
             <div className="hero-orbit orbit-two"></div>
 
             <div className="hero-bottle">
+
               <div className="perfume-display-wrapper">
+
                 <div className="bottle-container">
+
                   <img
                     src={perfumeBottle}
                     alt="Keian Luxury Perfume Bottle"
                   />
+
                 </div>
+
               </div>
+
             </div>
 
             <div className="floating-note note-one">
+
               <span>01</span>
 
               <p>
@@ -523,9 +583,11 @@ function HomePage() {
                 <br />
                 Amber
               </p>
+
             </div>
 
             <div className="floating-note note-two">
+
               <span>02</span>
 
               <p>
@@ -533,8 +595,11 @@ function HomePage() {
                 <br />
                 Mystery
               </p>
+
             </div>
+
           </div>
+
         </section>
 
         {/* =================================================
@@ -542,26 +607,37 @@ function HomePage() {
         ================================================= */}
 
         <section className="trust-bar">
+
           <div>
             <span>✦</span>
 
-            <strong>LONG LASTING</strong>
+            <strong>
+              LONG LASTING
+            </strong>
 
-            <small>Up to 12 hours</small>
+            <small>
+              Up to 12 hours
+            </small>
           </div>
 
           <div>
             <span>✧</span>
 
-            <strong>PREMIUM QUALITY</strong>
+            <strong>
+              PREMIUM QUALITY
+            </strong>
 
-            <small>Finest ingredients</small>
+            <small>
+              Finest ingredients
+            </small>
           </div>
 
           <div>
             <span>◇</span>
 
-            <strong>FREE SHIPPING</strong>
+            <strong>
+              FREE SHIPPING
+            </strong>
 
             <small>
               On orders above ₹1,999
@@ -571,10 +647,15 @@ function HomePage() {
           <div>
             <span>✦</span>
 
-            <strong>CRAFTED WITH CARE</strong>
+            <strong>
+              CRAFTED WITH CARE
+            </strong>
 
-            <small>Made for you</small>
+            <small>
+              Made for you
+            </small>
           </div>
+
         </section>
 
         {/* =================================================
@@ -585,8 +666,11 @@ function HomePage() {
           className="section categories"
           id="collections"
         >
+
           <div className="section-header">
+
             <div>
+
               <span className="section-label">
                 EXPLORE
               </span>
@@ -595,6 +679,7 @@ function HomePage() {
                 Discover Our{" "}
                 <em>Collections</em>
               </h2>
+
             </div>
 
             <p>
@@ -602,6 +687,7 @@ function HomePage() {
               traditional attars, luxurious gift
               sets and aromatic dhakoon.
             </p>
+
           </div>
 
           <div className="category-grid">
@@ -612,6 +698,7 @@ function HomePage() {
               href="/products/perfumes"
               className="category-card collection-card category-perfumes"
             >
+
               <img
                 src={giftImage}
                 alt="Perfumes"
@@ -619,14 +706,21 @@ function HomePage() {
               />
 
               <div className="category-overlay">
-                <span>DISCOVER</span>
 
-                <h3>Perfumes</h3>
+                <span>
+                  DISCOVER
+                </span>
+
+                <h3>
+                  Perfumes
+                </h3>
 
                 <p>
                   Elegant · Timeless · Refined →
                 </p>
+
               </div>
+
             </a>
 
             {/* ATTARS */}
@@ -635,6 +729,7 @@ function HomePage() {
               href="/products/attars"
               className="category-card collection-card category-attars"
             >
+
               <img
                 src={attarImage}
                 alt="Attars"
@@ -642,14 +737,21 @@ function HomePage() {
               />
 
               <div className="category-overlay">
-                <span>DISCOVER</span>
 
-                <h3>Attars</h3>
+                <span>
+                  DISCOVER
+                </span>
+
+                <h3>
+                  Attars
+                </h3>
 
                 <p>
                   Traditional · Rich · Fragrant →
                 </p>
+
               </div>
+
             </a>
 
             {/* GIFT SETS */}
@@ -658,6 +760,7 @@ function HomePage() {
               href="/products/gift-sets"
               className="category-card collection-card category-giftsets"
             >
+
               <img
                 src={perfumeImage}
                 alt="Gift Sets"
@@ -665,14 +768,21 @@ function HomePage() {
               />
 
               <div className="category-overlay">
-                <span>DISCOVER</span>
 
-                <h3>Gift Sets</h3>
+                <span>
+                  DISCOVER
+                </span>
+
+                <h3>
+                  Gift Sets
+                </h3>
 
                 <p>
                   Luxury · Thoughtful · Special →
                 </p>
+
               </div>
+
             </a>
 
             {/* DHAKOON */}
@@ -681,6 +791,7 @@ function HomePage() {
               href="/products/bakhoor"
               className="category-card collection-card category-dhakoon"
             >
+
               <img
                 src={dhakoonImage}
                 alt="Dhakoon"
@@ -688,17 +799,25 @@ function HomePage() {
               />
 
               <div className="category-overlay">
-                <span>DISCOVER</span>
 
-                <h3>Dhakoon</h3>
+                <span>
+                  DISCOVER
+                </span>
+
+                <h3>
+                  Dhakoon
+                </h3>
 
                 <p>
                   Smoky · Aromatic · Luxurious →
                 </p>
+
               </div>
+
             </a>
 
           </div>
+
         </section>
 
         {/* =================================================
@@ -709,7 +828,9 @@ function HomePage() {
           className="section products-section"
           id="shop"
         >
+
           <div className="section-header centered">
+
             <span className="section-label">
               THE COLLECTION
             </span>
@@ -722,6 +843,7 @@ function HomePage() {
               Fragrances loved by those who know
               what they want.
             </p>
+
           </div>
 
           {/* BEST SELLER TABS */}
@@ -788,12 +910,16 @@ function HomePage() {
 
           {/* LOADING */}
 
-          {loading && <LoadingMessage />}
+          {loading && (
+            <LoadingMessage />
+          )}
 
           {/* ERROR */}
 
           {error && (
-            <ErrorMessage message={error} />
+            <ErrorMessage
+              message={error}
+            />
           )}
 
           {/* PRODUCTS */}
@@ -802,19 +928,26 @@ function HomePage() {
             !error &&
             products.length > 0 && (
               <>
+
                 {filteredProducts.length > 0 ? (
                   <>
+
                     <div className="product-grid">
 
                       {filteredProducts
                         .slice(0, 4)
-                        .map((product, index) => (
-                          <ProductCard
-                            key={product.id}
-                            product={product}
-                            index={index}
-                          />
-                        ))}
+                        .map(
+                          (
+                            product,
+                            index
+                          ) => (
+                            <ProductCard
+                              key={product.id}
+                              product={product}
+                              index={index}
+                            />
+                          )
+                        )}
 
                     </div>
 
@@ -823,23 +956,31 @@ function HomePage() {
                     <div className="view-all-fragrances">
 
                       <a href="/products">
+
                         <span>
                           View All Fragrances
                         </span>
+
                       </a>
 
                     </div>
 
                   </>
                 ) : (
+
                   <div className="no-products-message">
+
                     No products available in{" "}
+
                     <strong>
                       {activeCategory}
                     </strong>
                     .
+
                   </div>
+
                 )}
+
               </>
             )}
 
@@ -848,10 +989,13 @@ function HomePage() {
           {!loading &&
             !error &&
             products.length === 0 && (
+
               <div className="no-products-message">
                 No fragrances available.
               </div>
+
             )}
+
         </section>
 
         {/* =================================================
@@ -862,16 +1006,20 @@ function HomePage() {
           className="story"
           id="about"
         >
+
           <div className="story-image">
+
             <img
-              src="src\Images\story2.jpg"
+              src={storyImage}
               alt="Keian luxury perfume bottle"
             />
 
             <div className="story-overlay"></div>
+
           </div>
 
           <div className="story-content">
+
             <span className="section-label">
               OUR PHILOSOPHY
             </span>
@@ -902,9 +1050,13 @@ function HomePage() {
             >
               OUR STORY
 
-              <span>→</span>
+              <span>
+                →
+              </span>
             </a>
+
           </div>
+
         </section>
 
         {/* =================================================
@@ -912,6 +1064,7 @@ function HomePage() {
         ================================================= */}
 
         <section className="newsletter">
+
           <span className="section-label">
             JOIN THE WORLD OF KEIAN
           </span>
@@ -937,6 +1090,7 @@ function HomePage() {
               );
             }}
           >
+
             <input
               type="email"
               placeholder="Your email address"
@@ -945,32 +1099,48 @@ function HomePage() {
             />
 
             <button type="submit">
+
               SUBSCRIBE
 
-              <span>→</span>
+              <span>
+                →
+              </span>
+
             </button>
+
           </form>
+
         </section>
+
       </main>
 
       <Footer />
+
     </div>
   );
 }
 
+/* =========================================================
+   FOOTER
+========================================================= */
+
 function Footer() {
   return (
     <footer className="footer">
+
       <div className="footer-top">
 
         {/* BRAND */}
 
         <div className="footer-brand">
+
           <div className="footer-logo">
+
             <img
               src="src\Images\logo01.webp"
               alt="KEIAN"
             />
+
           </div>
 
           <p>
@@ -978,12 +1148,16 @@ function Footer() {
             <br />
             captured in a bottle.
           </p>
+
         </div>
 
         {/* SHOP */}
 
         <div className="footer-column">
-          <h4>SHOP</h4>
+
+          <h4>
+            SHOP
+          </h4>
 
           <a href="/products">
             All Fragrances
@@ -1016,12 +1190,16 @@ function Footer() {
           <a href="/products/bakhoor">
             Dhakoon
           </a>
+
         </div>
 
         {/* ABOUT */}
 
         <div className="footer-column">
-          <h4>ABOUT</h4>
+
+          <h4>
+            ABOUT
+          </h4>
 
           <a href="/#about">
             Our Story
@@ -1038,19 +1216,25 @@ function Footer() {
           <a href="/#about">
             Journal
           </a>
+
         </div>
 
         {/* FOLLOW */}
 
         <div className="footer-column footer-social">
-          <h4>FOLLOW</h4>
+
+          <h4>
+            FOLLOW
+          </h4>
 
           <a
             href="#instagram"
             aria-label="Instagram"
           >
             <FaInstagram />
-            <span> Instagram</span>
+            <span>
+              Instagram
+            </span>
           </a>
 
           <a
@@ -1058,7 +1242,9 @@ function Footer() {
             aria-label="Facebook"
           >
             <FaFacebookF />
-            <span> Facebook</span>
+            <span>
+              Facebook
+            </span>
           </a>
 
           <a
@@ -1066,16 +1252,23 @@ function Footer() {
             aria-label="Pinterest"
           >
             <FaPinterestP />
-            <span> Pinterest</span>
+            <span>
+              Pinterest
+            </span>
           </a>
+
         </div>
 
         {/* CONTACT */}
 
         <div className="footer-column footer-contact">
-          <h4>CONTACT</h4>
+
+          <h4>
+            CONTACT
+          </h4>
 
           <div className="contact-item">
+
             <FaMapMarkerAlt />
 
             <span>
@@ -1085,30 +1278,35 @@ function Footer() {
               <br />
               India
             </span>
+
           </div>
 
           <a
             href="mailto:info@keian.com"
             className="contact-item"
           >
+
             <FaEnvelope />
-               
-                
-            <span><span> </span>
-            info@keian.com
+
+            <span>
+              info@keian.com
             </span>
+
           </a>
 
           <a
             href="tel:+919999999999"
             className="contact-item"
           >
+
             <FaPhone />
 
-            <span><span> </span>
+            <span>
               +91 99999 99999
             </span>
+
           </a>
+
         </div>
 
       </div>
@@ -1116,6 +1314,7 @@ function Footer() {
       {/* FOOTER BOTTOM */}
 
       <div className="footer-bottom">
+
         <span>
           © 2026 KEIAN. ALL RIGHTS RESERVED.
         </span>
@@ -1123,7 +1322,9 @@ function Footer() {
         <span>
           PRIVACY · TERMS · SHIPPING
         </span>
+
       </div>
+
     </footer>
   );
 }
