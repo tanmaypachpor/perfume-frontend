@@ -485,10 +485,11 @@ a {
 .section-label {
   color: var(--gold);
 
-  font-size: 9px;
+  font-size: 30px;
 
-  letter-spacing: 4px;
+  letter-spacing: 5px;
 }
+
 
 .section-header h2 {
   margin-top: 12px;
@@ -506,14 +507,16 @@ a {
   color: var(--gold);
 }
 
-.section-header>p {
-  max-width: 350px;
+.section-header > p {
+  max-width: 420px;
 
   color: var(--muted);
 
-  font-size: 12px;
+  font-size: 16px;
 
-  line-height: 1.8;
+  line-height: 1.9;
+
+  letter-spacing: 0.3px;
 }
 
 
@@ -2145,61 +2148,54 @@ a {
    FOOTER
 ========================================================= */
 
+/* =========================================================
+   FOOTER
+========================================================= */
+
 .footer {
-  padding: 75px 7% 25px;
-
+  padding: 80px 7% 30px;
   background: #11100f;
-
   color: white;
 }
 
 .footer-top {
   display: grid;
-
   grid-template-columns: 2fr repeat(3, 1fr);
-
   gap: 50px;
-
-  padding-bottom: 70px;
+  padding-bottom: 75px;
 }
+
+/* BRAND */
 
 .footer-brand p {
-  margin-top: 18px;
-
-  color: #77716a;
-
+  margin-top: 20px;
+  color: #918a82;
   font-family: "Cormorant Garamond", serif;
-
-  font-size: 18px;
-
-  line-height: 1.2;
+  font-size: 24px;       /* increased from 21px */
+  line-height: 1.5;
 }
+
+/* FOOTER COLUMNS */
 
 .footer-column {
   display: flex;
-
   flex-direction: column;
-
-  gap: 13px;
+  gap: 16px;
 }
 
 .footer-column h4 {
-  margin-bottom: 8px;
-
+  margin-bottom: 10px;
   color: var(--gold-light);
-
-  font-size: 8px;
-
+  font-size: 13px;       /* increased from 11px */
   letter-spacing: 3px;
+  font-weight: 500;
 }
 
 .footer-column a {
   width: fit-content;
-
-  color: #817b73;
-
-  font-size: 9px;
-
+  color: #918b83;
+  font-size: 15px;       /* increased from 12px */
+  letter-spacing: 0.5px;
   transition: 0.3s;
 }
 
@@ -2207,36 +2203,27 @@ a {
   color: white;
 }
 
-.footer-bottom {
-  padding-top: 23px;
+/* FOOTER LOGO */
 
-  border-top: 1px solid #282521;
-
-  display: flex;
-
-  justify-content: space-between;
-
-  color: #5d5852;
-
-  font-size: 7px;
-
-  letter-spacing: 1.5px;
+.footer-logo {
+  color: var(--gold-light);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 40px;       /* increased from 36px */
+  letter-spacing: 8px;
+  font-weight: 500;
 }
 
+/* FOOTER BOTTOM */
 
-/* =========================================================
-   RESPONSIVE - 1250px
-========================================================= */
-
-@media (max-width: 1250px) {
-
-  .category-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .product-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+.footer-bottom {
+  padding-top: 25px;
+  border-top: 1px solid #282521;
+  display: flex;
+  justify-content: space-between;
+  color: #706a63;
+  font-size: 12px;       /* increased from 10px */
+  letter-spacing: 1.5px;
+  line-height: 1.6;
 }
 
 
