@@ -56,8 +56,9 @@ function ProductCard({
       style={{ cursor: "pointer" }}
     >
       <div
-        className={`product-visual ${isBakhoor ? "" : className
-          }`}
+        className={`product-visual ${
+          isBakhoor ? "" : className
+        }`}
       >
         {/* PRODUCT TAG */}
         {product.tag && (
@@ -99,7 +100,7 @@ function ProductCard({
               </div>
 
               <div className="burner-body">
-                L
+                K
               </div>
 
               <div className="burner-base"></div>
@@ -116,7 +117,7 @@ function ProductCard({
             <div className="mini-neck"></div>
 
             <div className="mini-body">
-              <span>L</span>
+              <span>K</span>
             </div>
           </div>
         )}
@@ -177,9 +178,12 @@ function Navbar() {
       <a
         href="/"
         className="logo"
-        aria-label="Lumière home"
+        aria-label="Keian home"
       >
-        <img src="src\Images\logo.webp"></img>
+        <img
+          src="src/Images/logo.webp"
+          alt="Keian"
+        />
       </a>
 
       <nav
@@ -482,7 +486,7 @@ function HomePage() {
                 href="#about"
                 className="secondary-button"
               >
-                DISCOVER Keian
+                DISCOVER KEIAN
               </a>
             </div>
           </div>
@@ -497,13 +501,12 @@ function HomePage() {
             <div className="hero-bottle">
               <div className="perfume-display-wrapper">
                 <div className="bottle-container">
-                  <img 
-                  src="src\Images\Perfume_Bottle_Mockup.png" 
-                  alt="Luxury Perfume Bottle" 
+                  <img
+                    src="src/Images/Perfume_Bottle_Mockup.png"
+                    alt="Keian Luxury Perfume Bottle"
                   />
                 </div>
               </div>
-
             </div>
 
             <div className="floating-note note-one">
@@ -569,8 +572,8 @@ function HomePage() {
         </section>
 
         {/* =================================================
-    COLLECTIONS
-================================================= */}
+            COLLECTIONS
+        ================================================= */}
 
         <section
           className="section categories"
@@ -715,18 +718,17 @@ function HomePage() {
             </p>
           </div>
 
-          {/* =================================================
-              BEST SELLER TABS
-          ================================================= */}
+          {/* BEST SELLER TABS */}
 
           <div className="best-seller-tabs">
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "HIM"
-                ? "active"
-                : ""
-                }`}
+              className={`best-seller-tab ${
+                activeCategory === "HIM"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() =>
                 setActiveCategory("HIM")
               }
@@ -736,10 +738,11 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "HER"
-                ? "active"
-                : ""
-                }`}
+              className={`best-seller-tab ${
+                activeCategory === "HER"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() =>
                 setActiveCategory("HER")
               }
@@ -749,10 +752,11 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "ATTAR"
-                ? "active"
-                : ""
-                }`}
+              className={`best-seller-tab ${
+                activeCategory === "ATTAR"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() =>
                 setActiveCategory("ATTAR")
               }
@@ -762,10 +766,11 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "GIFTING"
-                ? "active"
-                : ""
-                }`}
+              className={`best-seller-tab ${
+                activeCategory === "GIFTING"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() =>
                 setActiveCategory("GIFTING")
               }
@@ -807,9 +812,7 @@ function HomePage() {
 
                     </div>
 
-                    {/* =================================================
-                        VIEW ALL FRAGRANCES
-                    ================================================= */}
+                    {/* VIEW ALL FRAGRANCES */}
 
                     <div className="view-all-fragrances">
 
@@ -855,15 +858,11 @@ function HomePage() {
         >
           <div className="story-image">
             <img
-              src="src\Images\story.jpg"
-              alt="Luxury perfume bottle"
+              src="src/Images/story.jpg"
+              alt="Keian luxury perfume bottle"
             />
 
             <div className="story-overlay"></div>
-
-            {/* <div className="story-frame">
-              <span>L</span>
-            </div> */}
           </div>
 
           <div className="story-content">
@@ -886,10 +885,11 @@ function HomePage() {
             </p>
 
             <p>
-              Every Lumière creation is carefully composed
+              Every Keian creation is carefully composed
               using exceptional ingredients to create
               something truly unforgettable.
             </p>
+
             <a
               href="/our-story"
               className="text-link"
@@ -907,7 +907,7 @@ function HomePage() {
 
         <section className="newsletter">
           <span className="section-label">
-            JOIN THE WORLD OF LUMIÈRE
+            JOIN THE WORLD OF KEIAN
           </span>
 
           <h2>
@@ -927,7 +927,7 @@ function HomePage() {
               event.preventDefault();
 
               alert(
-                "Thank you for subscribing to Lumière."
+                "Thank you for subscribing to Keian."
               );
             }}
           >
@@ -965,7 +965,7 @@ function Footer() {
 
         <div className="footer-brand">
           <div className="footer-logo">
-            LUMIÈRE
+            KEIAN
           </div>
 
           <p>
@@ -1056,7 +1056,7 @@ function Footer() {
 
       <div className="footer-bottom">
         <span>
-          © 2026 LUMIÈRE. ALL RIGHTS RESERVED.
+          © 2026 KEIAN. ALL RIGHTS RESERVED.
         </span>
 
         <span>
