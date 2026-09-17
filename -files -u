@@ -1,0 +1,15 @@
+* [33m4d33aa7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Merge remote-tracking branch 'upstream/main' git merge upstream/maingit merge upstream/maingit merge upstream/main# the commit.
+*   [33m930f137[m Merge remote-tracking branch 'upstream/main'
+[32m|[m[33m\[m  
+[32m|[m * [33maa5fb03[m imgae added
+[32m|[m *   [33m525a022[m Merge branch 'main' of https://github.com/tanmaypachpor/perfume-frontend
+[32m|[m [34m|[m[35m\[m  
+[32m|[m * [35m|[m [33m5543b24[m background
+[32m|[m * [35m|[m [33m28de6f4[m change-1
+* [35m|[m [35m|[m [33md115293[m[33m ([m[1;32mbackup-my-work[m[33m)[m filler remove
+* [35m|[m [35m|[m [33m6d9411b[m image added  , background circle & bar below it
+[35m|[m [35m|[m[35m/[m  
+[35m|[m[35m/[m[35m|[m   
+* [35m|[m [33m1881497[m Refactor: replace CSS bottle styling with standard image component
+[35m|[m[35m/[m  
+* [33mc7d7b59[m Update perfume frontend and add admin dashboard
