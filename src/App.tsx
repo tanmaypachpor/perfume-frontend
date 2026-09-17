@@ -863,7 +863,7 @@ function HomePage() {
         >
           <div className="story-image">
             <img
-              src={storyImage}
+              src="src\Images\story2.jpg"
               alt="Keian luxury perfume bottle"
             />
 
@@ -967,7 +967,7 @@ function Footer() {
         <div className="footer-brand">
           <div className="footer-logo">
             <img
-              src={logo}
+              src="src\Images\logo01.webp"
               alt="KEIAN"
             />
           </div>

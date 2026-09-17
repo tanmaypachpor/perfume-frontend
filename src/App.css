@@ -1757,7 +1757,7 @@ a {
   max-width: 480px;
   margin-bottom: 18px;
   color: #98928a;
-  font-size: 12px;
+  font-size: 18px;
   line-height: 1.9;
 }
 
@@ -1766,7 +1766,7 @@ a {
   gap: 25px;
   margin-top: 20px;
   color: var(--gold-light);
-  font-size: 9px;
+  font-size: 15px;
   letter-spacing: 2px;
   border-bottom: 1px solid var(--gold);
   padding-bottom: 8px;
