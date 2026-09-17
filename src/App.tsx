@@ -9,7 +9,14 @@ import attarImage from "./Images/attar.jpg";
 import perfumeImage from "./Images/perfume.jpg";
 import dhakoonImage from "./Images/dakhoonimages.jpg";
 import storyImage from "./Images/story.jpg";
-
+import {
+  FaInstagram,
+  FaFacebookF,
+  FaPinterestP,
+  FaEnvelope,
+  FaPhone,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
 interface Product {
   id: number;
   name: string;
@@ -69,6 +76,7 @@ function ProductCard({
         }`}
       >
         {/* PRODUCT TAG */}
+
         {product.tag && (
           <span className="product-tag">
             {product.tag}
@@ -76,6 +84,7 @@ function ProductCard({
         )}
 
         {/* WISHLIST */}
+
         <button
           className="wishlist-button"
           aria-label={
@@ -131,6 +140,7 @@ function ProductCard({
         )}
 
         {/* QUICK ADD */}
+
         <button
           className="quick-add"
           onClick={(event) => {
@@ -960,10 +970,6 @@ function HomePage() {
   );
 }
 
-/* =========================================================
-   FOOTER
-========================================================= */
-
 function Footer() {
   return (
     <footer className="footer">
@@ -1048,22 +1054,78 @@ function Footer() {
 
         {/* FOLLOW */}
 
-        <div className="footer-column">
+        <div className="footer-column footer-social">
           <h4>FOLLOW</h4>
 
-          <a href="#instagram">
-            Instagram
+          <a
+            href="#instagram"
+            aria-label="Instagram"
+          >
+            <FaInstagram />
+            <span> Instagram</span>
           </a>
 
-          <a href="#facebook">
-            Facebook
+          <a
+            href="#facebook"
+            aria-label="Facebook"
+          >
+            <FaFacebookF />
+            <span> Facebook</span>
           </a>
 
-          <a href="#pinterest">
-            Pinterest
+          <a
+            href="#pinterest"
+            aria-label="Pinterest"
+          >
+            <FaPinterestP />
+            <span> Pinterest</span>
           </a>
         </div>
+
+        {/* CONTACT */}
+
+        <div className="footer-column footer-contact">
+          <h4>CONTACT</h4>
+
+          <div className="contact-item">
+            <FaMapMarkerAlt />
+
+            <span>
+              KEIAN Fragrances
+              <br />
+              Pune, Maharashtra
+              <br />
+              India
+            </span>
+          </div>
+
+          <a
+            href="mailto:info@keian.com"
+            className="contact-item"
+          >
+            <FaEnvelope />
+               
+                
+            <span><span> </span>
+            info@keian.com
+            </span>
+          </a>
+
+          <a
+            href="tel:+919999999999"
+            className="contact-item"
+          >
+            <FaPhone />
+
+            <span><span> </span>
+              +91 99999 99999
+            </span>
+          </a>
+        </div>
+
       </div>
+
+      {/* FOOTER BOTTOM */}
 
       <div className="footer-bottom">
         <span>
