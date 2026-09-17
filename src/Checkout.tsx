@@ -109,6 +109,7 @@ function Checkout() {
 
       // If cart is empty,
       // go back to cart page.
+
       if (savedCart.length === 0) {
         navigate("/cart");
       }
@@ -133,8 +134,7 @@ function Checkout() {
       HTMLSelectElement
     >
   ) => {
-    const { name, value } =
-      event.target;
+    const { name, value } = event.target;
 
     setCustomer((current) => ({
       ...current,
@@ -142,6 +142,7 @@ function Checkout() {
     }));
 
     // Remove error while user types
+
     if (error) {
       setError("");
     }
@@ -154,8 +155,7 @@ function Checkout() {
   const subtotal = cart.reduce(
     (total, item) =>
       total +
-      item.price *
-        item.quantity,
+      item.price * item.quantity,
     0
   );
 
@@ -184,8 +184,7 @@ function Checkout() {
   const totalItems =
     cart.reduce(
       (total, item) =>
-        total +
-        item.quantity,
+        total + item.quantity,
       0
     );
 
@@ -199,6 +198,7 @@ function Checkout() {
     event.preventDefault();
 
     // Prevent double click
+
     if (isPlacingOrder) {
       return;
     }
@@ -306,7 +306,7 @@ function Checkout() {
       // =========================
 
       const orderId =
-        "LM" +
+        "KE" +
         Date.now()
           .toString()
           .slice(-8);
@@ -405,6 +405,7 @@ function Checkout() {
 
       const firebaseOrder = {
         ...order,
+
         firebaseId:
           documentReference.id,
       };
@@ -429,8 +430,7 @@ function Checkout() {
       // SAVE LOCAL ORDER HISTORY
       // =========================
 
-      let existingOrders:
-        any[] = [];
+      let existingOrders: any[] = [];
 
       try {
         existingOrders =
@@ -468,7 +468,6 @@ function Checkout() {
       );
 
     } catch (firebaseError) {
-
       console.error(
         "Firebase order error:",
         firebaseError
@@ -507,7 +506,7 @@ function Checkout() {
           to="/"
           className="checkout-logo"
         >
-          LUMIÈRE
+          KEIAN
         </Link>
 
         <nav className="checkout-nav-links">
@@ -569,7 +568,7 @@ function Checkout() {
 
           <p>
             Enter your details to complete
-            your Lumière order.
+            your Keian order.
           </p>
 
         </div>
@@ -604,6 +603,7 @@ function Checkout() {
                 </span>
 
                 <div>
+
                   <h2>
                     Customer Information
                   </h2>
@@ -611,6 +611,7 @@ function Checkout() {
                   <p>
                     Your contact details
                   </p>
+
                 </div>
 
               </div>
@@ -708,6 +709,7 @@ function Checkout() {
                 </span>
 
                 <div>
+
                   <h2>
                     Shipping Address
                   </h2>
@@ -715,6 +717,7 @@ function Checkout() {
                   <p>
                     Where should we deliver?
                   </p>
+
                 </div>
 
               </div>
@@ -932,6 +935,7 @@ function Checkout() {
                 </span>
 
                 <div>
+
                   <h2>
                     Payment
                   </h2>
@@ -939,6 +943,7 @@ function Checkout() {
                   <p>
                     Payment options
                   </p>
+
                 </div>
 
               </div>
@@ -1080,10 +1085,11 @@ function Checkout() {
                     const className =
                       productClasses[
                         index %
-                          productClasses.length
+                        productClasses.length
                       ];
 
                     return (
+
                       <div
                         className="checkout-item"
                         key={item.id}
@@ -1102,9 +1108,11 @@ function Checkout() {
                             <div className="checkout-neck"></div>
 
                             <div className="checkout-body">
+
                               <span>
-                                L
+                                K
                               </span>
+
                             </div>
 
                           </div>
@@ -1139,6 +1147,7 @@ function Checkout() {
                         {/* PRICE */}
 
                         <strong>
+
                           ₹
                           {(
                             item.price *
@@ -1146,9 +1155,11 @@ function Checkout() {
                           ).toLocaleString(
                             "en-IN"
                           )}
+
                         </strong>
 
                       </div>
+
                     );
                   }
                 )}
@@ -1183,8 +1194,7 @@ function Checkout() {
                   </span>
 
                   <strong>
-                    {shipping ===
-                    0
+                    {shipping === 0
                       ? "FREE"
                       : `₹${shipping}`}
                   </strong>
@@ -1207,6 +1217,7 @@ function Checkout() {
                   ).toLocaleString(
                     "en-IN"
                   )}{" "}
+
                   more for free shipping.
 
                 </p>
@@ -1299,7 +1310,7 @@ function Checkout() {
       <footer className="checkout-footer">
 
         <div className="checkout-footer-logo">
-          LUMIÈRE
+          KEIAN
         </div>
 
         <p>
@@ -1308,7 +1319,7 @@ function Checkout() {
         </p>
 
         <span>
-          © 2026 LUMIÈRE. ALL RIGHTS RESERVED.
+          © 2026 KEIAN. ALL RIGHTS RESERVED.
         </span>
 
       </footer>

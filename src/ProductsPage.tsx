@@ -4,6 +4,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import "./App.css";
+import { Navbar } from "./App";
 
 interface Product {
   id: number;
@@ -28,12 +29,12 @@ function ProductPage() {
 
   const navigate = useNavigate();
 
+  const location = useLocation();
+
   /*
     GET CATEGORY / COLLECTION
     FROM CURRENT URL
   */
-
-  const location = useLocation();
 
   const category =
     location.pathname
@@ -149,7 +150,6 @@ function ProductPage() {
     string,
     string
   > = {
-
     perfumes:
       "Perfumes",
 
@@ -173,7 +173,6 @@ function ProductPage() {
 
     bakhoor:
       "Dhakoon",
-
   };
 
   const pageTitle = category
@@ -190,7 +189,6 @@ function ProductPage() {
     string,
     string
   > = {
-
     perfumes:
       "Discover elegant, timeless and refined fragrances from our perfume collection.",
 
@@ -214,7 +212,6 @@ function ProductPage() {
 
     bakhoor:
       "Discover smoky, aromatic and luxurious dhakoon fragrances.",
-
   };
 
   const pageDescription = category
@@ -231,11 +228,9 @@ function ProductPage() {
   const handleProductClick = (
     id: number
   ) => {
-
     navigate(
       `/products/${id}`
     );
-
   };
 
   /* =========================
@@ -257,98 +252,10 @@ function ProductPage() {
     <div className="app">
 
       {/* =========================
-          NAVBAR
+          COMMON KEIAN NAVBAR
       ========================= */}
 
-      <header className="navbar">
-
-        <button
-          type="button"
-          className="logo"
-          onClick={() =>
-            navigate("/")
-          }
-          style={{
-            border: "none",
-            background: "none",
-            cursor: "pointer",
-            padding: 0,
-          }}
-        >
-          LUMIÈRE
-        </button>
-
-        <nav className="nav-links">
-
-          <button
-            type="button"
-            onClick={() =>
-              navigate("/")
-            }
-            style={{
-              background: "none",
-              border: "none",
-              color: "inherit",
-              cursor: "pointer",
-            }}
-          >
-            Home
-          </button>
-
-          <button
-            type="button"
-            onClick={() =>
-              navigate("/products")
-            }
-            style={{
-              background: "none",
-              border: "none",
-              color: "inherit",
-              cursor: "pointer",
-            }}
-          >
-            Shop
-          </button>
-
-          <a href="/#collections">
-            Collections
-          </a>
-
-          <a href="/#about">
-            Our Story
-          </a>
-
-        </nav>
-
-        <div className="nav-actions">
-
-          <button
-            type="button"
-            aria-label="Search"
-          >
-            ⌕
-          </button>
-
-          <button
-            type="button"
-            aria-label="Wishlist"
-          >
-            ♡
-          </button>
-
-          <button
-            type="button"
-            aria-label="Shopping bag"
-            onClick={() =>
-              navigate("/cart")
-            }
-          >
-            ♧
-          </button>
-
-        </div>
-
-      </header>
+      <Navbar />
 
       {/* =========================
           PRODUCTS
@@ -509,7 +416,7 @@ function ProductPage() {
                             <div className="mini-neck"></div>
 
                             <div className="mini-body">
-                              <span>L</span>
+                              <span>K</span>
                             </div>
 
                           </div>

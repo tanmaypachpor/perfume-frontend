@@ -5,12 +5,14 @@ import {
 } from "react-router-dom";
 
 import "./ProductDetails.css";
+import logo from "./Images/logo.webp";
 
 interface Product {
   id: number;
   name: string;
   category: string;
   collection: string;
+  type?: string;
   price: number;
   description: string;
   imageUrl: string;
@@ -35,6 +37,10 @@ function ProductDetails() {
 
   const [imageError, setImageError] =
     useState(false);
+
+  /* =================================================
+     FETCH PRODUCT
+  ================================================= */
 
   useEffect(() => {
     if (!id) {
@@ -67,10 +73,10 @@ function ProductDetails() {
 
         setProduct(data);
       })
-      .catch((error) => {
+      .catch((fetchError) => {
         console.error(
           "Product details error:",
-          error
+          fetchError
         );
 
         setError(
@@ -82,41 +88,207 @@ function ProductDetails() {
       });
   }, [id]);
 
+  /* =================================================
+     LOADING
+  ================================================= */
+
   if (loading) {
     return (
       <div className="product-details-page">
+
+        <header className="navbar">
+
+          <a
+            href="/"
+            className="logo"
+            aria-label="Keian home"
+          >
+            <img
+              src={logo}
+              alt="KEIAN"
+            />
+          </a>
+
+          <nav
+            className="nav-links"
+            aria-label="Main navigation"
+          >
+            <a href="/">
+              Home
+            </a>
+
+            <a href="/products">
+              Shop
+            </a>
+
+            <a href="/#collections">
+              Collections
+            </a>
+
+            <a href="/#about">
+              Our Story
+            </a>
+
+            <a href="/bakhoor">
+              Bakhoor
+            </a>
+          </nav>
+
+          <div className="nav-actions">
+
+            <button
+              type="button"
+              aria-label="Search"
+              onClick={() =>
+                navigate("/products")
+              }
+            >
+              ⌕
+            </button>
+
+            <button
+              type="button"
+              aria-label="Wishlist"
+              onClick={() =>
+                alert(
+                  "Wishlist feature coming soon."
+                )
+              }
+            >
+              ♡
+            </button>
+
+            <button
+              type="button"
+              aria-label="Shopping bag"
+              onClick={() =>
+                navigate("/cart")
+              }
+            >
+              ♧
+            </button>
+
+          </div>
+
+        </header>
+
         <div className="product-details-loading">
           Loading product...
         </div>
+
       </div>
     );
   }
+
+  /* =================================================
+     ERROR
+  ================================================= */
 
   if (error || !product) {
     return (
       <div className="product-details-page">
+
+        <header className="navbar">
+
+          <a
+            href="/"
+            className="logo"
+            aria-label="Keian home"
+          >
+            <img
+              src={logo}
+              alt="KEIAN"
+            />
+          </a>
+
+          <nav
+            className="nav-links"
+            aria-label="Main navigation"
+          >
+            <a href="/">
+              Home
+            </a>
+
+            <a href="/products">
+              Shop
+            </a>
+
+            <a href="/#collections">
+              Collections
+            </a>
+
+            <a href="/#about">
+              Our Story
+            </a>
+
+            <a href="/bakhoor">
+              Bakhoor
+            </a>
+          </nav>
+
+          <div className="nav-actions">
+
+            <button
+              type="button"
+              aria-label="Search"
+              onClick={() =>
+                navigate("/products")
+              }
+            >
+              ⌕
+            </button>
+
+            <button
+              type="button"
+              aria-label="Wishlist"
+              onClick={() =>
+                alert(
+                  "Wishlist feature coming soon."
+                )
+              }
+            >
+              ♡
+            </button>
+
+            <button
+              type="button"
+              aria-label="Shopping bag"
+              onClick={() =>
+                navigate("/cart")
+              }
+            >
+              ♧
+            </button>
+
+          </div>
+
+        </header>
+
         <div className="product-details-error">
-          {error || "Product not found."}
+
+          <p>
+            {error ||
+              "Product not found."}
+          </p>
 
           <button
-            onClick={() => navigate("/products")}
+            type="button"
+            onClick={() =>
+              navigate("/products")
+            }
           >
             BACK TO PRODUCTS
           </button>
+
         </div>
+
       </div>
     );
   }
 
-  /*
-   * Backend returns:
-   *
-   * /images/noir-lumiere.jpg
-   *
-   * So convert it into:
-   *
-   * http://localhost:8080/images/noir-lumiere.jpg
-   */
+  /* =================================================
+     PRODUCT IMAGE URL
+  ================================================= */
 
   const productImageUrl =
     product.imageUrl
@@ -125,32 +297,50 @@ function ProductDetails() {
         : `http://localhost:8080${product.imageUrl}`
       : "";
 
+  /* =================================================
+     QUANTITY
+  ================================================= */
+
   const increaseQuantity = () => {
-    setQuantity((current) => current + 1);
+    setQuantity(
+      (current) => current + 1
+    );
   };
 
   const decreaseQuantity = () => {
-    setQuantity((current) =>
-      current > 1
-        ? current - 1
-        : 1
+    setQuantity(
+      (current) =>
+        current > 1
+          ? current - 1
+          : 1
     );
   };
+
+  /* =================================================
+     ADD TO CART
+  ================================================= */
 
   const addToCart = () => {
     const existingCart =
       JSON.parse(
-        localStorage.getItem("cart") || "[]"
+        localStorage.getItem(
+          "cart"
+        ) || "[]"
       );
 
     const existingProduct =
       existingCart.find(
-        (item: Product & { quantity: number }) =>
+        (
+          item: Product & {
+            quantity: number;
+          }
+        ) =>
           item.id === product.id
       );
 
     if (existingProduct) {
-      existingProduct.quantity += quantity;
+      existingProduct.quantity +=
+        quantity;
     } else {
       existingCart.push({
         ...product,
@@ -168,10 +358,25 @@ function ProductDetails() {
     );
   };
 
+  /* =================================================
+     BUY NOW
+  ================================================= */
+
   const buyNow = () => {
-  addToCart();
-  navigate("/cart");
-};
+    addToCart();
+    navigate("/cart");
+  };
+
+  /* =================================================
+     PRODUCT TYPE
+  ================================================= */
+
+  const productType =
+    product.type?.trim()
+      ? product.type.trim()
+      : product.collection?.trim()
+      ? product.collection.trim()
+      : "EAU DE PARFUM";
 
   return (
     <div className="product-details-page">
@@ -182,14 +387,25 @@ function ProductDetails() {
 
       <header className="navbar">
 
+        {/* KEIAN LOGO */}
+
         <a
           href="/"
           className="logo"
+          aria-label="Keian home"
         >
-          LUMIÈRE
+          <img
+            src={logo}
+            alt="KEIAN"
+          />
         </a>
 
-        <nav className="nav-links">
+        {/* NAVIGATION */}
+
+        <nav
+          className="nav-links"
+          aria-label="Main navigation"
+        >
 
           <a href="/">
             Home
@@ -207,11 +423,19 @@ function ProductDetails() {
             Our Story
           </a>
 
+          <a href="/bakhoor">
+            Bakhoor
+          </a>
+
         </nav>
+
+        {/* NAV ACTIONS */}
 
         <div className="nav-actions">
 
           <button
+            type="button"
+            aria-label="Search"
             onClick={() =>
               navigate("/products")
             }
@@ -219,11 +443,21 @@ function ProductDetails() {
             ⌕
           </button>
 
-          <button>
+          <button
+            type="button"
+            aria-label="Wishlist"
+            onClick={() =>
+              alert(
+                "Wishlist feature coming soon."
+              )
+            }
+          >
             ♡
           </button>
 
           <button
+            type="button"
+            aria-label="Shopping bag"
             onClick={() =>
               navigate("/cart")
             }
@@ -246,6 +480,7 @@ function ProductDetails() {
 
         <button
           className="back-button"
+          type="button"
           onClick={() =>
             navigate("/products")
           }
@@ -275,7 +510,9 @@ function ProductDetails() {
                     productImageUrl
                   );
 
-                  setImageError(true);
+                  setImageError(
+                    true
+                  );
                 }}
               />
 
@@ -290,11 +527,11 @@ function ProductDetails() {
                 <div className="details-bottle-body">
 
                   <span>
-                    L
+                    K
                   </span>
 
                   <strong>
-                    LUMIÈRE
+                    KEIAN
                   </strong>
 
                 </div>
@@ -312,39 +549,56 @@ function ProductDetails() {
 
           <div className="product-details-info">
 
+            {/* PRODUCT TAG */}
+
             {product.tag && (
               <span className="product-details-tag">
                 {product.tag}
               </span>
             )}
 
+            {/* CATEGORY */}
+
             <span className="product-details-category">
               {product.category}
             </span>
+
+            {/* NAME */}
 
             <h1>
               {product.name}
             </h1>
 
+            {/* PRICE */}
+
             <p className="product-details-price">
               ₹
               {Number(
                 product.price
-              ).toLocaleString("en-IN")}
+              ).toLocaleString(
+                "en-IN"
+              )}
             </p>
 
             <div className="product-details-line"></div>
+
+            {/* DESCRIPTION */}
 
             <p className="product-details-description">
               {product.description}
             </p>
 
 
-            {/* PRODUCT INFORMATION */}
+            {/* =================================================
+                PRODUCT INFORMATION
+            ================================================= */}
 
             <div className="product-meta">
 
+              {/* CATEGORY */}
+
               <div>
+
                 <span>
                   CATEGORY
                 </span>
@@ -352,9 +606,14 @@ function ProductDetails() {
                 <strong>
                   {product.category}
                 </strong>
+
               </div>
 
+
+              {/* COLLECTION */}
+
               <div>
+
                 <span>
                   COLLECTION
                 </span>
@@ -362,22 +621,30 @@ function ProductDetails() {
                 <strong>
                   {product.collection}
                 </strong>
+
               </div>
 
+
+              {/* TYPE */}
+
               <div>
+
                 <span>
                   TYPE
                 </span>
 
                 <strong>
-                  EAU DE PARFUM
+                  {productType}
                 </strong>
+
               </div>
 
             </div>
 
 
-            {/* QUANTITY */}
+            {/* =================================================
+                QUANTITY
+            ================================================= */}
 
             <div className="quantity-section">
 
@@ -388,6 +655,8 @@ function ProductDetails() {
               <div className="quantity-control">
 
                 <button
+                  type="button"
+                  aria-label="Decrease quantity"
                   onClick={
                     decreaseQuantity
                   }
@@ -400,6 +669,8 @@ function ProductDetails() {
                 </span>
 
                 <button
+                  type="button"
+                  aria-label="Increase quantity"
                   onClick={
                     increaseQuantity
                   }
@@ -412,20 +683,28 @@ function ProductDetails() {
             </div>
 
 
-            {/* ACTION BUTTONS */}
+            {/* =================================================
+                ACTION BUTTONS
+            ================================================= */}
 
             <div className="product-actions">
 
               <button
                 className="add-to-cart-button"
-                onClick={addToCart}
+                type="button"
+                onClick={
+                  addToCart
+                }
               >
                 ADD TO CART
               </button>
 
               <button
                 className="buy-now-button"
-                onClick={buyNow}
+                type="button"
+                onClick={
+                  buyNow
+                }
               >
                 BUY NOW
               </button>
@@ -444,6 +723,7 @@ function ProductDetails() {
         <section className="product-features">
 
           <div>
+
             <span>
               ✦
             </span>
@@ -456,9 +736,12 @@ function ProductDetails() {
               Designed to stay with you
               throughout the day.
             </p>
+
           </div>
 
+
           <div>
+
             <span>
               ✧
             </span>
@@ -471,9 +754,12 @@ function ProductDetails() {
               Crafted using carefully
               selected ingredients.
             </p>
+
           </div>
 
+
           <div>
+
             <span>
               ◇
             </span>
@@ -486,21 +772,25 @@ function ProductDetails() {
               Carefully packed for
               safe delivery.
             </p>
+
           </div>
 
+
           <div>
+
             <span>
               ✦
             </span>
 
             <strong>
-              LUMIÈRE CRAFT
+              KEIAN CRAFT
             </strong>
 
             <p>
               Created with attention
               to every detail.
             </p>
+
           </div>
 
         </section>
@@ -516,10 +806,12 @@ function ProductDetails() {
 
         <div className="footer-top">
 
+          {/* BRAND */}
+
           <div className="footer-brand">
 
             <div className="footer-logo">
-              LUMIÈRE
+              KEIAN
             </div>
 
             <p>
@@ -530,6 +822,8 @@ function ProductDetails() {
 
           </div>
 
+
+          {/* SHOP */}
 
           <div className="footer-column">
 
@@ -564,6 +858,8 @@ function ProductDetails() {
           </div>
 
 
+          {/* ABOUT */}
+
           <div className="footer-column">
 
             <h4>
@@ -584,6 +880,8 @@ function ProductDetails() {
 
           </div>
 
+
+          {/* FOLLOW */}
 
           <div className="footer-column">
 
@@ -608,10 +906,12 @@ function ProductDetails() {
         </div>
 
 
+        {/* FOOTER BOTTOM */}
+
         <div className="footer-bottom">
 
           <span>
-            © 2026 LUMIÈRE. ALL RIGHTS RESERVED.
+            © 2026 KEIAN. ALL RIGHTS RESERVED.
           </span>
 
           <span>

@@ -12,7 +12,10 @@ function OrderSuccess() {
     return (
       <div className="success-page">
         <div className="success-card">
-          <div className="success-icon">!</div>
+
+          <div className="success-icon">
+            !
+          </div>
 
           <h1>
             Order <em>Not Found</em>
@@ -29,6 +32,7 @@ function OrderSuccess() {
             CONTINUE SHOPPING
             <span>→</span>
           </Link>
+
         </div>
       </div>
     );
@@ -38,13 +42,14 @@ function OrderSuccess() {
     <div className="success-page">
 
       {/* NAVBAR */}
+
       <header className="success-navbar">
 
         <Link
           to="/"
           className="success-logo"
         >
-          LUMIÈRE
+          KEIAN
         </Link>
 
         <span className="success-secure">
@@ -54,11 +59,13 @@ function OrderSuccess() {
       </header>
 
       {/* MAIN */}
+
       <main className="success-container">
 
         <div className="success-card">
 
           {/* SUCCESS ICON */}
+
           <div className="success-icon">
             ✓
           </div>
@@ -72,12 +79,13 @@ function OrderSuccess() {
           </h1>
 
           <p className="success-message">
-            Your Lumière order has been successfully
+            Your Keian order has been successfully
             placed. We will deliver your fragrance
             to the address provided.
           </p>
 
           {/* ORDER ID */}
+
           <div className="order-number">
 
             <span>
@@ -91,9 +99,11 @@ function OrderSuccess() {
           </div>
 
           {/* ORDER DETAILS */}
+
           <div className="success-details">
 
             <div className="detail-row">
+
               <span>
                 ITEMS
               </span>
@@ -101,9 +111,11 @@ function OrderSuccess() {
               <strong>
                 {order.totalItems}
               </strong>
+
             </div>
 
             <div className="detail-row">
+
               <span>
                 PAYMENT
               </span>
@@ -111,9 +123,11 @@ function OrderSuccess() {
               <strong>
                 {order.paymentMethod}
               </strong>
+
             </div>
 
             <div className="detail-row">
+
               <span>
                 SHIPPING
               </span>
@@ -123,9 +137,11 @@ function OrderSuccess() {
                   ? "FREE"
                   : `₹${order.shipping}`}
               </strong>
+
             </div>
 
             <div className="detail-row total-row">
+
               <span>
                 TOTAL
               </span>
@@ -133,11 +149,13 @@ function OrderSuccess() {
               <strong>
                 ₹{order.total.toLocaleString("en-IN")}
               </strong>
+
             </div>
 
           </div>
 
           {/* DELIVERY */}
+
           <div className="delivery-box">
 
             <span className="delivery-icon">
@@ -145,6 +163,7 @@ function OrderSuccess() {
             </span>
 
             <div>
+
               <strong>
                 DELIVERY ADDRESS
               </strong>
@@ -157,11 +176,13 @@ function OrderSuccess() {
                 <br />
                 {order.customer.pincode}
               </p>
+
             </div>
 
           </div>
 
           {/* BUTTONS */}
+
           <div className="success-actions">
 
             <Link
@@ -191,10 +212,11 @@ function OrderSuccess() {
       </main>
 
       {/* FOOTER */}
+
       <footer className="success-footer">
 
         <div>
-          LUMIÈRE
+          KEIAN
         </div>
 
         <p>
@@ -202,7 +224,7 @@ function OrderSuccess() {
         </p>
 
         <span>
-          © 2026 LUMIÈRE. ALL RIGHTS RESERVED.
+          © 2026 KEIAN. ALL RIGHTS RESERVED.
         </span>
 
       </footer>

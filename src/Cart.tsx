@@ -135,12 +135,12 @@ function Cart() {
         <div className="cart-page">
 
             {/* =========================
-          NAVBAR
-      ========================= */}
+              NAVBAR
+          ========================= */}
             <header className="cart-navbar">
 
                 <Link to="/" className="cart-logo">
-                    LUMIÈRE
+                    KEIAN
                 </Link>
 
                 <nav className="cart-nav-links">
@@ -191,8 +191,8 @@ function Cart() {
             </header>
 
             {/* =========================
-          CART CONTENT
-      ========================= */}
+              CART CONTENT
+          ========================= */}
             <main className="cart-container">
 
                 {/* HEADER */}
@@ -218,8 +218,8 @@ function Cart() {
                 </div>
 
                 {/* =========================
-            EMPTY CART
-        ========================= */}
+                EMPTY CART
+            ========================= */}
                 {cart.length === 0 && (
 
                     <div className="empty-cart">
@@ -250,15 +250,15 @@ function Cart() {
                 )}
 
                 {/* =========================
-            CART WITH PRODUCTS
-        ========================= */}
+                CART WITH PRODUCTS
+            ========================= */}
                 {cart.length > 0 && (
 
                     <div className="cart-layout">
 
                         {/* =========================
-                LEFT: PRODUCTS
-            ========================= */}
+                    LEFT: PRODUCTS
+                ========================= */}
                         <div className="cart-products">
 
                             <div className="cart-products-top">
@@ -314,7 +314,7 @@ function Cart() {
                                                 <div className="cart-mini-neck"></div>
 
                                                 <div className="cart-mini-body">
-                                                    <span>L</span>
+                                                    <span>K</span>
                                                 </div>
 
                                             </div>
@@ -446,8 +446,8 @@ function Cart() {
                         </div>
 
                         {/* =========================
-                RIGHT: SUMMARY
-            ========================= */}
+                    RIGHT: SUMMARY
+                ========================= */}
                         <aside className="cart-summary">
 
                             <span className="summary-label">
@@ -552,12 +552,12 @@ function Cart() {
             </main>
 
             {/* =========================
-          FOOTER
-      ========================= */}
+              FOOTER
+          ========================= */}
             <footer className="cart-footer">
 
                 <div className="cart-footer-logo">
-                    LUMIÈRE
+                    KEIAN
                 </div>
 
                 <p>
@@ -566,7 +566,7 @@ function Cart() {
                 </p>
 
                 <span>
-                    © 2026 LUMIÈRE. ALL RIGHTS RESERVED.
+                    © 2026 KEIAN. ALL RIGHTS RESERVED.
                 </span>
 
             </footer>

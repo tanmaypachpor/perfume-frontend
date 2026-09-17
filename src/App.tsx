@@ -2,6 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./App.css";
 
+import logo from "./Images/logo.webp";
+import perfumeBottle from "./Images/Perfume_Bottle_Mockup.png";
+import giftImage from "./Images/gift.jpg";
+import attarImage from "./Images/attar.jpg";
+import perfumeImage from "./Images/perfume.jpg";
+import dhakoonImage from "./Images/dakhoonimages.jpg";
+import storyImage from "./Images/story.jpg";
+
 interface Product {
   id: number;
   name: string;
@@ -172,7 +180,7 @@ function ProductCard({
    NAVBAR
 ========================================================= */
 
-function Navbar() {
+export function Navbar() {
   return (
     <header className="navbar">
       <a
@@ -181,7 +189,7 @@ function Navbar() {
         aria-label="Keian home"
       >
         <img
-          src="src/Images/logo.webp"
+          src={logo}
           alt="Keian"
         />
       </a>
@@ -502,7 +510,7 @@ function HomePage() {
               <div className="perfume-display-wrapper">
                 <div className="bottle-container">
                   <img
-                    src="src/Images/Perfume_Bottle_Mockup.png"
+                    src={perfumeBottle}
                     alt="Keian Luxury Perfume Bottle"
                   />
                 </div>
@@ -607,7 +615,7 @@ function HomePage() {
               className="category-card collection-card category-perfumes"
             >
               <img
-                src="src/Images/gift.jpg"
+                src={giftImage}
                 alt="Perfumes"
                 className="collection-image"
               />
@@ -630,7 +638,7 @@ function HomePage() {
               className="category-card collection-card category-attars"
             >
               <img
-                src="src/Images/attar.jpg"
+                src={attarImage}
                 alt="Attars"
                 className="collection-image"
               />
@@ -653,7 +661,7 @@ function HomePage() {
               className="category-card collection-card category-giftsets"
             >
               <img
-                src="src/Images/perfume.jpg"
+                src={perfumeImage}
                 alt="Gift Sets"
                 className="collection-image"
               />
@@ -676,7 +684,7 @@ function HomePage() {
               className="category-card collection-card category-dhakoon"
             >
               <img
-                src="src/Images/dakhoonimages.jpg"
+                src={dhakoonImage}
                 alt="Dhakoon"
                 className="collection-image"
               />
@@ -858,7 +866,7 @@ function HomePage() {
         >
           <div className="story-image">
             <img
-              src="src/Images/story.jpg"
+              src={storyImage}
               alt="Keian luxury perfume bottle"
             />
 
@@ -965,7 +973,10 @@ function Footer() {
 
         <div className="footer-brand">
           <div className="footer-logo">
-            KEIAN
+            <img
+              src={logo}
+              alt="KEIAN"
+            />
           </div>
 
           <p>
