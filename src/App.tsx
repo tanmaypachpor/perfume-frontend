@@ -190,73 +190,60 @@ function ProductCard({
    NAVBAR
 ========================================================= */
 
+/* =========================================================
+   NAVBAR (RESTRUCTURED TSX)
+========================================================= */
+
 export function Navbar() {
   return (
     <header className="navbar">
-      <a
-        href="/"
-        className="logo"
-        aria-label="Keian home"
-      >
-        <img
-          src={logo}
-          alt="Keian"
-        />
-      </a>
-
-      <nav
-        className="nav-links"
-        aria-label="Main navigation"
-      >
-        <a href="/">Home</a>
-
-        <a href="/products">Shop</a>
-
-        <a href="/#collections">
-          Collections
+      {/* NEW WRAPPER ROW: Groups your Top Logo and Right Utilities together */}
+      <div className="nav-top-row">
+        <a href="/" className="logo" aria-label="Keian home">
+          <img src={logo} alt="Keian" />
         </a>
 
-        <a href="/#about">
-          Our Story
-        </a>
-      </nav>
+        <div className="nav-actions">
+          <button
+            aria-label="Search"
+            onClick={() => {
+              window.location.href = "/products";
+            }}
+          >
+            ⌕
+          </button>
 
-      <div className="nav-actions">
-        <button
-          aria-label="Search"
-          onClick={() => {
-            window.location.href =
-              "/products";
-          }}
-        >
-          ⌕
-        </button>
+          <button
+            aria-label="Wishlist"
+            onClick={() => {
+              alert("Wishlist feature coming soon.");
+            }}
+          >
+            ♡
+          </button>
 
-        <button
-          aria-label="Wishlist"
-          onClick={() => {
-            alert(
-              "Wishlist feature coming soon."
-            );
-          }}
-        >
-          ♡
-        </button>
-
-        <button
-          aria-label="Shopping bag"
-          onClick={() => {
-            alert(
-              "Shopping bag feature coming soon."
-            );
-          }}
-        >
-          ♧
-        </button>
+          <button
+            aria-label="Shopping bag"
+            onClick={() => {
+              alert("Shopping bag feature coming soon.");
+            }}
+          >
+            ♧
+          </button>
+        </div>
       </div>
+
+      {/* BOTTOM ROW: Sits independently directly beneath the top row elements */}
+      <nav className="nav-links" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/products">Shop</a>
+        <a href="/#collections">Collections</a>
+        <a href="/#about">Our Story</a>
+      </nav>
     </header>
   );
 }
+
 
 /* =========================================================
    API HELPER
