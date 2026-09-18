@@ -209,7 +209,7 @@ export function Navbar() {
       <div className="nav-top-row">
         <a href="/" className="logo" aria-label="Keian home">
           <img src={logo} alt="Keian Logo" />
-          <span className="logo-text">KEIAN</span>
+          <span className="logo-text"></span>
         </a>
       </div>
 
@@ -436,40 +436,64 @@ function HomePage() {
         ================================================= */}
 
         <section className="hero" id="home">
-  {/* The brand logo asset rendered natively behind content as a vector watermark */}
-  <img src={logo} alt="" className="hero-watermark-bg" aria-hidden="true" />
+          {/* The brand logo asset rendered natively behind content as a vector watermark */}
+          <img src={logo} alt="" className="hero-watermark-bg" aria-hidden="true" />
 
-  <div className="hero-background-circle"></div>
+          <div className="hero-background-circle"></div>
 
-  <div className="hero-content">
-    <h1>
-      <span>A Scent</span>
-      <span>That Defines</span>
-      <em>You.</em>
-    </h1>
+          <div className="hero-content">
+            <div className="eyebrow">
+              <span></span>
 
-    <p className="hero-description">
-      Discover extraordinary fragrances crafted with exquisite ingredients and timeless elegance.
-    </p>
+              THE ART OF FRAGRANCE
 
-    <div className="hero-buttons">
-      <a href="#shop" className="primary-button">
-        Shop Collection
-      </a>
-    </div>
-  </div>
+              <span></span>
+            </div>
+            <h1>
+              <span>A Scent</span>
+              <em>That Defines</em>
+              <span>You.</span>
+            </h1>
 
-  {/* HERO PRODUCT SIDE */}
-  <div className="hero-product">
-    <div className="hero-bottle">
-      <div className="perfume-display-wrapper">
-        <div className="bottle-container">
-          <img src="src/Images/hero.png" alt="Keian Luxury Perfume Bottle" />
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+            <p className="hero-description">
+              Discover extraordinary fragrances crafted
+              with exquisite ingredients and timeless
+              elegance.
+            </p>
+
+            <div className="hero-buttons">
+
+              <a
+                href="#shop"
+                className="primary-button"
+              >
+                SHOP COLLECTION
+
+                <span>→</span>
+              </a>
+
+              <a
+                href="#about"
+                className="secondary-button"
+              >
+                DISCOVER KEIAN
+              </a>
+
+            </div>
+
+          </div>
+
+          {/* HERO PRODUCT SIDE */}
+          <div className="hero-product">
+            <div className="hero-bottle">
+              <div className="perfume-display-wrapper">
+                <div className="bottle-container">
+                  <img src="src/Images/hero.png" alt="Keian Luxury Perfume Bottle" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* =================================================
             TRUST BAR
@@ -722,8 +746,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "HIM"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("HIM")
@@ -735,8 +759,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "HER"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("HER")
@@ -748,8 +772,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "ATTAR"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("ATTAR")
@@ -761,8 +785,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "GIFTING"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("GIFTING")
