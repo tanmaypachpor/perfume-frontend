@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./App.css";
 
-import logo from "./Images/logo.webp";
+import logo1 from "./Images/logo01.webp";
 import giftImage from "./Images/gift.jpg";
 import attarImage from "./Images/attar.jpg";
 import perfumeImage from "./Images/perfume.jpg";
@@ -25,6 +25,7 @@ interface Product {
   price: number;
   description: string;
   imageUrl: string;
+  secondUrl?: string;
   tag: string;
 }
 
@@ -71,8 +72,9 @@ function ProductCard({
       style={{ cursor: "pointer" }}
     >
       <div
-        className={`product-visual ${isBakhoor ? "" : className
-          }`}
+        className={`product-visual ${
+          isBakhoor ? "" : className
+        }`}
       >
         {/* PRODUCT TAG */}
 
@@ -129,14 +131,33 @@ function ProductCard({
 
           <div className="product-image-wrapper">
             {product.imageUrl ? (
-              <img
-                src={product.imageUrl}
-                alt={product.name}
-                className="product-image"
-                onError={(event) => {
-                  event.currentTarget.style.display = "none";
-                }}
-              />
+              <>
+                {/* FIRST IMAGE - DEFAULT */}
+
+                <img
+                  src={product.imageUrl}
+                  alt={product.name}
+                  className="product-image first-image"
+                  onError={(event) => {
+                    event.currentTarget.style.display =
+                      "none";
+                  }}
+                />
+
+                {/* SECOND IMAGE - HOVER */}
+
+                {product.secondUrl && (
+                  <img
+                    src={product.secondUrl}
+                    alt={`${product.name} alternate`}
+                    className="product-image second-image"
+                    onError={(event) => {
+                      event.currentTarget.style.display =
+                        "none";
+                    }}
+                  />
+                )}
+              </>
             ) : (
               <div className="product-bottle">
                 <div className="mini-cap"></div>
@@ -216,13 +237,13 @@ export function Navbar() {
           aria-label="Keian home"
         >
           <img
-            src={logo}
+            src={logo1}
             alt="Keian Logo"
           />
 
-          <span className="logo-text">
+          {/* <span className="logo-text">
             KEIAN
-          </span>
+          </span> */}
         </a>
 
         <div className="nav-actions">
@@ -547,15 +568,19 @@ function HomePage() {
           </div>
 
           {/* HERO PRODUCT */}
+
           <div className="hero-product">
 
             {/* OUTER RING */}
+
             <div className="hero-orbit orbit-one"></div>
 
             {/* INNER RING */}
+
             <div className="hero-orbit orbit-two"></div>
 
             {/* KEIAN LOGO INSIDE THE RINGS */}
+
             <div className="hero-logo">
 
               <img
@@ -566,6 +591,7 @@ function HomePage() {
             </div>
 
             {/* HERO PERFUME BOTTLE */}
+
             <div className="hero-bottle">
 
               <div className="perfume-display-wrapper">
@@ -837,10 +863,11 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "HIM"
+              className={`best-seller-tab ${
+                activeCategory === "HIM"
                   ? "active"
                   : ""
-                }`}
+              }`}
               onClick={() =>
                 setActiveCategory("HIM")
               }
@@ -850,10 +877,11 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "HER"
+              className={`best-seller-tab ${
+                activeCategory === "HER"
                   ? "active"
                   : ""
-                }`}
+              }`}
               onClick={() =>
                 setActiveCategory("HER")
               }
@@ -863,10 +891,11 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "ATTAR"
+              className={`best-seller-tab ${
+                activeCategory === "ATTAR"
                   ? "active"
                   : ""
-                }`}
+              }`}
               onClick={() =>
                 setActiveCategory("ATTAR")
               }
@@ -876,10 +905,11 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "GIFTING"
+              className={`best-seller-tab ${
+                activeCategory === "GIFTING"
                   ? "active"
                   : ""
-                }`}
+              }`}
               onClick={() =>
                 setActiveCategory("GIFTING")
               }
