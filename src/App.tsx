@@ -205,86 +205,28 @@ function ProductCard({
 export function Navbar() {
   return (
     <header className="navbar">
-
-      {/* TOP ROW */}
-
+      {/* Pinned to column grid lane 1 natively */}
       <div className="nav-top-row">
-
-        <a
-          href="/"
-          className="logo"
-          aria-label="Keian home"
-        >
-          <img
-            src={logo}
-            alt="Keian Logo"
-          />
-
-          <span className="logo-text">
-            KEIAN
-          </span>
+        <a href="/" className="logo" aria-label="Keian home">
+          <img src={logo} alt="Keian Logo" />
+          <span className="logo-text">KEIAN</span>
         </a>
-
-        <div className="nav-actions">
-
-          <button
-            aria-label="Search"
-            onClick={() => {
-              window.location.href =
-                "/products";
-            }}
-          >
-            ⌕
-          </button>
-
-          <button
-            aria-label="Wishlist"
-            onClick={() => {
-              alert(
-                "Wishlist feature coming soon."
-              );
-            }}
-          >
-            ♡
-          </button>
-
-          <button
-            aria-label="Shopping bag"
-            onClick={() => {
-              alert(
-                "Shopping bag feature coming soon."
-              );
-            }}
-          >
-            ♧
-          </button>
-
-        </div>
       </div>
 
-      {/* NAVIGATION */}
-
-      <nav
-        className="nav-links"
-        aria-label="Main navigation"
-      >
-        <a href="/">
-          Home
-        </a>
-
-        <a href="/products">
-          Shop
-        </a>
-
-        <a href="/#collections">
-          Collections
-        </a>
-
-        <a href="/#about">
-          Our Story
-        </a>
+      {/* Pinned directly to the absolute center layout line */}
+      <nav className="nav-links" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/products">Shop</a>
+        <a href="/#collections">Collections</a>
+        <a href="/#about">Our Story</a>
       </nav>
 
+      {/* Pinned to column grid lane 3 natively */}
+      <div className="nav-actions">
+        <button aria-label="Search" onClick={() => { window.location.href = "/products"; }}>⌕</button>
+        <button aria-label="Wishlist" onClick={() => { alert("Wishlist feature coming soon."); }}>♡</button>
+        <button aria-label="Shopping bag" onClick={() => { alert("Shopping bag feature coming soon."); }}>♧</button>
+      </div>
     </header>
   );
 }
@@ -493,99 +435,41 @@ function HomePage() {
             HERO
         ================================================= */}
 
-        <section
-          className="hero"
-          id="home"
-        >
+        <section className="hero" id="home">
+  {/* The brand logo asset rendered natively behind content as a vector watermark */}
+  <img src={logo} alt="" className="hero-watermark-bg" aria-hidden="true" />
 
-          <div className="hero-background-circle"></div>
+  <div className="hero-background-circle"></div>
 
-          <div className="hero-content">
+  <div className="hero-content">
+    <h1>
+      <span>A Scent</span>
+      <span>That Defines</span>
+      <em>You.</em>
+    </h1>
 
-            <div className="eyebrow">
-              <span></span>
+    <p className="hero-description">
+      Discover extraordinary fragrances crafted with exquisite ingredients and timeless elegance.
+    </p>
 
-              THE ART OF FRAGRANCE
+    <div className="hero-buttons">
+      <a href="#shop" className="primary-button">
+        Shop Collection
+      </a>
+    </div>
+  </div>
 
-              <span></span>
-            </div>
-
-            <h1>
-              A Scent
-              <br />
-              <em>That Defines</em>
-              <br />
-              You.
-            </h1>
-
-            <p className="hero-description">
-              Discover extraordinary fragrances crafted
-              with exquisite ingredients and timeless
-              elegance.
-            </p>
-
-            <div className="hero-buttons">
-
-              <a
-                href="#shop"
-                className="primary-button"
-              >
-                SHOP COLLECTION
-
-                <span>→</span>
-              </a>
-
-              <a
-                href="#about"
-                className="secondary-button"
-              >
-                DISCOVER KEIAN
-              </a>
-
-            </div>
-
-          </div>
-
-          {/* HERO PRODUCT */}
-          <div className="hero-product">
-
-            {/* OUTER RING */}
-            <div className="hero-orbit orbit-one"></div>
-
-            {/* INNER RING */}
-            <div className="hero-orbit orbit-two"></div>
-
-            {/* KEIAN LOGO INSIDE THE RINGS */}
-            <div className="hero-logo">
-
-              <img
-                src="src\Images\logo01.webp"
-                alt="KEIAN Logo"
-              />
-
-            </div>
-
-            {/* HERO PERFUME BOTTLE */}
-            <div className="hero-bottle">
-
-              <div className="perfume-display-wrapper">
-
-                <div className="bottle-container">
-
-                  <img
-                    src="src\Images\hero.png"
-                    alt="Keian Luxury Perfume Bottle"
-                  />
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </section>
+  {/* HERO PRODUCT SIDE */}
+  <div className="hero-product">
+    <div className="hero-bottle">
+      <div className="perfume-display-wrapper">
+        <div className="bottle-container">
+          <img src="src/Images/hero.png" alt="Keian Luxury Perfume Bottle" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
         {/* =================================================
             TRUST BAR
