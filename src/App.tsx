@@ -3,12 +3,10 @@ import { useNavigate } from "react-router-dom";
 import "./App.css";
 
 import logo from "./Images/logo.webp";
-import perfumeBottle from "./Images/Perfume_Bottle_Mockup05.png";
 import giftImage from "./Images/gift.jpg";
 import attarImage from "./Images/attar.jpg";
 import perfumeImage from "./Images/perfume.jpg";
 import dhakoonImage from "./Images/dakhoonimages.jpg";
-import storyImage from "./Images/story.jpg";
 
 import {
   FaInstagram,
@@ -73,9 +71,8 @@ function ProductCard({
       style={{ cursor: "pointer" }}
     >
       <div
-        className={`product-visual ${
-          isBakhoor ? "" : className
-        }`}
+        className={`product-visual ${isBakhoor ? "" : className
+          }`}
       >
         {/* PRODUCT TAG */}
 
@@ -550,13 +547,25 @@ function HomePage() {
           </div>
 
           {/* HERO PRODUCT */}
-
           <div className="hero-product">
 
+            {/* OUTER RING */}
             <div className="hero-orbit orbit-one"></div>
 
+            {/* INNER RING */}
             <div className="hero-orbit orbit-two"></div>
 
+            {/* KEIAN LOGO INSIDE THE RINGS */}
+            <div className="hero-logo">
+
+              <img
+                src="src\Images\logo01.webp"
+                alt="KEIAN Logo"
+              />
+
+            </div>
+
+            {/* HERO PERFUME BOTTLE */}
             <div className="hero-bottle">
 
               <div className="perfume-display-wrapper">
@@ -564,37 +573,13 @@ function HomePage() {
                 <div className="bottle-container">
 
                   <img
-                    src={perfumeBottle}
+                    src="src\Images\hero.png"
                     alt="Keian Luxury Perfume Bottle"
                   />
 
                 </div>
 
               </div>
-
-            </div>
-
-            <div className="floating-note note-one">
-
-              <span>01</span>
-
-              <p>
-                Woody
-                <br />
-                Amber
-              </p>
-
-            </div>
-
-            <div className="floating-note note-two">
-
-              <span>02</span>
-
-              <p>
-                Deep
-                <br />
-                Mystery
-              </p>
 
             </div>
 
@@ -852,11 +837,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "HIM"
+              className={`best-seller-tab ${activeCategory === "HIM"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("HIM")
               }
@@ -866,11 +850,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "HER"
+              className={`best-seller-tab ${activeCategory === "HER"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("HER")
               }
@@ -880,11 +863,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "ATTAR"
+              className={`best-seller-tab ${activeCategory === "ATTAR"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("ATTAR")
               }
@@ -894,11 +876,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "GIFTING"
+              className={`best-seller-tab ${activeCategory === "GIFTING"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("GIFTING")
               }
@@ -1010,7 +991,7 @@ function HomePage() {
           <div className="story-image">
 
             <img
-              src={storyImage}
+              src="src\Images\story2.jpg"
               alt="Keian luxury perfume bottle"
             />
 
