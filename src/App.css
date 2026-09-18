@@ -117,7 +117,7 @@ a {
   font-weight: 700 !important;
   text-transform: uppercase !important;               /* Forces sleek professional uniform styling */
   letter-spacing: 1.5px !important;                     /* High-end breathing room between characters */
-  transform: translate(-35px, 5px);
+  transform: translate(-45px, 10px);
   
   /* Matches the exact luxury gold filter color tint used on your graphic vector logo */
   color: #d8b362 !important; 
