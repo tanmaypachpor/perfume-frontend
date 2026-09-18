@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./App.css";
 
 import logo from "./Images/logo.webp";
-import perfumeBottle from "./Images/Perfume_Bottle_Mockup.png";
+import perfumeBottle from "./Images/Perfume_Bottle_Mockup05.png";
 import giftImage from "./Images/gift.jpg";
 import attarImage from "./Images/attar.jpg";
 import perfumeImage from "./Images/perfume.jpg";

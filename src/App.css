@@ -342,11 +342,34 @@ a {
     );
 }
 
+/* =========================================================
+   HERO BOTTLE IMAGE SIZE ADJUSTMENT
+========================================================= */
+
+.hero-bottle img {
+  display: block;
+  
+  /* 🛠️ ADJUST THIS PERCENTAGE VALUE TO SCALE THE BOTTLE SIZE */
+  width: 65% !important; /* Scale this down (e.g., 55%, 50%) to make it smaller */
+  
+  height: auto !important; /* Preserves your aspect ratio so it doesn't warp or squash */
+  margin: 0 auto !important; /* Automatically centers the image horizontally */
+  
+  /* Adds a smooth drop shadow to make your new bottle image pop */
+  filter: drop-shadow(15px 25px 25px rgba(0, 0, 0, 0.35)) !important; 
+}
+
+/* Ensure the wrapper container handles the size reduction without clipping */
 .hero-bottle {
   position: relative;
   z-index: 3;
   margin-top: 40px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 
 .hero-orbit {
   position: absolute;
