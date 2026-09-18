@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./App.css";
 
-import logo1 from "./Images/logo01.webp";
+import logo1 from "./Images/logo.webp";
 import giftImage from "./Images/gift.jpg";
 import attarImage from "./Images/attar.jpg";
 import perfumeImage from "./Images/perfume.jpg";
@@ -139,8 +139,7 @@ function ProductCard({
                   alt={product.name}
                   className="product-image first-image"
                   onError={(event) => {
-                    event.currentTarget.style.display =
-                      "none";
+                    event.currentTarget.style.display = "none";
                   }}
                 />
 
@@ -152,8 +151,7 @@ function ProductCard({
                     alt={`${product.name} alternate`}
                     className="product-image second-image"
                     onError={(event) => {
-                      event.currentTarget.style.display =
-                        "none";
+                      event.currentTarget.style.display = "none";
                     }}
                   />
                 )}
@@ -227,7 +225,7 @@ export function Navbar() {
   return (
     <header className="navbar">
 
-      {/* TOP ROW */}
+      {/* Pinned to column grid lane 1 natively */}
 
       <div className="nav-top-row">
 
@@ -241,49 +239,12 @@ export function Navbar() {
             alt="Keian Logo"
           />
 
-          {/* <span className="logo-text">
-            KEIAN
-          </span> */}
+          <span className="logo-text"></span>
         </a>
 
-        <div className="nav-actions">
-
-          <button
-            aria-label="Search"
-            onClick={() => {
-              window.location.href =
-                "/products";
-            }}
-          >
-            ⌕
-          </button>
-
-          <button
-            aria-label="Wishlist"
-            onClick={() => {
-              alert(
-                "Wishlist feature coming soon."
-              );
-            }}
-          >
-            ♡
-          </button>
-
-          <button
-            aria-label="Shopping bag"
-            onClick={() => {
-              alert(
-                "Shopping bag feature coming soon."
-              );
-            }}
-          >
-            ♧
-          </button>
-
-        </div>
       </div>
 
-      {/* NAVIGATION */}
+      {/* Pinned directly to the absolute center layout line */}
 
       <nav
         className="nav-links"
@@ -305,6 +266,44 @@ export function Navbar() {
           Our Story
         </a>
       </nav>
+
+      {/* Pinned to column grid lane 3 natively */}
+
+      <div className="nav-actions">
+
+        <button
+          aria-label="Search"
+          onClick={() => {
+            window.location.href =
+              "/products";
+          }}
+        >
+          ⌕
+        </button>
+
+        <button
+          aria-label="Wishlist"
+          onClick={() => {
+            alert(
+              "Wishlist feature coming soon."
+            );
+          }}
+        >
+          ♡
+        </button>
+
+        <button
+          aria-label="Shopping bag"
+          onClick={() => {
+            alert(
+              "Shopping bag feature coming soon."
+            );
+          }}
+        >
+          ♧
+        </button>
+
+      </div>
 
     </header>
   );
@@ -519,30 +518,51 @@ function HomePage() {
           id="home"
         >
 
+          {/* BRAND WATERMARK */}
+
+          <img
+            src={logo1}
+            alt=""
+            className="hero-watermark-bg"
+            aria-hidden="true"
+          />
+
           <div className="hero-background-circle"></div>
 
           <div className="hero-content">
 
             <div className="eyebrow">
+
               <span></span>
 
               THE ART OF FRAGRANCE
 
               <span></span>
+
             </div>
 
             <h1>
-              A Scent
-              <br />
-              <em>That Defines</em>
-              <br />
-              You.
+
+              <span>
+                A Scent
+              </span>
+
+              <em>
+                That Defines
+              </em>
+
+              <span>
+                You.
+              </span>
+
             </h1>
 
             <p className="hero-description">
+
               Discover extraordinary fragrances crafted
               with exquisite ingredients and timeless
               elegance.
+
             </p>
 
             <div className="hero-buttons">
@@ -553,7 +573,10 @@ function HomePage() {
               >
                 SHOP COLLECTION
 
-                <span>→</span>
+                <span>
+                  →
+                </span>
+
               </a>
 
               <a
@@ -567,7 +590,9 @@ function HomePage() {
 
           </div>
 
-          {/* HERO PRODUCT */}
+          {/* =================================================
+              HERO PRODUCT SIDE
+          ================================================= */}
 
           <div className="hero-product">
 
@@ -583,10 +608,10 @@ function HomePage() {
 
             <div className="hero-logo">
 
-              <img
-                src="src\Images\logo01.webp"
+              {/* <img
+                src={logo1}
                 alt="KEIAN Logo"
-              />
+              /> */}
 
             </div>
 
@@ -599,7 +624,7 @@ function HomePage() {
                 <div className="bottle-container">
 
                   <img
-                    src="src\Images\hero.png"
+                    src="src/Images/hero.png"
                     alt="Keian Luxury Perfume Bottle"
                   />
 
@@ -620,7 +645,10 @@ function HomePage() {
         <section className="trust-bar">
 
           <div>
-            <span>✦</span>
+
+            <span>
+              ✦
+            </span>
 
             <strong>
               LONG LASTING
@@ -629,10 +657,14 @@ function HomePage() {
             <small>
               Up to 12 hours
             </small>
+
           </div>
 
           <div>
-            <span>✧</span>
+
+            <span>
+              ✧
+            </span>
 
             <strong>
               PREMIUM QUALITY
@@ -641,10 +673,14 @@ function HomePage() {
             <small>
               Finest ingredients
             </small>
+
           </div>
 
           <div>
-            <span>◇</span>
+
+            <span>
+              ◇
+            </span>
 
             <strong>
               FREE SHIPPING
@@ -653,10 +689,14 @@ function HomePage() {
             <small>
               On orders above ₹1,999
             </small>
+
           </div>
 
           <div>
-            <span>✦</span>
+
+            <span>
+              ✦
+            </span>
 
             <strong>
               CRAFTED WITH CARE
@@ -665,6 +705,7 @@ function HomePage() {
             <small>
               Made for you
             </small>
+
           </div>
 
         </section>
@@ -688,7 +729,9 @@ function HomePage() {
 
               <h2>
                 Discover Our{" "}
-                <em>Collections</em>
+                <em>
+                  Collections
+                </em>
               </h2>
 
             </div>
@@ -847,7 +890,10 @@ function HomePage() {
             </span>
 
             <h2>
-              Our <em>Bestsellers</em>
+              Our{" "}
+              <em>
+                Bestsellers
+              </em>
             </h2>
 
             <p>
@@ -938,9 +984,11 @@ function HomePage() {
           {!loading &&
             !error &&
             products.length > 0 && (
+
               <>
 
                 {filteredProducts.length > 0 ? (
+
                   <>
 
                     <div className="product-grid">
@@ -952,11 +1000,13 @@ function HomePage() {
                             product,
                             index
                           ) => (
+
                             <ProductCard
                               key={product.id}
                               product={product}
                               index={index}
                             />
+
                           )
                         )}
 
@@ -977,6 +1027,7 @@ function HomePage() {
                     </div>
 
                   </>
+
                 ) : (
 
                   <div className="no-products-message">
@@ -993,6 +1044,7 @@ function HomePage() {
                 )}
 
               </>
+
             )}
 
           {/* NO PRODUCTS FROM API */}
@@ -1002,7 +1054,9 @@ function HomePage() {
             products.length === 0 && (
 
               <div className="no-products-message">
+
                 No fragrances available.
+
               </div>
 
             )}
@@ -1021,7 +1075,7 @@ function HomePage() {
           <div className="story-image">
 
             <img
-              src="src\Images\story2.jpg"
+              src="src/Images/story2.jpg"
               alt="Keian luxury perfume bottle"
             />
 
@@ -1036,34 +1090,46 @@ function HomePage() {
             </span>
 
             <h2>
+
               More Than
+
               <br />
-              <em>A Fragrance.</em>
+
+              <em>
+                A Fragrance.
+              </em>
+
             </h2>
 
             <div className="gold-line"></div>
 
             <p>
+
               We believe a fragrance is more than a scent.
               It is a memory, an emotion, a feeling that
               stays long after you've left the room.
+
             </p>
 
             <p>
+
               Every Keian creation is carefully composed
               using exceptional ingredients to create
               something truly unforgettable.
+
             </p>
 
             <a
               href="/our-story"
               className="text-link"
             >
+
               OUR STORY
 
               <span>
                 →
               </span>
+
             </a>
 
           </div>
@@ -1081,24 +1147,34 @@ function HomePage() {
           </span>
 
           <h2>
+
             Your next signature
+
             <br />
-            <em>is waiting.</em>
+
+            <em>
+              is waiting.
+            </em>
+
           </h2>
 
           <p>
+
             Subscribe for exclusive launches, fragrance
             stories, and special offers.
+
           </p>
 
           <form
             className="newsletter-form"
             onSubmit={(event) => {
+
               event.preventDefault();
 
               alert(
                 "Thank you for subscribing to Keian."
               );
+
             }}
           >
 
@@ -1148,16 +1224,20 @@ function Footer() {
           <div className="footer-logo">
 
             <img
-              src="src\Images\logo01.webp"
+              src={logo1}
               alt="KEIAN"
             />
 
           </div>
 
           <p>
+
             The art of fragrance,
+
             <br />
+
             captured in a bottle.
+
           </p>
 
         </div>
@@ -1242,30 +1322,39 @@ function Footer() {
             href="#instagram"
             aria-label="Instagram"
           >
+
             <FaInstagram />
+
             <span>
               Instagram
             </span>
+
           </a>
 
           <a
             href="#facebook"
             aria-label="Facebook"
           >
+
             <FaFacebookF />
+
             <span>
               Facebook
             </span>
+
           </a>
 
           <a
             href="#pinterest"
             aria-label="Pinterest"
           >
+
             <FaPinterestP />
+
             <span>
               Pinterest
             </span>
+
           </a>
 
         </div>
@@ -1283,11 +1372,17 @@ function Footer() {
             <FaMapMarkerAlt />
 
             <span>
+
               KEIAN Fragrances
+
               <br />
+
               Pune, Maharashtra
+
               <br />
+
               India
+
             </span>
 
           </div>
