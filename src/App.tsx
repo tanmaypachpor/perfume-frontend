@@ -8,6 +8,7 @@ import attarImage from "./Images/attar.jpg";
 import perfumeImage from "./Images/perfume.jpg";
 import dhakoonImage from "./Images/dakhoonimages.jpg";
 
+
 import {
   FaInstagram,
   FaFacebookF,
@@ -72,9 +73,8 @@ function ProductCard({
       style={{ cursor: "pointer" }}
     >
       <div
-        className={`product-visual ${
-          isBakhoor ? "" : className
-        }`}
+        className={`product-visual ${isBakhoor ? "" : className
+          }`}
       >
         {/* PRODUCT TAG */}
 
@@ -909,11 +909,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "HIM"
+              className={`best-seller-tab ${activeCategory === "HIM"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("HIM")
               }
@@ -923,11 +922,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "HER"
+              className={`best-seller-tab ${activeCategory === "HER"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("HER")
               }
@@ -937,11 +935,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "ATTAR"
+              className={`best-seller-tab ${activeCategory === "ATTAR"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("ATTAR")
               }
@@ -951,11 +948,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "GIFTING"
+              className={`best-seller-tab ${activeCategory === "GIFTING"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("GIFTING")
               }
@@ -1292,20 +1288,12 @@ function Footer() {
             ABOUT
           </h4>
 
-          <a href="/#about">
-            Our Story
-          </a>
-
-          <a href="/#about">
+          <a href="/our-story">
             Our Philosophy
           </a>
 
-          <a href="/#about">
+          <a href="/contact">
             Contact
-          </a>
-
-          <a href="/#about">
-            Journal
           </a>
 
         </div>
@@ -1401,14 +1389,14 @@ function Footer() {
           </a>
 
           <a
-            href="tel:+919999999999"
+            href="tel:+919898552297"
             className="contact-item"
           >
 
             <FaPhone />
 
             <span>
-              +91 99999 99999
+              +91 9898552297
             </span>
 
           </a>

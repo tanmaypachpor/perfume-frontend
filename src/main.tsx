@@ -15,6 +15,7 @@ import Cart from "./Cart";
 import Checkout from "./Checkout";
 import OrderSuccess from "./OrderSuccess";
 import AdminDashboard from "./admin/AdminDashboard";
+import ContactPage from "./ContactPage";
 
 import "./index.css";
 
@@ -135,11 +136,19 @@ ReactDOM.createRoot(
           path="/order-success"
           element={<OrderSuccess />}
         />
+        {/* =========================
+    CONTACT
+========================= */}
 
         <Route
-  path="/admin/orders"
-  element={<AdminDashboard />}
-/>
+          path="/contact"
+          element={<ContactPage />}
+        />
+
+        <Route
+          path="/admin/orders"
+          element={<AdminDashboard />}
+        />
 
       </Routes>
     </BrowserRouter>
