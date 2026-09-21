@@ -74,26 +74,34 @@ a {
 .logo {
   display: flex !important;
   align-items: center !important;
-  gap: 12px !important;
+  gap: 0px !important;
   text-decoration: none !important;
 }
 
 .logo img {
   display: block !important;
   width: auto !important;
-  margin-top: -5px;
-  max-height: 100px !important;
+  margin-top: -15px;
+  max-height: 90px !important;
   object-fit: contain !important;
   filter: brightness(0) saturate(100%) invert(94%) sepia(10%) saturate(350%) hue-rotate(330deg) brightness(95%) contrast(90%) !important;
 }
 
 .logo-text {
+ position: absolute !important;
+  z-index: 10000 !important; /* Forces text to float on top of everything else */
+  
+  top: 25px !important;       /* Distance from the top of the header */
+  left: 14% !important;      /* Distance from the left edge of the page */
+  
   font-family: "Montserrat", sans-serif !important;
-  font-size: 14px !important;
-  font-weight: 400 !important;
+  font-size: 30px !important;
+  font-weight: 1000 !important;
   text-transform: uppercase !important;
   letter-spacing: 5px !important;
-  color: #e5dfd3 !important;
+  color: #e5dfd3 !important; /* Luxury brand cream-gold color */
+  pointer-events: none !important; /* Prevents blocking clicks on elements underneath it */
+
 }
 
 /* Bulletproof centering row setup for primary navigation links */
@@ -107,8 +115,8 @@ a {
 }
 
 .nav-links a {
-  color: #9c958a !important;
-  font-size: 15px !important;
+  color: #d3cec6 !important;
+  font-size: 18px !important;
   text-transform: uppercase !important;
   letter-spacing: 2.2px !important;
   font-weight: 500 !important;
@@ -131,7 +139,7 @@ a {
 .nav-actions button {
   border: none !important;
   background: transparent !important;
-  color: #9c958a !important;
+  color: #d3cec6 !important;
   font-size: 30px !important;
   margin-top: -15px;
   transition: color 0.3s ease !important;

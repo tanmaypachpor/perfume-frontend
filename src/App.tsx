@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./App.css";
 
 import logo1 from "./Images/logo.webp";
+import logo2 from "./Images/logo03.webp";
 import giftImage from "./Images/gift.jpg";
 import attarImage from "./Images/attar.jpg";
 import perfumeImage from "./Images/perfume.jpg";
@@ -239,16 +240,17 @@ export function Navbar() {
             alt="Keian Logo"
           />
 
-          <span className="logo-text"></span>
         </a>
 
       </div>
 
+      <span className="logo-text">KEIAN</span>
+      
+
       {/* Pinned directly to the absolute center layout line */}
 
       <nav
-        className="nav-links"
-        aria-label="Main navigation"
+        className="nav-links" aria-label="Main navigation"
       >
         <a href="/">
           Home
@@ -519,13 +521,6 @@ function HomePage() {
         >
 
           {/* BRAND WATERMARK */}
-
-          <img
-            src={logo1}
-            alt=""
-            className="hero-watermark-bg"
-            aria-hidden="true"
-          />
 
           <div className="hero-background-circle"></div>
 
