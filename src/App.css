@@ -159,67 +159,74 @@ a {
    HERO & WATERMARK GRAPHICS CONTEXT
 ========================================================= */
 
+/* =========================================================
+   HERO BANNER
+========================================================= */
+
 .hero {
-  min-height: calc(100vh - 75px);
   position: relative;
+  width: 100%;
+
+  /* 16:9 ratio matching Banner02.jpg */
+  aspect-ratio: 16 / 9;
+
+  min-height: 0;
+
   display: flex;
   align-items: center;
-  background: #1c1410 !important;
-  background: linear-gradient(135deg, #211813 0%, #150f0c 100%) !important;
+
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+
   color: #ffffff;
   overflow: hidden;
+
   padding: 0 5% 0 8% !important;
 }
 
-/* Giant background vector monogram logo positioned elegantly behind the center text boundary */
-.hero-watermark-bg {
+/* Optional dark overlay for better text visibility */
+
+.hero::before {
+  content: "";
   position: absolute;
-  top: 50%;
-  left: 50% !important;
-  /* Forces perfect layout centering across the entire section */
-  transform: translate(-50%, -50%);
-  width: 55vw;
-  height: 55vw;
-  max-width: 780px;
-  max-height: 780px;
-  opacity: 0.022 !important;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.15);
+
   pointer-events: none;
   z-index: 1;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
 }
 
-.hero-text-watermark {
-  position: absolute;
-  top: 50%;
-  left: 50% !important;
-  /* Perfect absolute center alignment matching the logo backdrop */
-  transform: translate(-50%, -50%);
-  font-family: "Montserrat", sans-serif;
-  font-size: clamp(40px, 6vw, 85px);
-  font-weight: 600;
-  letter-spacing: 16px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.012);
-  pointer-events: none;
-  z-index: 2;
-}
+
+/* =========================================================
+   HERO CONTENT
+========================================================= */
 
 .hero-content {
   width: 50%;
   padding: 40px 0;
+
   position: relative;
   z-index: 5;
+
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
+
+/* =========================================================
+   EYEBROW
+========================================================= */
+
 .eyebrow {
   display: flex;
   align-items: center;
   gap: 13px;
+
   color: var(--gold-light);
+
   font-size: 9px;
   letter-spacing: 4px;
 }
@@ -227,16 +234,26 @@ a {
 .eyebrow span {
   width: 30px;
   height: 1px;
+
   background: var(--gold);
 }
 
+
+/* =========================================================
+   HERO HEADING
+========================================================= */
+
 .hero h1 {
   font-family: 'Ibarra Real Nova', serif;
+
   font-size: clamp(50px, 8vw, 100px) !important;
   line-height: 0.80 !important;
+
   font-weight: 400 !important;
+
   text-transform: uppercase;
   letter-spacing: 2px !important;
+
   margin-top: 20px !important;
   margin-bottom: 20px !important;
 }
@@ -248,32 +265,53 @@ a {
 .hero h1 em {
   font-style: italic;
   display: block;
+
   color: var(--gold-light);
   font-weight: 300;
 }
 
+
+/* =========================================================
+   HERO DESCRIPTION
+========================================================= */
+
 .hero-description {
   width: 430px;
   max-width: 100%;
+
   margin-top: 10px;
   margin-bottom: 16px;
+
   color: #a6a099;
+
   font-size: 13px;
   line-height: 1.9;
 }
+
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
 
 .primary-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   padding: 16px 38px !important;
+
   background: #cbad73 !important;
   color: #1a120e !important;
+
   font-size: 10.5px !important;
   font-weight: 600 !important;
+
   letter-spacing: 2.5px !important;
   text-transform: uppercase;
-  transition: opacity 0.3s ease, transform 0.3s ease !important;
+
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease !important;
 }
 
 .primary-button:hover {
@@ -281,14 +319,23 @@ a {
   transform: translateY(-1px);
 }
 
+
+/* =========================================================
+   SECONDARY BUTTON
+========================================================= */
+
 .secondary-button {
   color: #aaa49b;
+
   font-size: 8px;
   letter-spacing: 2px;
+
   border-bottom: 1px solid #655e54;
+
   padding-bottom: 7px;
-  transition: 0.3s;
   padding-left: 15px;
+
+  transition: 0.3s;
 }
 
 .secondary-button:hover {
@@ -296,59 +343,22 @@ a {
   border-color: var(--gold);
 }
 
+
 /* =========================================================
-   HERO PRODUCT VIEW (OPTIMIZED PERFUME PROPORTIONS)
+   OLD HERO ELEMENTS
+   Not required when using Banner02.jpg
 ========================================================= */
 
-.hero-product {
-  width: 50%;
-  position: relative;
-  display: flex;
-  justify-content: flex-end !important;
-  /* Shifts the product block elements cleanly rightward */
-  align-items: center;
-  min-height: 75vh;
-  z-index: 5;
-  padding-left: 6% !important;
-  /* Extra breathing space boundary off the right viewport edge */
+.hero-background-circle,
+.hero-watermark-bg,
+.hero-text-watermark,
+.hero-product,
+.hero-bottle,
+.hero-orbit,
+.hero-logo {
+  display: none;
 }
 
-.hero-background-circle {
-  position: absolute;
-  width: 680px;
-  /* Expands glow size backdrop radius */
-  height: 680px;
-  background: radial-gradient(circle, rgba(219, 202, 167, 0.06) 0%, transparent 70%) !important;
-  border: none !important;
-  border-radius: 50%;
-  pointer-events: none;
-  top: 50%;
-  left: 60% !important;
-  /* Moves visual glow footprint further right behind the bottle */
-  transform: translate(-50%, -50%);
-}
-
-.hero-bottle {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 !important;
-}
-
-.hero-bottle img {
-  display: block;
-  width: auto !important;
-  height: auto !important;
-  max-height: 540px !important;
-  /* Scaled up to mirror mockups accurately */
-  max-width: 95% !important;
-  object-fit: contain !important;
-  filter: drop-shadow(0 35px 70px rgba(0, 0, 0, 0.7)) !important;
-  transition: transform 0.5s ease-out !important;
-  margin-left: 150px;
-
-}
 
 /* Responsive Adaptive Strategy */
 @media (max-width: 991px) {

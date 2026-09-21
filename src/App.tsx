@@ -7,6 +7,7 @@ import giftImage from "./Images/gifts.png";
 import attarImage from "./Images/attar.png";
 import perfumeImage from "./Images/perfume.png";
 import dhakoonImage from "./Images/dakhoonimages.png";
+import heroBanner from "./Images/Banner02.jpg";
 
 
 import {
@@ -511,17 +512,16 @@ function HomePage() {
       <main>
 
         {/* =================================================
-            HERO
-        ================================================= */}
+    HERO
+================================================= */}
 
         <section
           className="hero"
           id="home"
+          style={{
+            backgroundImage: `url(${heroBanner})`,
+          }}
         >
-
-          {/* BRAND WATERMARK */}
-
-          <div className="hero-background-circle"></div>
 
           <div className="hero-content">
 
@@ -584,53 +584,8 @@ function HomePage() {
 
           </div>
 
-          {/* =================================================
-              HERO PRODUCT SIDE
-          ================================================= */}
-
-          <div className="hero-product">
-
-            {/* OUTER RING */}
-
-            <div className="hero-orbit orbit-one"></div>
-
-            {/* INNER RING */}
-
-            <div className="hero-orbit orbit-two"></div>
-
-            {/* KEIAN LOGO INSIDE THE RINGS */}
-
-            <div className="hero-logo">
-
-              {/* <img
-                src={logo1}
-                alt="KEIAN Logo"
-              /> */}
-
-            </div>
-
-            {/* HERO PERFUME BOTTLE */}
-
-            <div className="hero-bottle">
-
-              <div className="perfume-display-wrapper">
-
-                <div className="bottle-container">
-
-                  <img
-                    src="src/Images/hero.png"
-                    alt="Keian Luxury Perfume Bottle"
-                  />
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
         </section>
+
 
         {/* =================================================
             TRUST BAR
