@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import "./App.css";
 
 import logo1 from "./Images/logo.webp";
-import logo2 from "./Images/logo03.webp";
-import giftImage from "./Images/gift.jpg";
-import attarImage from "./Images/attar.jpg";
-import perfumeImage from "./Images/perfume.jpg";
-import dhakoonImage from "./Images/dakhoonimages.jpg";
+import giftImage from "./Images/gifts.png";
+import attarImage from "./Images/attar.png";
+import perfumeImage from "./Images/perfume.png";
+import dhakoonImage from "./Images/dakhoonimages.png";
 
 
 import {
@@ -245,7 +244,7 @@ export function Navbar() {
       </div>
 
       <span className="logo-text">KEIAN</span>
-      
+
 
       {/* Pinned directly to the absolute center layout line */}
 
@@ -566,7 +565,7 @@ function HomePage() {
                 href="#shop"
                 className="primary-button"
               >
-                SHOP COLLECTION
+                SHOP Now
 
                 <span>
                   →
@@ -749,7 +748,7 @@ function HomePage() {
             >
 
               <img
-                src={giftImage}
+                src={perfumeImage}
                 alt="Perfumes"
                 className="collection-image"
               />
@@ -811,7 +810,7 @@ function HomePage() {
             >
 
               <img
-                src={perfumeImage}
+                src={giftImage}
                 alt="Gift Sets"
                 className="collection-image"
               />
@@ -905,8 +904,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "HIM"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("HIM")
@@ -918,8 +917,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "HER"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("HER")
@@ -931,8 +930,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "ATTAR"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("ATTAR")
@@ -944,8 +943,8 @@ function HomePage() {
             <button
               type="button"
               className={`best-seller-tab ${activeCategory === "GIFTING"
-                  ? "active"
-                  : ""
+                ? "active"
+                : ""
                 }`}
               onClick={() =>
                 setActiveCategory("GIFTING")
