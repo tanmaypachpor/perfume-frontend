@@ -223,13 +223,29 @@ function ProductCard({
 ========================================================= */
 
 export function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Switches threshold if user scrolls past 20px
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <header className="navbar">
+    <header className={`navbar ${isScrolled ? "scrolled" : ""}`}>
 
       {/* Pinned to column grid lane 1 natively */}
-
       <div className="nav-top-row">
-
         <a
           href="/"
           className="logo"
@@ -239,72 +255,24 @@ export function Navbar() {
             src={logo1}
             alt="Keian Logo"
           />
-
         </a>
-
       </div>
 
       <span className="logo-text">KEIAN</span>
 
-
       {/* Pinned directly to the absolute center layout line */}
-
-      <nav
-        className="nav-links" aria-label="Main navigation"
-      >
-        <a href="/">
-          Home
-        </a>
-
-        <a href="/products">
-          Shop
-        </a>
-
-        <a href="/#collections">
-          Collections
-        </a>
-
-        <a href="/#about">
-          Our Story
-        </a>
+      <nav className="nav-links" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/products">Shop</a>
+        <a href="/#collections">Collections</a>
+        <a href="/#about">Our Story</a>
       </nav>
 
       {/* Pinned to column grid lane 3 natively */}
-
       <div className="nav-actions">
-
-        <button
-          aria-label="Search"
-          onClick={() => {
-            window.location.href =
-              "/products";
-          }}
-        >
-          ⌕
-        </button>
-
-        <button
-          aria-label="Wishlist"
-          onClick={() => {
-            alert(
-              "Wishlist feature coming soon."
-            );
-          }}
-        >
-          ♡
-        </button>
-
-        <button
-          aria-label="Shopping bag"
-          onClick={() => {
-            alert(
-              "Shopping bag feature coming soon."
-            );
-          }}
-        >
-          ♧
-        </button>
-
+        <button aria-label="Search" onClick={() => { window.location.href = "/products"; }}>⌕</button>
+        <button aria-label="Wishlist" onClick={() => { alert("Wishlist feature coming soon."); }}>♡</button>
+        <button aria-label="Shopping bag" onClick={() => { alert("Shopping bag feature coming soon."); }}>♧</button>
       </div>
 
     </header>
