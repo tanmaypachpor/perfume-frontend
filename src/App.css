@@ -98,25 +98,22 @@ a {
 }
 
 .logo-text {
-  position: fixed !important;
-  z-index: 10000 !important;
-  /* Forces text to float on top of everything else */
-
-  top: 25px !important;
-  /* Distance from the top of the header */
-  left: 14% !important;
-  /* Distance from the left edge of the page */
-
+  position: absolute !important;
+  z-index: 10000 !important; /* Forces text to float on top of everything else */
+  top: 25px !important; /* Distance from the top of the header */
+  left: 14% !important; /* Distance from the left edge of the page */
   font-family: "Montserrat", sans-serif !important;
   font-size: 30px !important;
   font-weight: 1000 !important;
   text-transform: uppercase !important;
   letter-spacing: 5px !important;
-  color: #e5dfd3 !important;
-  /* Luxury brand cream-gold color */
-  pointer-events: none !important;
-  /* Prevents blocking clicks on elements underneath it */
+  color: #e5dfd3 !important; /* Luxury brand cream-gold color */
+  pointer-events: none !important; /* Prevents blocking clicks on elements underneath it */
+}
 
+.navbar:not(.scrolled) ~ .logo-text,
+.logo-text.scrolled {
+  position: fixed !important; 
 }
 
 /* Bulletproof centering row setup for primary navigation links */

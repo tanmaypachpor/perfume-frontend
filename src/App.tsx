@@ -224,8 +224,15 @@ function ProductCard({
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const isHomePage = window.location.pathname === "/";
 
   useEffect(() => {
+
+    if (!isHomePage) {
+      setIsScrolled(true);
+      return;
+    }
+
     const handleScroll = () => {
       // Switches threshold if user scrolls past 20px
       if (window.scrollY > 20) {
@@ -235,11 +242,13 @@ export function Navbar() {
       }
     };
 
+    handleScroll();
+
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [isHomePage]);
 
   return (
     <header className={`navbar ${isScrolled ? "scrolled" : ""}`}>
