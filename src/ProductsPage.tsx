@@ -3,8 +3,9 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+
 import "./App.css";
-import { Navbar } from "./App";
+import { Footer, Navbar } from "./App";
 
 interface Product {
   id: number;
@@ -14,6 +15,7 @@ interface Product {
   price: number;
   description: string;
   imageUrl: string;
+  secondUrl?: string;
   tag: string;
 }
 
@@ -28,22 +30,11 @@ function ProductPage() {
     useState("");
 
   const navigate = useNavigate();
-
   const location = useLocation();
 
-  /*
-    GET CATEGORY / COLLECTION
-    FROM CURRENT URL
-  */
-
-  const category =
-    location.pathname
-      .split("/")
-      .filter(Boolean)[1];
-
-  /* =========================
-     FETCH PRODUCTS
-  ========================= */
+  const category = location.pathname
+    .split("/")
+    .filter(Boolean)[1];
 
   useEffect(() => {
     setLoading(true);
@@ -52,59 +43,31 @@ function ProductPage() {
     let url =
       "http://localhost:8080/api/products";
 
-    /*
-      CATEGORY / COLLECTION FILTER
-    */
-
     if (category === "him") {
       url =
         "http://localhost:8080/api/products/filter?category=HIM";
-    }
-
-    else if (category === "her") {
+    } else if (category === "her") {
       url =
         "http://localhost:8080/api/products/filter?category=HER";
-    }
-
-    else if (category === "unisex") {
+    } else if (category === "unisex") {
       url =
         "http://localhost:8080/api/products/filter?category=UNISEX";
-    }
-
-    else if (category === "perfumes") {
+    } else if (category === "perfumes") {
       url =
         "http://localhost:8080/api/products/filter?collection=PERFUME";
-    }
-
-    else if (category === "attars") {
+    } else if (category === "attars") {
       url =
         "http://localhost:8080/api/products/filter?collection=ATTAR";
-    }
-
-    else if (category === "oud") {
+    } else if (category === "oud") {
       url =
         "http://localhost:8080/api/products/filter?collection=OUD";
-    }
-
-    else if (category === "bakhoor") {
+    } else if (category === "bakhoor") {
       url =
         "http://localhost:8080/api/products/filter?collection=BAKHOOR";
-    }
-
-    else if (category === "gift-sets") {
+    } else if (category === "gift-sets") {
       url =
         "http://localhost:8080/api/products/filter?collection=GIFTING";
     }
-
-    console.log(
-      "Current category:",
-      category
-    );
-
-    console.log(
-      "Fetching products from:",
-      url
-    );
 
     fetch(url)
       .then((response) => {
@@ -116,74 +79,34 @@ function ProductPage() {
 
         return response.json();
       })
-
       .then((data: Product[]) => {
-        console.log(
-          "Products:",
-          data
-        );
-
         setProducts(data);
-        setLoading(false);
       })
-
-      .catch((error) => {
+      .catch((fetchError) => {
         console.error(
           "Error fetching products:",
-          error
+          fetchError
         );
 
         setError(
           "Unable to load products. Please try again."
         );
-
+      })
+      .finally(() => {
         setLoading(false);
       });
-
   }, [category]);
 
-  /* =========================
-     PAGE TITLES
-  ========================= */
-
-  const pageTitles: Record<
-    string,
-    string
-  > = {
-    perfumes:
-      "Perfumes",
-
-    attars:
-      "Attars",
-
-    "gift-sets":
-      "Gift Sets",
-
-    him:
-      "For Him",
-
-    her:
-      "For Her",
-
-    unisex:
-      "Unisex",
-
-    oud:
-      "Oud Collection",
-
-    bakhoor:
-      "Dhakoon",
+  const pageTitles: Record<string, string> = {
+    perfumes: "Perfumes",
+    attars: "Attars",
+    "gift-sets": "Gift Sets",
+    him: "For Him",
+    her: "For Her",
+    unisex: "Unisex",
+    oud: "Oud Collection",
+    bakhoor: "Dhakoon",
   };
-
-  const pageTitle = category
-    ? pageTitles[
-        category.toLowerCase()
-      ] || "All Fragrances"
-    : "All Fragrances";
-
-  /* =========================
-     PAGE DESCRIPTIONS
-  ========================= */
 
   const pageDescriptions: Record<
     string,
@@ -214,28 +137,22 @@ function ProductPage() {
       "Discover smoky, aromatic and luxurious dhakoon fragrances.",
   };
 
-  const pageDescription = category
-    ? pageDescriptions[
-        category.toLowerCase()
-      ] ||
+  const normalizedCategory =
+    category?.toLowerCase();
+
+  const pageTitle = normalizedCategory
+    ? pageTitles[normalizedCategory] ||
+      "All Fragrances"
+    : "All Fragrances";
+
+  const pageDescription = normalizedCategory
+    ? pageDescriptions[normalizedCategory] ||
       "Explore our complete collection of extraordinary fragrances."
     : "Explore our complete collection of extraordinary fragrances.";
 
-  /* =========================
-     PRODUCT CLICK
-  ========================= */
-
-  const handleProductClick = (
-    id: number
-  ) => {
-    navigate(
-      `/products/${id}`
-    );
+  const handleProductClick = (id: number) => {
+    navigate(`/products/${id}`);
   };
-
-  /* =========================
-     PRODUCT CLASS
-  ========================= */
 
   const productClasses = [
     "product-noir",
@@ -244,313 +161,217 @@ function ProductPage() {
     "product-bloom",
   ];
 
-  /* =========================
-     RENDER
-  ========================= */
+  const getProductType = (product: Product) => {
+    switch (product.collection?.toUpperCase()) {
+      case "BAKHOOR":
+        return "BAKHOOR";
+
+      case "OUD":
+        return "OUD";
+
+      case "ATTAR":
+        return "ATTAR";
+
+      case "GIFTING":
+        return "GIFT SET";
+
+      default:
+        return "EAU DE PARFUM";
+    }
+  };
 
   return (
     <div className="app">
-
-      {/* =========================
-          COMMON KEIAN NAVBAR
-      ========================= */}
-
       <Navbar />
 
-      {/* =========================
-          PRODUCTS
-      ========================= */}
-
       <main>
-
         <section
           className="section products-section"
           id="products"
         >
-
-          {/* =========================
-              HEADER
-          ========================= */}
-
           <div className="section-header centered">
-
             <span className="section-label">
-
               {category
                 ? "EXPLORE THE COLLECTION"
                 : "THE COMPLETE COLLECTION"}
-
             </span>
 
             <h2>
-
               {category ? (
-
                 pageTitle
-
               ) : (
-
                 <>
                   All <em>Fragrances</em>
                 </>
-
               )}
-
             </h2>
 
-            <p>
-              {pageDescription}
-            </p>
-
+            <p>{pageDescription}</p>
           </div>
 
-          {/* =========================
-              LOADING
-          ========================= */}
-
           {loading && (
-
             <div
               style={{
-                textAlign:
-                  "center",
+                textAlign: "center",
                 padding: "80px",
               }}
             >
               Loading fragrances...
             </div>
-
           )}
 
-          {/* =========================
-              ERROR
-          ========================= */}
-
           {error && (
-
             <div
               style={{
-                textAlign:
-                  "center",
+                textAlign: "center",
                 padding: "80px",
                 color: "#9b3d3d",
               }}
             >
               {error}
             </div>
-
           )}
-
-          {/* =========================
-              PRODUCT GRID
-          ========================= */}
 
           {!loading &&
             !error &&
             products.length > 0 && (
-
               <div className="product-grid">
+                {products.map((product, index) => {
+                  const className =
+                    productClasses[
+                      index % productClasses.length
+                    ];
 
-                {products.map(
-                  (product, index) => {
-
-                    const className =
-                      productClasses[
-                        index %
-                          productClasses.length
-                      ];
-
-                    return (
-
-                      <article
-                        className="product-card"
-                        key={product.id}
-                        onClick={() =>
-                          handleProductClick(
-                            product.id
-                          )
-                        }
-                        style={{
-                          cursor:
-                            "pointer",
-                        }}
+                  return (
+                    <article
+                      className="product-card"
+                      key={product.id}
+                      onClick={() =>
+                        handleProductClick(product.id)
+                      }
+                      style={{
+                        cursor: "pointer",
+                      }}
+                    >
+                      <div
+                        className={`product-visual ${className}`}
                       >
-
-                        {/* PRODUCT VISUAL */}
-
-                        <div
-                          className={`product-visual ${className}`}
-                        >
-
-                          {/* TAG */}
-
-                          {product.tag && (
-
-                            <span className="product-tag">
-                              {product.tag}
-                            </span>
-
-                          )}
-
-                          {/* WISHLIST */}
-
-                          <button
-                            type="button"
-                            className="wishlist-button"
-                            aria-label={`Add ${product.name} to wishlist`}
-                            onClick={(
-                              event
-                            ) => {
-                              event.stopPropagation();
-                            }}
-                          >
-                            ♡
-                          </button>
-
-                          {/* PRODUCT BOTTLE */}
-
-                          <div className="product-bottle">
-
-                            <div className="mini-cap"></div>
-
-                            <div className="mini-neck"></div>
-
-                            <div className="mini-body">
-                              <span>K</span>
-                            </div>
-
-                          </div>
-
-                          {/* QUICK ADD */}
-
-                          <button
-                            type="button"
-                            className="quick-add"
-                            onClick={(
-                              event
-                            ) => {
-                              event.stopPropagation();
-                            }}
-                          >
-                            QUICK ADD
-                            <span>
-                              +
-                            </span>
-                          </button>
-
-                        </div>
-
-                        {/* PRODUCT DETAILS */}
-
-                        <div className="product-details">
-
-                          <span>
-
-                            {product.collection
-                              ?.toUpperCase() ===
-                            "BAKHOOR"
-
-                              ? "BAKHOOR"
-
-                              : product.collection
-                                  ?.toUpperCase() ===
-                                "OUD"
-
-                              ? "OUD"
-
-                              : product.collection
-                                  ?.toUpperCase() ===
-                                "ATTAR"
-
-                              ? "ATTAR"
-
-                              : product.collection
-                                  ?.toUpperCase() ===
-                                "GIFTING"
-
-                              ? "GIFT SET"
-
-                              : "EAU DE PARFUM"}
-
+                        {product.tag && (
+                          <span className="product-tag">
+                            {product.tag}
                           </span>
+                        )}
 
-                          <h3>
-                            {product.name}
-                          </h3>
+                        <button
+                          type="button"
+                          className="wishlist-button"
+                          aria-label={`Add ${product.name} to wishlist`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                          }}
+                        >
+                          ♡
+                        </button>
 
-                          <p>
-                            {product.category}
-                          </p>
+                        <div className="product-image-wrapper">
+                          {product.imageUrl ? (
+                            <>
+                              <img
+                                src={product.imageUrl}
+                                alt={product.name}
+                                className="product-image first-image"
+                                onError={(event) => {
+                                  event.currentTarget.style.display =
+                                    "none";
+                                }}
+                              />
 
-                          <strong>
+                              {product.secondUrl && (
+                                <img
+                                  src={product.secondUrl}
+                                  alt={`${product.name} alternate view`}
+                                  className="product-image second-image"
+                                  onError={(event) => {
+                                    event.currentTarget.style.display =
+                                      "none";
+                                  }}
+                                />
+                              )}
+                            </>
+                          ) : (
+                            <div className="product-bottle">
+                              <div className="mini-cap"></div>
 
-                            ₹
-                            {Number(
-                              product.price
-                            ).toLocaleString(
-                              "en-IN"
-                            )}
+                              <div className="mini-neck"></div>
 
-                          </strong>
-
+                              <div className="mini-body">
+                                <span>K</span>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
-                      </article>
+                        <button
+                          type="button"
+                          className="quick-add"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                          }}
+                        >
+                          QUICK ADD
+                          <span>+</span>
+                        </button>
+                      </div>
 
-                    );
+                      <div className="product-details">
+                        <span>
+                          {getProductType(product)}
+                        </span>
 
-                  }
-                )}
+                        <h3>{product.name}</h3>
 
+                        <p>{product.category}</p>
+
+                        <strong>
+                          ₹
+                          {Number(
+                            product.price
+                          ).toLocaleString("en-IN")}
+                        </strong>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
-
             )}
-
-          {/* =========================
-              NO PRODUCTS
-          ========================= */}
 
           {!loading &&
             !error &&
             products.length === 0 && (
-
               <div
                 style={{
-                  textAlign:
-                    "center",
+                  textAlign: "center",
                   padding: "80px",
-                  color:
-                    "#827c73",
+                  color: "#827c73",
                 }}
               >
-                No fragrances found in this
-                collection.
+                No fragrances found in this collection.
               </div>
-
             )}
 
-          {/* =========================
-              BACK BUTTON
-          ========================= */}
-
           <div className="center-button">
-
             <button
               type="button"
               className="outline-button"
-              onClick={() =>
-                navigate("/")
-              }
+              onClick={() => navigate("/")}
             >
               ← BACK TO HOME
             </button>
-
           </div>
-
         </section>
-
       </main>
 
+      <Footer />
     </div>
   );
 }
