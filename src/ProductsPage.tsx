@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
-
+import { useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import { Footer, Navbar } from "./App";
 
@@ -20,14 +16,9 @@ interface Product {
 }
 
 function ProductPage() {
-  const [products, setProducts] =
-    useState<Product[]>([]);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,8 +31,7 @@ function ProductPage() {
     setLoading(true);
     setError("");
 
-    let url =
-      "http://localhost:8080/api/products";
+    let url = "http://localhost:8080/api/products";
 
     if (category === "him") {
       url =
@@ -72,9 +62,7 @@ function ProductPage() {
     fetch(url)
       .then((response) => {
         if (!response.ok) {
-          throw new Error(
-            "Failed to fetch products"
-          );
+          throw new Error("Failed to fetch products");
         }
 
         return response.json();
@@ -97,63 +85,6 @@ function ProductPage() {
       });
   }, [category]);
 
-  const pageTitles: Record<string, string> = {
-    perfumes: "Perfumes",
-    attars: "Attars",
-    "gift-sets": "Gift Sets",
-    him: "For Him",
-    her: "For Her",
-    unisex: "Unisex",
-    oud: "Oud Collection",
-    bakhoor: "Dhakoon",
-  };
-
-  const pageDescriptions: Record<
-    string,
-    string
-  > = {
-    perfumes:
-      "Discover elegant, timeless and refined fragrances from our perfume collection.",
-
-    attars:
-      "Discover traditional, rich and fragrant attars crafted with care.",
-
-    "gift-sets":
-      "Explore luxurious and thoughtful fragrance gift sets for every occasion.",
-
-    him:
-      "Discover bold, refined and powerful fragrances crafted for him.",
-
-    her:
-      "Discover elegant, floral and alluring fragrances crafted for her.",
-
-    unisex:
-      "Discover modern, unique and timeless fragrances for everyone.",
-
-    oud:
-      "Explore rich, warm and mysterious oud fragrances.",
-
-    bakhoor:
-      "Discover smoky, aromatic and luxurious dhakoon fragrances.",
-  };
-
-  const normalizedCategory =
-    category?.toLowerCase();
-
-  const pageTitle = normalizedCategory
-    ? pageTitles[normalizedCategory] ||
-      "All Fragrances"
-    : "All Fragrances";
-
-  const pageDescription = normalizedCategory
-    ? pageDescriptions[normalizedCategory] ||
-      "Explore our complete collection of extraordinary fragrances."
-    : "Explore our complete collection of extraordinary fragrances.";
-
-  const handleProductClick = (id: number) => {
-    navigate(`/products/${id}`);
-  };
-
   const productClasses = [
     "product-noir",
     "product-rose",
@@ -165,19 +96,24 @@ function ProductPage() {
     switch (product.collection?.toUpperCase()) {
       case "BAKHOOR":
         return "BAKHOOR";
-
       case "OUD":
         return "OUD";
-
       case "ATTAR":
         return "ATTAR";
-
       case "GIFTING":
         return "GIFT SET";
-
       default:
         return "EAU DE PARFUM";
     }
+  };
+
+  const scrollToProducts = () => {
+    document
+      .getElementById("product-grid")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
   };
 
   return (
@@ -185,30 +121,76 @@ function ProductPage() {
       <Navbar />
 
       <main>
+        <section 
+          className="product-promo-banner" 
+          style={{
+            width: "100%",
+            marginTop: "80px",
+            backgroundColor: "#C8B7AB",
+            borderTop: "1px solid #D4AF37",
+            borderBottom: "1px solid #D4AF37",
+            padding: "56px 20px",
+            textAlign: "center",
+            fontFamily: "'Cinzel', 'Playfair Display', serif",
+            boxShadow: "inset 0 0 30px rgba(0, 0, 0, 0.05)"
+          }}
+        >
+          <div style={{ maxWidth: "1100px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px" }}>
+            
+            <span style={{ fontSize: "11px", letterSpacing: "4px", color: "#6A5344", textTransform: "uppercase", fontWeight: 600 }}>
+              • Signature Collection •
+            </span>
+
+            <h2 className="product-promo-title" style={{ fontSize: "32px", letterSpacing: "2.5px", color: "#2C221E", margin: 0, fontWeight: 600, textShadow: "0 1px 2px rgba(255,255,255,0.3)" }}>
+              FLAT 25% OFF
+            </h2>
+
+            <p style={{ fontSize: "20px", color: "#4A382F", margin: 0, fontFamily: "Montserrat, sans-serif", fontWeight: 300, letterSpacing: "0.5px" }}>
+              Curate your signature scent and explore our luxury range.
+            </p>
+
+            <div style={{ marginTop: "12px" }}>
+              <button
+                type="button"
+                className="product-promo-button"
+                onClick={scrollToProducts}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#D4AF37";
+                  e.currentTarget.style.color = "#1A1A1A";
+                  e.currentTarget.style.borderColor = "#D4AF37";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#2C221E";
+                  e.currentTarget.style.color = "#F5F0EB";
+                  e.currentTarget.style.borderColor = "#2C221E";
+                }}
+                style={{
+                  display: "inline-block",
+                  backgroundColor: "#2C221E",
+                  color: "#F5F0EB",
+                  padding: "14px 34px",
+                  fontSize: "12px",
+                  letterSpacing: "2.5px",
+                  textDecoration: "none",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                  border: "1px solid #2C221E",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                }}
+              >
+                SHOP THE COLLECTION
+              </button>
+            </div>
+
+          </div>
+        </section>
+
         <section
           className="section products-section"
           id="products"
         >
-          <div className="section-header centered">
-            <span className="section-label">
-              {category
-                ? "EXPLORE THE COLLECTION"
-                : "THE COMPLETE COLLECTION"}
-            </span>
-
-            <h2>
-              {category ? (
-                pageTitle
-              ) : (
-                <>
-                  All <em>Fragrances</em>
-                </>
-              )}
-            </h2>
-
-            <p>{pageDescription}</p>
-          </div>
-
           {loading && (
             <div
               style={{
@@ -235,7 +217,10 @@ function ProductPage() {
           {!loading &&
             !error &&
             products.length > 0 && (
-              <div className="product-grid">
+              <div
+                className="product-grid"
+                id="product-grid"
+              >
                 {products.map((product, index) => {
                   const className =
                     productClasses[
@@ -247,11 +232,9 @@ function ProductPage() {
                       className="product-card"
                       key={product.id}
                       onClick={() =>
-                        handleProductClick(product.id)
+                        navigate(`/products/${product.id}`)
                       }
-                      style={{
-                        cursor: "pointer",
-                      }}
+                      style={{ cursor: "pointer" }}
                     >
                       <div
                         className={`product-visual ${className}`}
@@ -301,9 +284,7 @@ function ProductPage() {
                           ) : (
                             <div className="product-bottle">
                               <div className="mini-cap"></div>
-
                               <div className="mini-neck"></div>
-
                               <div className="mini-body">
                                 <span>K</span>
                               </div>
@@ -318,15 +299,12 @@ function ProductPage() {
                             event.stopPropagation();
                           }}
                         >
-                          QUICK ADD
-                          <span>+</span>
+                          QUICK ADD <span>+</span>
                         </button>
                       </div>
 
                       <div className="product-details">
-                        <span>
-                          {getProductType(product)}
-                        </span>
+                        <span>{getProductType(product)}</span>
 
                         <h3>{product.name}</h3>
 

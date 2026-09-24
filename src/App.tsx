@@ -8,6 +8,7 @@ import attarImage from "./Images/attar.png";
 import perfumeImage from "./Images/perfume.png";
 import dhakoonImage from "./Images/dakhoonimages.png";
 import heroBanner from "./Images/Banner02.jpg";
+import logofooter from "./Images/logo001.webp"
 
 
 import {
@@ -223,37 +224,76 @@ function ProductCard({
 ========================================================= */
 
 export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const isHomePage = window.location.pathname === "/";
+  const [isScrolled, setIsScrolled] =
+    useState(false);
+
+  const navigate = useNavigate();
+
+  const isHomePage =
+    window.location.pathname === "/";
 
   useEffect(() => {
-
     if (!isHomePage) {
       setIsScrolled(true);
       return;
     }
 
     const handleScroll = () => {
-      // Switches threshold if user scrolls past 20px
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 20);
     };
 
     handleScroll();
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener(
+      "scroll",
+      handleScroll
+    );
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
     };
   }, [isHomePage]);
 
-  return (
-    <header className={`navbar ${isScrolled ? "scrolled" : ""}`}>
+  const handleSectionNavigation = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    sectionId: string
+  ) => {
+    event.preventDefault();
 
-      {/* Pinned to column grid lane 1 natively */}
+    if (window.location.pathname === "/") {
+      document
+        .getElementById(sectionId)
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+
+      window.history.replaceState(
+        null,
+        "",
+        `/#${sectionId}`
+      );
+
+      return;
+    }
+
+    sessionStorage.setItem(
+      "scrollTarget",
+      sectionId
+    );
+
+    navigate("/");
+  };
+
+  return (
+    <header
+      className={`navbar ${
+        isScrolled ? "scrolled" : ""
+      }`}
+    >
       <div className="nav-top-row">
         <a
           href="/"
@@ -269,21 +309,67 @@ export function Navbar() {
 
       <span className="logo-text">KEIAN</span>
 
-      {/* Pinned directly to the absolute center layout line */}
-      <nav className="nav-links" aria-label="Main navigation">
+      <nav
+        className="nav-links"
+        aria-label="Main navigation"
+      >
         <a href="/">Home</a>
+
         <a href="/products">Shop</a>
-        <a href="/#collections">Collections</a>
-        <a href="/#about">Our Story</a>
+
+        <a
+          href="/#collections"
+          onClick={(event) =>
+            handleSectionNavigation(
+              event,
+              "collections"
+            )
+          }
+        >
+          Collections
+        </a>
+
+        <a
+          href="/#about"
+          onClick={(event) =>
+            handleSectionNavigation(
+              event,
+              "about"
+            )
+          }
+        >
+          Our Story
+        </a>
       </nav>
 
-      {/* Pinned to column grid lane 3 natively */}
       <div className="nav-actions">
-        <button aria-label="Search" onClick={() => { window.location.href = "/products"; }}>⌕</button>
-        <button aria-label="Wishlist" onClick={() => { alert("Wishlist feature coming soon."); }}>♡</button>
-        <button aria-label="Shopping bag" onClick={() => { alert("Shopping bag feature coming soon."); }}>♧</button>
-      </div>
+        <button
+          aria-label="Search"
+          onClick={() => {
+            window.location.href = "/products";
+          }}
+        >
+          ⌕
+        </button>
 
+        <button
+          aria-label="Wishlist"
+          onClick={() => {
+            alert("Wishlist feature coming soon.");
+          }}
+        >
+          ♡
+        </button>
+
+        <button
+          aria-label="Shopping bag"
+          onClick={() => {
+            alert("Shopping bag feature coming soon.");
+          }}
+        >
+          ♧
+        </button>
+      </div>
     </header>
   );
 }
@@ -1146,7 +1232,7 @@ function HomePage() {
           <div className="footer-logo">
 
             <img
-              src={logo1}
+              src={logofooter}
               alt="KEIAN"
             />
 
