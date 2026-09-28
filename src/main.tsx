@@ -16,7 +16,7 @@ import Checkout from "./Checkout";
 import OrderSuccess from "./OrderSuccess";
 import ContactPage from "./ContactPage";
 import AdminDashboard from "./AdminDashboard";
-
+import AdminLogin from "./AdminLogin";
 import "./index.css";
 
 ReactDOM.createRoot(
@@ -80,6 +80,11 @@ ReactDOM.createRoot(
         <Route
           path="/products/attars"
           element={<ProductPage />}
+        />
+
+        <Route
+          path="/admin/login"
+          element={<AdminLogin />}
         />
 
         <Route
@@ -150,7 +155,7 @@ ReactDOM.createRoot(
             ADMIN DASHBOARD
         ========================= */}
 
-       
+
 
         {/* =========================
             ADMIN ORDERS
