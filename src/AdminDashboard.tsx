@@ -119,6 +119,40 @@ function AdminDashboard() {
     }, [loadOrders]);
 
     // =====================================================
+    // LOGOUT
+    // =====================================================
+
+    const handleLogout = async () => {
+        try {
+            const { error } =
+                await supabase.auth.signOut();
+
+            if (error) {
+                console.error(
+                    "Logout error:",
+                    error
+                );
+                alert(
+                    "Unable to logout. Please try again."
+                );
+                return;
+            }
+
+            window.location.href =
+                "/admin/login";
+        } catch (err) {
+            console.error(
+                "Logout error:",
+                err
+            );
+
+            alert(
+                "Unable to logout. Please try again."
+            );
+        }
+    };
+
+    // =====================================================
     // STATISTICS
     // =====================================================
 
@@ -239,9 +273,9 @@ function AdminDashboard() {
     const formatPrice = (
         value: number
     ) => {
-        return `₹${Number(value || 0).toLocaleString(
-            "en-IN"
-        )}`;
+        return `₹${Number(
+            value || 0
+        ).toLocaleString("en-IN")}`;
     };
 
     // =====================================================
@@ -289,15 +323,6 @@ function AdminDashboard() {
             .toUpperCase()}`;
     };
 
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
-
-        window.location.href = "/admin/login";
-    };
-    <button onClick={handleLogout}>
-        Logout
-    </button>
-
     // =====================================================
     // LOADING
     // =====================================================
@@ -322,12 +347,13 @@ function AdminDashboard() {
         <div className="admin-page">
 
             {/* =================================================
-          SIDEBAR
-      ================================================= */}
+                SIDEBAR
+            ================================================= */}
 
             <aside className="admin-sidebar">
 
                 <div className="admin-brand">
+
                     <div className="admin-brand-name">
                         KEIAN
                     </div>
@@ -335,6 +361,7 @@ function AdminDashboard() {
                     <span>
                         ADMIN PANEL
                     </span>
+
                 </div>
 
                 <nav className="admin-nav">
@@ -364,9 +391,11 @@ function AdminDashboard() {
                 <div className="admin-sidebar-bottom">
 
                     <div className="admin-status">
+
                         <span className="status-dot" />
 
                         <div>
+
                             <strong>
                                 System Online
                             </strong>
@@ -374,7 +403,9 @@ function AdminDashboard() {
                             <small>
                                 Supabase connected
                             </small>
+
                         </div>
+
                     </div>
 
                     <div className="admin-version">
@@ -386,8 +417,8 @@ function AdminDashboard() {
             </aside>
 
             {/* =================================================
-          MAIN CONTENT
-      ================================================= */}
+                MAIN CONTENT
+            ================================================= */}
 
             <main className="admin-main">
 
@@ -396,27 +427,43 @@ function AdminDashboard() {
                 <header className="admin-header">
 
                     <div>
+
                         <span className="admin-eyebrow">
                             OVERVIEW
                         </span>
 
                         <h1>
-                            Good morning, <em>Admin.</em>
+                            Good morning,{" "}
+                            <em>Admin.</em>
                         </h1>
 
                         <p>
                             Here's what's happening
                             with your store.
                         </p>
+
                     </div>
 
-                    <button
-                        className="refresh-button"
-                        onClick={loadOrders}
-                    >
-                        ↻
-                        <span>Refresh</span>
-                    </button>
+                    <div className="admin-header-actions">
+
+                        <button
+                            className="refresh-button"
+                            onClick={loadOrders}
+                        >
+                            ↻
+                            <span>
+                                Refresh
+                            </span>
+                        </button>
+
+                        <button
+                            className="admin-logout-button"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
+
+                    </div>
 
                 </header>
 
@@ -424,6 +471,7 @@ function AdminDashboard() {
 
                 {error && (
                     <div className="admin-error">
+
                         <strong>
                             Unable to load dashboard
                         </strong>
@@ -431,18 +479,20 @@ function AdminDashboard() {
                         <span>
                             {error}
                         </span>
+
                     </div>
                 )}
 
                 {/* =================================================
-            STAT CARDS
-        ================================================= */}
+                    STAT CARDS
+                ================================================= */}
 
                 <section className="admin-stats">
 
                     <div className="stat-card">
 
                         <div className="stat-card-top">
+
                             <span>
                                 TOTAL ORDERS
                             </span>
@@ -450,6 +500,7 @@ function AdminDashboard() {
                             <div className="stat-icon">
                                 ↗
                             </div>
+
                         </div>
 
                         <strong>
@@ -465,6 +516,7 @@ function AdminDashboard() {
                     <div className="stat-card">
 
                         <div className="stat-card-top">
+
                             <span>
                                 TOTAL REVENUE
                             </span>
@@ -472,6 +524,7 @@ function AdminDashboard() {
                             <div className="stat-icon">
                                 ₹
                             </div>
+
                         </div>
 
                         <strong>
@@ -489,6 +542,7 @@ function AdminDashboard() {
                     <div className="stat-card">
 
                         <div className="stat-card-top">
+
                             <span>
                                 PENDING
                             </span>
@@ -496,6 +550,7 @@ function AdminDashboard() {
                             <div className="stat-icon">
                                 ◷
                             </div>
+
                         </div>
 
                         <strong>
@@ -511,6 +566,7 @@ function AdminDashboard() {
                     <div className="stat-card">
 
                         <div className="stat-card-top">
+
                             <span>
                                 DELIVERED
                             </span>
@@ -518,6 +574,7 @@ function AdminDashboard() {
                             <div className="stat-icon">
                                 ✓
                             </div>
+
                         </div>
 
                         <strong>
@@ -533,25 +590,29 @@ function AdminDashboard() {
                 </section>
 
                 {/* =================================================
-            ORDERS SECTION
-        ================================================= */}
+                    ORDERS SECTION
+                ================================================= */}
 
                 <section className="orders-section">
 
                     <div className="orders-header">
 
                         <div>
+
                             <span className="admin-eyebrow">
                                 SALES
                             </span>
 
                             <h2>
-                                Recent <em>Orders</em>
+                                Recent{" "}
+                                <em>Orders</em>
                             </h2>
+
                         </div>
 
                         <span className="order-count">
-                            {filteredOrders.length} orders
+                            {filteredOrders.length}{" "}
+                            orders
                         </span>
 
                     </div>
@@ -587,6 +648,7 @@ function AdminDashboard() {
                                 )
                             }
                         >
+
                             <option value="ALL">
                                 All Status
                             </option>
@@ -614,6 +676,7 @@ function AdminDashboard() {
                             <option value="CANCELLED">
                                 Cancelled
                             </option>
+
                         </select>
 
                     </div>
@@ -621,6 +684,7 @@ function AdminDashboard() {
                     {/* ORDERS */}
 
                     {filteredOrders.length === 0 ? (
+
                         <div className="empty-orders">
 
                             <div>
@@ -637,7 +701,9 @@ function AdminDashboard() {
                             </p>
 
                         </div>
+
                     ) : (
+
                         <div className="orders-table-wrapper">
 
                             <table className="orders-table">
@@ -645,6 +711,7 @@ function AdminDashboard() {
                                 <thead>
 
                                     <tr>
+
                                         <th>
                                             ORDER
                                         </th>
@@ -675,6 +742,7 @@ function AdminDashboard() {
 
                                         <th>
                                         </th>
+
                                     </tr>
 
                                 </thead>
@@ -683,13 +751,17 @@ function AdminDashboard() {
 
                                     {filteredOrders.map(
                                         (order) => (
+
                                             <tr
-                                                key={order.id}
+                                                key={
+                                                    order.id
+                                                }
                                             >
 
                                                 {/* ORDER */}
 
                                                 <td>
+
                                                     <button
                                                         className="order-id-button"
                                                         onClick={() =>
@@ -702,6 +774,7 @@ function AdminDashboard() {
                                                             order.id
                                                         )}
                                                     </button>
+
                                                 </td>
 
                                                 {/* CUSTOMER */}
@@ -711,9 +784,13 @@ function AdminDashboard() {
                                                     <div className="customer-cell">
 
                                                         <div className="customer-avatar">
+
                                                             {order.customer_name
-                                                                ?.charAt(0)
+                                                                ?.charAt(
+                                                                    0
+                                                                )
                                                                 .toUpperCase()}
+
                                                         </div>
 
                                                         <div>
@@ -743,11 +820,15 @@ function AdminDashboard() {
                                                     <div className="products-cell">
 
                                                         {order.items
-                                                            .slice(0, 2)
+                                                            .slice(
+                                                                0,
+                                                                2
+                                                            )
                                                             .map(
                                                                 (
                                                                     item
                                                                 ) => (
+
                                                                     <span
                                                                         key={
                                                                             item.id
@@ -761,11 +842,13 @@ function AdminDashboard() {
                                                                             item.quantity
                                                                         }
                                                                     </span>
+
                                                                 )
                                                             )}
 
                                                         {order.items.length >
                                                             2 && (
+
                                                                 <small>
                                                                     +
                                                                     {order
@@ -774,6 +857,7 @@ function AdminDashboard() {
                                                                         2}{" "}
                                                                     more
                                                                 </small>
+
                                                             )}
 
                                                     </div>
@@ -785,11 +869,13 @@ function AdminDashboard() {
                                                 <td>
 
                                                     <strong className="order-total">
+
                                                         {formatPrice(
                                                             Number(
                                                                 order.total
                                                             )
                                                         )}
+
                                                     </strong>
 
                                                 </td>
@@ -907,6 +993,7 @@ function AdminDashboard() {
                                                 </td>
 
                                             </tr>
+
                                         )
                                     )}
 
@@ -915,6 +1002,7 @@ function AdminDashboard() {
                             </table>
 
                         </div>
+
                     )}
 
                 </section>
@@ -922,10 +1010,11 @@ function AdminDashboard() {
             </main>
 
             {/* =================================================
-          ORDER DETAIL MODAL
-      ================================================= */}
+                ORDER DETAIL MODAL
+            ================================================= */}
 
             {selectedOrder && (
+
                 <div
                     className="order-modal-overlay"
                     onClick={() =>
@@ -994,6 +1083,7 @@ function AdminDashboard() {
                             <div className="customer-detail-grid">
 
                                 <div>
+
                                     <span>
                                         NAME
                                     </span>
@@ -1003,9 +1093,11 @@ function AdminDashboard() {
                                             selectedOrder.customer_name
                                         }
                                     </strong>
+
                                 </div>
 
                                 <div>
+
                                     <span>
                                         EMAIL
                                     </span>
@@ -1015,9 +1107,11 @@ function AdminDashboard() {
                                             selectedOrder.customer_email
                                         }
                                     </strong>
+
                                 </div>
 
                                 <div>
+
                                     <span>
                                         PHONE
                                     </span>
@@ -1028,6 +1122,7 @@ function AdminDashboard() {
                                             "—"
                                         }
                                     </strong>
+
                                 </div>
 
                             </div>
@@ -1043,16 +1138,19 @@ function AdminDashboard() {
                             </div>
 
                             <p className="address-text">
+
                                 {
                                     selectedOrder.address ||
                                     "—"
                                 }
+
                                 <br />
 
                                 {
                                     selectedOrder.city ||
                                     ""
                                 }
+
                                 {selectedOrder.city &&
                                     selectedOrder.state
                                     ? ", "
@@ -1069,6 +1167,7 @@ function AdminDashboard() {
                                     selectedOrder.pincode ||
                                     ""
                                 }
+
                             </p>
 
                         </div>
@@ -1085,9 +1184,12 @@ function AdminDashboard() {
 
                                 {selectedOrder.items.map(
                                     (item) => (
+
                                         <div
                                             className="modal-product"
-                                            key={item.id}
+                                            key={
+                                                item.id
+                                            }
                                         >
 
                                             <div>
@@ -1117,6 +1219,7 @@ function AdminDashboard() {
                                             </strong>
 
                                         </div>
+
                                     )
                                 )}
 
@@ -1129,6 +1232,7 @@ function AdminDashboard() {
                         <div className="modal-summary">
 
                             <div>
+
                                 <span>
                                     Subtotal
                                 </span>
@@ -1140,9 +1244,11 @@ function AdminDashboard() {
                                         )
                                     )}
                                 </strong>
+
                             </div>
 
                             <div>
+
                                 <span>
                                     Shipping
                                 </span>
@@ -1158,9 +1264,11 @@ function AdminDashboard() {
                                             )
                                         )}
                                 </strong>
+
                             </div>
 
                             <div className="modal-total">
+
                                 <span>
                                     TOTAL
                                 </span>
@@ -1172,6 +1280,7 @@ function AdminDashboard() {
                                         )
                                     )}
                                 </strong>
+
                             </div>
 
                         </div>
@@ -1181,6 +1290,7 @@ function AdminDashboard() {
                         <div className="modal-payment">
 
                             <div>
+
                                 <span>
                                     PAYMENT
                                 </span>
@@ -1190,9 +1300,11 @@ function AdminDashboard() {
                                         selectedOrder.payment_status
                                     }
                                 </strong>
+
                             </div>
 
                             <div>
+
                                 <span>
                                     ORDER DATE
                                 </span>
@@ -1202,6 +1314,7 @@ function AdminDashboard() {
                                         selectedOrder.created_at
                                     )}
                                 </strong>
+
                             </div>
 
                         </div>
@@ -1209,6 +1322,7 @@ function AdminDashboard() {
                     </div>
 
                 </div>
+
             )}
 
         </div>
