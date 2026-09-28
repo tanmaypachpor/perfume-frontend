@@ -1,95 +1,130 @@
 import { Link } from "react-router-dom";
+import { Navbar, Footer } from "./App";
 import "./OrderSuccess.css";
 
 function OrderSuccess() {
   const orderData = localStorage.getItem("lastOrder");
 
-  const order = orderData
-    ? JSON.parse(orderData)
-    : null;
+  const order = orderData ? JSON.parse(orderData) : null;
+
+  /* =========================================================
+     ORDER NOT FOUND
+  ========================================================= */
 
   if (!order) {
     return (
       <div className="success-page">
-        <div className="success-card">
 
-          <div className="success-icon">
-            !
-          </div>
+        <Navbar />
 
-          <h1>
-            Order <em>Not Found</em>
-          </h1>
+        <main className="success-container">
 
-          <p>
-            We couldn't find your recent order.
-          </p>
+          <section className="success-card not-found-card">
 
-          <Link
-            to="/products"
-            className="success-button"
-          >
-            CONTINUE SHOPPING
-            <span>→</span>
-          </Link>
+            <div className="confirmation-mark error-mark">
+              !
+            </div>
 
-        </div>
+            <span className="success-eyebrow">
+              ORDER INFORMATION
+            </span>
+
+            <h1>
+              Order <em>Not Found</em>
+            </h1>
+
+            <p className="success-message">
+              We couldn't find your recent order.
+              Please return to the collection and
+              continue shopping.
+            </p>
+
+            <Link
+              to="/products"
+              className="success-button"
+            >
+              Continue Shopping
+              <span>→</span>
+            </Link>
+
+          </section>
+
+        </main>
+
+        <Footer />
+
       </div>
     );
   }
 
+
+  /* =========================================================
+     PAYMENT TEXT
+  ========================================================= */
+
+  const paymentText =
+    order.paymentMethod === "Online Payment"
+      ? "Online Payment"
+      : "Cash on Delivery";
+
+
+  /* =========================================================
+     MAIN
+  ========================================================= */
+
   return (
     <div className="success-page">
 
-      {/* NAVBAR */}
+      {/* =====================================================
+          SHARED NAVBAR FROM APP.TSX
+      ===================================================== */}
 
-      <header className="success-navbar">
+      <Navbar />
 
-        <Link
-          to="/"
-          className="success-logo"
-        >
-          KEIAN
-        </Link>
 
-        <span className="success-secure">
-          ✦ SECURE ORDER
-        </span>
-
-      </header>
-
-      {/* MAIN */}
+      {/* =====================================================
+          MAIN CONTENT
+      ===================================================== */}
 
       <main className="success-container">
 
-        <div className="success-card">
+        <section className="success-card">
 
-          {/* SUCCESS ICON */}
 
-          <div className="success-icon">
-            ✓
+          {/* =================================================
+              CONFIRMATION
+          ================================================= */}
+
+          <div className="confirmation-section">
+
+            <div className="confirmation-mark">
+              <span>✓</span>
+            </div>
+
+            <span className="success-eyebrow">
+              ORDER CONFIRMED
+            </span>
+
+            <h1>
+              Thank you, <em>{order.customer.name}</em>
+            </h1>
+
+            <p className="success-message">
+              Your order has been received and is now
+              being prepared with care.
+            </p>
+
           </div>
 
-          <span className="success-label">
-            ORDER CONFIRMED
-          </span>
 
-          <h1>
-            Thank You, <em>{order.customer.name}</em>
-          </h1>
-
-          <p className="success-message">
-            Your Keian order has been successfully
-            placed. We will deliver your fragrance
-            to the address provided.
-          </p>
-
-          {/* ORDER ID */}
+          {/* =================================================
+              ORDER NUMBER
+          ================================================= */}
 
           <div className="order-number">
 
             <span>
-              ORDER NUMBER
+              Order number
             </span>
 
             <strong>
@@ -98,90 +133,275 @@ function OrderSuccess() {
 
           </div>
 
-          {/* ORDER DETAILS */}
 
-          <div className="success-details">
+          {/* =================================================
+              ORDER SUMMARY
+          ================================================= */}
 
-            <div className="detail-row">
+          <div className="section-block">
+
+            <div className="section-heading">
 
               <span>
-                ITEMS
+                01
               </span>
 
-              <strong>
-                {order.totalItems}
-              </strong>
+              <h2>
+                Order summary
+              </h2>
 
             </div>
 
-            <div className="detail-row">
 
-              <span>
-                PAYMENT
-              </span>
+            <div className="summary-list">
 
-              <strong>
-                {order.paymentMethod}
-              </strong>
+              <div className="summary-row">
 
-            </div>
+                <span>
+                  {order.totalItems === 1
+                    ? "Item"
+                    : "Items"}
+                </span>
 
-            <div className="detail-row">
+                <strong>
+                  {order.totalItems}
+                </strong>
 
-              <span>
-                SHIPPING
-              </span>
+              </div>
 
-              <strong>
-                {order.shipping === 0
-                  ? "FREE"
-                  : `₹${order.shipping}`}
-              </strong>
 
-            </div>
+              <div className="summary-row">
 
-            <div className="detail-row total-row">
+                <span>
+                  Payment
+                </span>
 
-              <span>
-                TOTAL
-              </span>
+                <strong>
+                  {paymentText}
+                </strong>
 
-              <strong>
-                ₹{order.total.toLocaleString("en-IN")}
-              </strong>
+              </div>
+
+
+              <div className="summary-row">
+
+                <span>
+                  Shipping
+                </span>
+
+                <strong>
+                  {order.shipping === 0
+                    ? "Complimentary"
+                    : `₹${order.shipping.toLocaleString(
+                        "en-IN"
+                      )}`}
+                </strong>
+
+              </div>
+
+
+              <div className="summary-row total-row">
+
+                <span>
+                  Total
+                </span>
+
+                <strong>
+                  ₹{order.total.toLocaleString("en-IN")}
+                </strong>
+
+              </div>
 
             </div>
 
           </div>
 
-          {/* DELIVERY */}
 
-          <div className="delivery-box">
+          {/* =================================================
+              DELIVERY DETAILS
+          ================================================= */}
 
-            <span className="delivery-icon">
-              ✦
-            </span>
+          <div className="section-block">
 
-            <div>
+            <div className="section-heading">
 
-              <strong>
-                DELIVERY ADDRESS
-              </strong>
+              <span>
+                02
+              </span>
 
-              <p>
-                {order.customer.address}
-                <br />
-                {order.customer.city},{" "}
-                {order.customer.state}
-                <br />
-                {order.customer.pincode}
-              </p>
+              <h2>
+                Delivery details
+              </h2>
+
+            </div>
+
+
+            <div className="delivery-content">
+
+              <div className="delivery-icon">
+                <span>↗</span>
+              </div>
+
+
+              <div className="delivery-info">
+
+                <span className="delivery-label">
+                  Delivering to
+                </span>
+
+                <strong>
+                  {order.customer.name}
+                </strong>
+
+                <p>
+                  {order.customer.address}
+                  <br />
+
+                  {order.customer.city},{" "}
+                  {order.customer.state}
+
+                  <br />
+
+                  {order.customer.pincode}
+                </p>
+
+              </div>
 
             </div>
 
           </div>
 
-          {/* BUTTONS */}
+
+          {/* =================================================
+              WHAT HAPPENS NEXT
+          ================================================= */}
+
+          <div className="section-block next-section">
+
+            <div className="section-heading">
+
+              <span>
+                03
+              </span>
+
+              <h2>
+                What happens next
+              </h2>
+
+            </div>
+
+
+            <div className="order-journey">
+
+
+              {/* STEP 1 */}
+
+              <div className="journey-item active">
+
+                <div className="journey-number">
+                  01
+                </div>
+
+                <div>
+
+                  <strong>
+                    Order confirmed
+                  </strong>
+
+                  <p>
+                    Your order has been received.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div className="journey-line" />
+
+
+              {/* STEP 2 */}
+
+              <div className="journey-item">
+
+                <div className="journey-number">
+                  02
+                </div>
+
+                <div>
+
+                  <strong>
+                    Being prepared
+                  </strong>
+
+                  <p>
+                    Your fragrance will be carefully prepared.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div className="journey-line" />
+
+
+              {/* STEP 3 */}
+
+              <div className="journey-item">
+
+                <div className="journey-number">
+                  03
+                </div>
+
+                <div>
+
+                  <strong>
+                    Dispatched
+                  </strong>
+
+                  <p>
+                    Your order will soon be on its way.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div className="journey-line" />
+
+
+              {/* STEP 4 */}
+
+              <div className="journey-item">
+
+                <div className="journey-number">
+                  04
+                </div>
+
+                <div>
+
+                  <strong>
+                    Delivered
+                  </strong>
+
+                  <p>
+                    Your KEIAN fragrance arrives at your door.
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          {/* =================================================
+              ACTIONS
+          ================================================= */}
 
           <div className="success-actions">
 
@@ -189,45 +409,45 @@ function OrderSuccess() {
               to="/products"
               className="success-button"
             >
-              CONTINUE SHOPPING
-              <span>→</span>
+              Continue Shopping
+
+              <span>
+                →
+              </span>
+
             </Link>
+
 
             <Link
               to="/"
               className="home-button"
             >
-              BACK TO HOME
+              Back to Home
             </Link>
 
           </div>
 
-          <p className="success-footer-text">
-            A confirmation has been recorded for
-            your order.
+
+          {/* =================================================
+              NOTE
+          ================================================= */}
+
+          <p className="success-note">
+            Order details and future updates will be
+            shared using the contact information provided
+            at checkout.
           </p>
 
-        </div>
+        </section>
 
       </main>
 
-      {/* FOOTER */}
 
-      <footer className="success-footer">
+      {/* =====================================================
+          SHARED FOOTER FROM APP.TSX
+      ===================================================== */}
 
-        <div>
-          KEIAN
-        </div>
-
-        <p>
-          The art of fragrance, captured in a bottle.
-        </p>
-
-        <span>
-          © 2026 KEIAN. ALL RIGHTS RESERVED.
-        </span>
-
-      </footer>
+      <Footer />
 
     </div>
   );

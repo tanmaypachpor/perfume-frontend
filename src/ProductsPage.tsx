@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import { Footer, Navbar } from "./App";
+import { supabase } from "./lib/supabaseClient";
 
 interface Product {
   id: number;
@@ -23,54 +24,102 @@ function ProductPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  /* =========================================================
+     GET CURRENT CATEGORY FROM URL
+     
+     Examples:
+     /products/him
+     /products/her
+     /products/unisex
+     /products/perfumes
+     /products/attars
+     /products/oud
+     /products/bakhoor
+     /products/gift-sets
+  ========================================================= */
+
   const category = location.pathname
     .split("/")
     .filter(Boolean)[1];
 
+  /* =========================================================
+     FETCH PRODUCTS FROM SUPABASE
+  ========================================================= */
+
   useEffect(() => {
-    setLoading(true);
-    setError("");
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError("");
 
-    let url = "http://localhost:8080/api/products";
+      try {
+        /*
+         * Start with all active products
+         */
+        let query = supabase
+          .from("products")
+          .select(
+            `
+            id,
+            name,
+            category,
+            collection,
+            price,
+            description,
+            "imageUrl",
+            "secondUrl",
+            tag
+            `
+          )
+          .eq("active", true)
+          .order("id", {
+            ascending: true,
+          });
 
-    if (category === "him") {
-      url =
-        "http://localhost:8080/api/products/filter?category=HIM";
-    } else if (category === "her") {
-      url =
-        "http://localhost:8080/api/products/filter?category=HER";
-    } else if (category === "unisex") {
-      url =
-        "http://localhost:8080/api/products/filter?category=UNISEX";
-    } else if (category === "perfumes") {
-      url =
-        "http://localhost:8080/api/products/filter?collection=PERFUME";
-    } else if (category === "attars") {
-      url =
-        "http://localhost:8080/api/products/filter?collection=ATTAR";
-    } else if (category === "oud") {
-      url =
-        "http://localhost:8080/api/products/filter?collection=OUD";
-    } else if (category === "bakhoor") {
-      url =
-        "http://localhost:8080/api/products/filter?collection=BAKHOOR";
-    } else if (category === "gift-sets") {
-      url =
-        "http://localhost:8080/api/products/filter?collection=GIFTING";
-    }
+        /*
+         * CATEGORY FILTERS
+         */
 
-    fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
+        if (category === "him") {
+          query = query.eq("category", "HIM");
+        } else if (category === "her") {
+          query = query.eq("category", "HER");
+        } else if (category === "unisex") {
+          query = query.eq("category", "UNISEX");
+        } else if (category === "perfumes") {
+          query = query.eq("collection", "PERFUME");
+        } else if (category === "attars") {
+          query = query.eq("collection", "ATTAR");
+        } else if (category === "oud") {
+          query = query.eq("collection", "OUD");
+        } else if (category === "bakhoor") {
+          query = query.eq("collection", "BAKHOOR");
+        } else if (category === "gift-sets") {
+          query = query.eq("collection", "GIFTING");
         }
 
-        return response.json();
-      })
-      .then((data: Product[]) => {
-        setProducts(data);
-      })
-      .catch((fetchError) => {
+        const {
+          data,
+          error: supabaseError,
+        } = await query;
+
+        if (supabaseError) {
+          console.error(
+            "Supabase product error:",
+            supabaseError
+          );
+
+          throw supabaseError;
+        }
+
+        console.log(
+          "Products from Supabase:",
+          data
+        );
+
+        setProducts(
+          (data || []) as Product[]
+        );
+      } catch (fetchError) {
         console.error(
           "Error fetching products:",
           fetchError
@@ -79,11 +128,19 @@ function ProductPage() {
         setError(
           "Unable to load products. Please try again."
         );
-      })
-      .finally(() => {
+
+        setProducts([]);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
   }, [category]);
+
+  /* =========================================================
+     PRODUCT CARD CLASSES
+  ========================================================= */
 
   const productClasses = [
     "product-noir",
@@ -92,20 +149,36 @@ function ProductPage() {
     "product-bloom",
   ];
 
-  const getProductType = (product: Product) => {
-    switch (product.collection?.toUpperCase()) {
+  /* =========================================================
+     PRODUCT TYPE
+  ========================================================= */
+
+  const getProductType = (
+    product: Product
+  ) => {
+    switch (
+      product.collection?.toUpperCase()
+    ) {
       case "BAKHOOR":
         return "BAKHOOR";
+
       case "OUD":
         return "OUD";
+
       case "ATTAR":
         return "ATTAR";
+
       case "GIFTING":
         return "GIFT SET";
+
       default:
         return "EAU DE PARFUM";
     }
   };
+
+  /* =========================================================
+     SCROLL TO PRODUCTS
+  ========================================================= */
 
   const scrollToProducts = () => {
     document
@@ -118,51 +191,118 @@ function ProductPage() {
 
   return (
     <div className="app">
+
       <Navbar />
 
       <main>
-        <section 
-          className="product-promo-banner" 
+
+        {/* =================================================
+            PROMO BANNER
+        ================================================= */}
+
+        <section
+          className="product-promo-banner"
           style={{
             width: "100%",
             marginTop: "80px",
             backgroundColor: "#C8B7AB",
-            borderTop: "1px solid #D4AF37",
-            borderBottom: "1px solid #D4AF37",
+            borderTop:
+              "1px solid #D4AF37",
+            borderBottom:
+              "1px solid #D4AF37",
             padding: "56px 20px",
             textAlign: "center",
-            fontFamily: "'Cinzel', 'Playfair Display', serif",
-            boxShadow: "inset 0 0 30px rgba(0, 0, 0, 0.05)"
+            fontFamily:
+              "'Cinzel', 'Playfair Display', serif",
+            boxShadow:
+              "inset 0 0 30px rgba(0, 0, 0, 0.05)",
           }}
         >
-          <div style={{ maxWidth: "1100px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px" }}>
-            
-            <span style={{ fontSize: "11px", letterSpacing: "4px", color: "#6A5344", textTransform: "uppercase", fontWeight: 600 }}>
+
+          <div
+            style={{
+              maxWidth: "1100px",
+              margin: "0 auto",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "16px",
+            }}
+          >
+
+            <span
+              style={{
+                fontSize: "11px",
+                letterSpacing: "4px",
+                color: "#6A5344",
+                textTransform:
+                  "uppercase",
+                fontWeight: 600,
+              }}
+            >
               • Signature Collection •
             </span>
 
-            <h2 className="product-promo-title" style={{ fontSize: "32px", letterSpacing: "2.5px", color: "#2C221E", margin: 0, fontWeight: 600, textShadow: "0 1px 2px rgba(255,255,255,0.3)" }}>
+            <h2
+              className="product-promo-title"
+              style={{
+                fontSize: "32px",
+                letterSpacing: "2.5px",
+                color: "#2C221E",
+                margin: 0,
+                fontWeight: 600,
+                textShadow:
+                  "0 1px 2px rgba(255,255,255,0.3)",
+              }}
+            >
               FLAT 25% OFF
             </h2>
 
-            <p style={{ fontSize: "20px", color: "#4A382F", margin: 0, fontFamily: "Montserrat, sans-serif", fontWeight: 300, letterSpacing: "0.5px" }}>
-              Curate your signature scent and explore our luxury range.
+            <p
+              style={{
+                fontSize: "20px",
+                color: "#4A382F",
+                margin: 0,
+                fontFamily:
+                  "Montserrat, sans-serif",
+                fontWeight: 300,
+                letterSpacing: "0.5px",
+              }}
+            >
+              Curate your signature scent
+              and explore our luxury range.
             </p>
 
-            <div style={{ marginTop: "12px" }}>
+            <div
+              style={{
+                marginTop: "12px",
+              }}
+            >
+
               <button
                 type="button"
                 className="product-promo-button"
                 onClick={scrollToProducts}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#D4AF37";
-                  e.currentTarget.style.color = "#1A1A1A";
-                  e.currentTarget.style.borderColor = "#D4AF37";
+                onMouseEnter={(event) => {
+                  event.currentTarget.style.backgroundColor =
+                    "#D4AF37";
+
+                  event.currentTarget.style.color =
+                    "#1A1A1A";
+
+                  event.currentTarget.style.borderColor =
+                    "#D4AF37";
                 }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#2C221E";
-                  e.currentTarget.style.color = "#F5F0EB";
-                  e.currentTarget.style.borderColor = "#2C221E";
+                onMouseLeave={(event) => {
+                  event.currentTarget.style.backgroundColor =
+                    "#2C221E";
+
+                  event.currentTarget.style.color =
+                    "#F5F0EB";
+
+                  event.currentTarget.style.borderColor =
+                    "#2C221E";
                 }}
                 style={{
                   display: "inline-block",
@@ -172,25 +312,40 @@ function ProductPage() {
                   fontSize: "12px",
                   letterSpacing: "2.5px",
                   textDecoration: "none",
-                  textTransform: "uppercase",
+                  textTransform:
+                    "uppercase",
                   fontWeight: 600,
-                  border: "1px solid #2C221E",
+                  border:
+                    "1px solid #2C221E",
                   cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                  transition:
+                    "all 0.3s ease",
+                  boxShadow:
+                    "0 4px 12px rgba(0,0,0,0.15)",
                 }}
               >
                 SHOP THE COLLECTION
               </button>
+
             </div>
 
           </div>
+
         </section>
+
+        {/* =================================================
+            PRODUCTS SECTION
+        ================================================= */}
 
         <section
           className="section products-section"
           id="products"
         >
+
+          {/* =================================================
+              LOADING
+          ================================================= */}
+
           {loading && (
             <div
               style={{
@@ -201,6 +356,10 @@ function ProductPage() {
               Loading fragrances...
             </div>
           )}
+
+          {/* =================================================
+              ERROR
+          ================================================= */}
 
           {error && (
             <div
@@ -214,118 +373,216 @@ function ProductPage() {
             </div>
           )}
 
+          {/* =================================================
+              PRODUCTS
+          ================================================= */}
+
           {!loading &&
             !error &&
             products.length > 0 && (
+
               <div
                 className="product-grid"
                 id="product-grid"
               >
-                {products.map((product, index) => {
-                  const className =
-                    productClasses[
-                      index % productClasses.length
-                    ];
 
-                  return (
-                    <article
-                      className="product-card"
-                      key={product.id}
-                      onClick={() =>
-                        navigate(`/products/${product.id}`)
-                      }
-                      style={{ cursor: "pointer" }}
-                    >
-                      <div
-                        className={`product-visual ${className}`}
+                {products.map(
+                  (product, index) => {
+
+                    const className =
+                      productClasses[
+                        index %
+                          productClasses.length
+                      ];
+
+                    return (
+                      <article
+                        className="product-card"
+                        key={product.id}
+                        onClick={() =>
+                          navigate(
+                            `/products/${product.id}`
+                          )
+                        }
+                        style={{
+                          cursor: "pointer",
+                        }}
                       >
-                        {product.tag && (
-                          <span className="product-tag">
-                            {product.tag}
-                          </span>
-                        )}
 
-                        <button
-                          type="button"
-                          className="wishlist-button"
-                          aria-label={`Add ${product.name} to wishlist`}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                          }}
+                        {/* =================================================
+                            PRODUCT VISUAL
+                        ================================================= */}
+
+                        <div
+                          className={`product-visual ${className}`}
                         >
-                          ♡
-                        </button>
 
-                        <div className="product-image-wrapper">
-                          {product.imageUrl ? (
-                            <>
-                              <img
-                                src={product.imageUrl}
-                                alt={product.name}
-                                className="product-image first-image"
-                                onError={(event) => {
-                                  event.currentTarget.style.display =
-                                    "none";
-                                }}
-                              />
+                          {/* PRODUCT TAG */}
 
-                              {product.secondUrl && (
+                          {product.tag && (
+                            <span className="product-tag">
+                              {product.tag}
+                            </span>
+                          )}
+
+                          {/* WISHLIST */}
+
+                          <button
+                            type="button"
+                            className="wishlist-button"
+                            aria-label={`Add ${product.name} to wishlist`}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                            }}
+                          >
+                            ♡
+                          </button>
+
+                          {/* PRODUCT IMAGE */}
+
+                          <div className="product-image-wrapper">
+
+                            {product.imageUrl ? (
+
+                              <>
+
+                                {/* FIRST IMAGE */}
+
                                 <img
-                                  src={product.secondUrl}
-                                  alt={`${product.name} alternate view`}
-                                  className="product-image second-image"
-                                  onError={(event) => {
+                                  src={
+                                    product.imageUrl
+                                  }
+                                  alt={
+                                    product.name
+                                  }
+                                  className="product-image first-image"
+                                  onError={(
+                                    event
+                                  ) => {
                                     event.currentTarget.style.display =
                                       "none";
                                   }}
                                 />
-                              )}
-                            </>
-                          ) : (
-                            <div className="product-bottle">
-                              <div className="mini-cap"></div>
-                              <div className="mini-neck"></div>
-                              <div className="mini-body">
-                                <span>K</span>
+
+                                {/* SECOND IMAGE */}
+
+                                {product.secondUrl && (
+                                  <img
+                                    src={
+                                      product.secondUrl
+                                    }
+                                    alt={`${product.name} alternate view`}
+                                    className="product-image second-image"
+                                    onError={(
+                                      event
+                                    ) => {
+                                      event.currentTarget.style.display =
+                                        "none";
+                                    }}
+                                  />
+                                )}
+
+                              </>
+
+                            ) : (
+
+                              /* FALLBACK PRODUCT */
+
+                              <div className="product-bottle">
+
+                                <div className="mini-cap"></div>
+
+                                <div className="mini-neck"></div>
+
+                                <div className="mini-body">
+                                  <span>
+                                    K
+                                  </span>
+                                </div>
+
                               </div>
-                            </div>
-                          )}
+
+                            )}
+
+                          </div>
+
+                          {/* QUICK ADD */}
+
+                          <button
+                            type="button"
+                            className="quick-add"
+                            onClick={(event) => {
+                              event.stopPropagation();
+
+                              console.log(
+                                "Quick add:",
+                                product.name
+                              );
+                            }}
+                          >
+                            QUICK ADD{" "}
+                            <span>
+                              +
+                            </span>
+                          </button>
+
                         </div>
 
-                        <button
-                          type="button"
-                          className="quick-add"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                          }}
-                        >
-                          QUICK ADD <span>+</span>
-                        </button>
-                      </div>
+                        {/* =================================================
+                            PRODUCT DETAILS
+                        ================================================= */}
 
-                      <div className="product-details">
-                        <span>{getProductType(product)}</span>
+                        <div className="product-details">
 
-                        <h3>{product.name}</h3>
+                          <span>
+                            {getProductType(
+                              product
+                            )}
+                          </span>
 
-                        <p>{product.category}</p>
+                          <h3>
+                            {product.name}
+                          </h3>
 
-                        <strong>
-                          ₹
-                          {Number(
-                            product.price
-                          ).toLocaleString("en-IN")}
-                        </strong>
-                      </div>
-                    </article>
-                  );
-                })}
+                          <p>
+                            {product.category}
+                          </p>
+
+                          {product.description && (
+                            <p>
+                              {
+                                product.description
+                              }
+                            </p>
+                          )}
+
+                          <strong>
+                            ₹
+                            {Number(
+                              product.price
+                            ).toLocaleString(
+                              "en-IN"
+                            )}
+                          </strong>
+
+                        </div>
+
+                      </article>
+                    );
+                  }
+                )}
+
               </div>
             )}
+
+          {/* =================================================
+              NO PRODUCTS
+          ================================================= */}
 
           {!loading &&
             !error &&
             products.length === 0 && (
+
               <div
                 style={{
                   textAlign: "center",
@@ -333,23 +590,36 @@ function ProductPage() {
                   color: "#827c73",
                 }}
               >
-                No fragrances found in this collection.
+                No fragrances found in this
+                collection.
               </div>
+
             )}
 
+          {/* =================================================
+              BACK TO HOME
+          ================================================= */}
+
           <div className="center-button">
+
             <button
               type="button"
               className="outline-button"
-              onClick={() => navigate("/")}
+              onClick={() =>
+                navigate("/")
+              }
             >
               ← BACK TO HOME
             </button>
+
           </div>
+
         </section>
+
       </main>
 
       <Footer />
+
     </div>
   );
 }

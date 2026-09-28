@@ -8,8 +8,9 @@ import attarImage from "./Images/attar.png";
 import perfumeImage from "./Images/perfume.png";
 import dhakoonImage from "./Images/dakhoonimages.png";
 import heroBanner from "./Images/Banner02.jpg";
-import logofooter from "./Images/logo001.webp"
+import logofooter from "./Images/logo001.webp";
 
+import { supabase } from "./lib/supabaseClient";
 
 import {
   FaInstagram,
@@ -75,8 +76,9 @@ function ProductCard({
       style={{ cursor: "pointer" }}
     >
       <div
-        className={`product-visual ${isBakhoor ? "" : className
-          }`}
+        className={`product-visual ${
+          isBakhoor ? "" : className
+        }`}
       >
         {/* PRODUCT TAG */}
 
@@ -128,7 +130,7 @@ function ProductCard({
           </div>
         ) : (
           /* =================================================
-             PERFUME PRODUCT IMAGE FROM DATABASE
+             PERFUME PRODUCT IMAGE FROM SUPABASE
           ================================================= */
 
           <div className="product-image-wrapper">
@@ -141,7 +143,8 @@ function ProductCard({
                   alt={product.name}
                   className="product-image first-image"
                   onError={(event) => {
-                    event.currentTarget.style.display = "none";
+                    event.currentTarget.style.display =
+                      "none";
                   }}
                 />
 
@@ -153,7 +156,8 @@ function ProductCard({
                     alt={`${product.name} alternate`}
                     className="product-image second-image"
                     onError={(event) => {
-                      event.currentTarget.style.display = "none";
+                      event.currentTarget.style.display =
+                        "none";
                     }}
                   />
                 )}
@@ -346,7 +350,8 @@ export function Navbar() {
         <button
           aria-label="Search"
           onClick={() => {
-            window.location.href = "/products";
+            window.location.href =
+              "/products";
           }}
         >
           ⌕
@@ -355,7 +360,9 @@ export function Navbar() {
         <button
           aria-label="Wishlist"
           onClick={() => {
-            alert("Wishlist feature coming soon.");
+            alert(
+              "Wishlist feature coming soon."
+            );
           }}
         >
           ♡
@@ -364,7 +371,9 @@ export function Navbar() {
         <button
           aria-label="Shopping bag"
           onClick={() => {
-            alert("Shopping bag feature coming soon.");
+            alert(
+              "Shopping bag feature coming soon."
+            );
           }}
         >
           ♧
@@ -375,24 +384,42 @@ export function Navbar() {
 }
 
 /* =========================================================
-   API HELPER
+   SUPABASE PRODUCT HELPER
 ========================================================= */
 
-const API_URL =
-  "http://localhost:8080/api/products";
-
 async function fetchProducts(): Promise<Product[]> {
-  const response = await fetch(API_URL);
+  const { data, error } = await supabase
+    .from("products")
+    .select(
+      `
+      id,
+      name,
+      category,
+      collection,
+      price,
+      description,
+      "imageUrl",
+      "secondUrl",
+      tag
+      `
+    )
+    .eq("active", true)
+    .order("id", {
+      ascending: true,
+    });
 
-  if (!response.ok) {
+  if (error) {
+    console.error(
+      "Supabase product error:",
+      error
+    );
+
     throw new Error(
-      "Failed to fetch products"
+      "Failed to fetch products from Supabase"
     );
   }
 
-  const data = await response.json();
-
-  return data;
+  return (data || []) as Product[];
 }
 
 /* =========================================================
@@ -527,14 +554,14 @@ function HomePage() {
     useState<BestSellerCategory>("HIM");
 
   /* =====================================================
-     FETCH PRODUCTS
+     FETCH PRODUCTS FROM SUPABASE
   ===================================================== */
 
   useEffect(() => {
     fetchProducts()
       .then((data) => {
         console.log(
-          "Products from database:",
+          "Products from Supabase:",
           data
         );
 
@@ -575,8 +602,8 @@ function HomePage() {
       <main>
 
         {/* =================================================
-    HERO
-================================================= */}
+            HERO
+        ================================================= */}
 
         <section
           className="hero"
@@ -585,7 +612,6 @@ function HomePage() {
             backgroundImage: `url(${heroBanner})`,
           }}
         >
-
           <div className="hero-content">
 
             <div className="eyebrow">
@@ -646,9 +672,7 @@ function HomePage() {
             </div>
 
           </div>
-
         </section>
-
 
         {/* =================================================
             TRUST BAR
@@ -921,10 +945,11 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "HIM"
-                ? "active"
-                : ""
-                }`}
+              className={`best-seller-tab ${
+                activeCategory === "HIM"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() =>
                 setActiveCategory("HIM")
               }
@@ -934,10 +959,11 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "HER"
-                ? "active"
-                : ""
-                }`}
+              className={`best-seller-tab ${
+                activeCategory === "HER"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() =>
                 setActiveCategory("HER")
               }
@@ -947,10 +973,11 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "ATTAR"
-                ? "active"
-                : ""
-                }`}
+              className={`best-seller-tab ${
+                activeCategory === "ATTAR"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() =>
                 setActiveCategory("ATTAR")
               }
@@ -960,10 +987,11 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${activeCategory === "GIFTING"
-                ? "active"
-                : ""
-                }`}
+              className={`best-seller-tab ${
+                activeCategory === "GIFTING"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() =>
                 setActiveCategory("GIFTING")
               }
@@ -1055,7 +1083,7 @@ function HomePage() {
 
             )}
 
-          {/* NO PRODUCTS FROM API */}
+          {/* NO PRODUCTS FROM SUPABASE */}
 
           {!loading &&
             !error &&
@@ -1219,7 +1247,7 @@ function HomePage() {
    FOOTER
 ========================================================= */
 
- export function Footer() {
+export function Footer() {
   return (
     <footer className="footer">
 

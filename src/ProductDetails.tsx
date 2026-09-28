@@ -6,6 +6,7 @@ import {
 
 import "./ProductDetails.css";
 import { Footer, Navbar } from "./App";
+import { supabase } from "./lib/supabaseClient";
 
 interface Product {
   id: number;
@@ -58,6 +59,9 @@ function ProductDetails() {
   const [activeImageIndex, setActiveImageIndex] =
     useState(0);
 
+  /*
+   * FETCH PRODUCT FROM SUPABASE
+   */
   useEffect(() => {
     if (!id) {
       setError("Product ID is missing.");
@@ -65,33 +69,62 @@ function ProductDetails() {
       return;
     }
 
-    setLoading(true);
-    setError("");
-    setImageError(false);
-    setActiveImageIndex(0);
+    const fetchProduct = async () => {
+      setLoading(true);
+      setError("");
+      setImageError(false);
+      setActiveImageIndex(0);
 
-    fetch(`http://localhost:8080/api/products/${id}`)
-      .then((response) => {
-        if (!response.ok) {
+      try {
+        const productId = Number(id);
+
+        if (Number.isNaN(productId)) {
+          throw new Error("Invalid product ID");
+        }
+
+        const { data, error: supabaseError } =
+          await supabase
+            .from("products")
+            .select(
+              `
+              id,
+              name,
+              category,
+              collection,
+              price,
+              description,
+              "imageUrl",
+              "secondUrl",
+              tag
+              `
+            )
+            .eq("id", productId)
+            .eq("active", true)
+            .single();
+
+        if (supabaseError) {
+          throw supabaseError;
+        }
+
+        if (!data) {
           throw new Error("Product not found");
         }
 
-        return response.json();
-      })
-      .then((data: Product) => {
-        setProduct(data);
-      })
-      .catch((fetchError) => {
+        setProduct(data as Product);
+      } catch (fetchError) {
         console.error(
-          "Product details error:",
+          "Supabase product details error:",
           fetchError
         );
 
+        setProduct(null);
         setError("Unable to load product.");
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProduct();
   }, [id]);
 
   if (loading) {
@@ -118,7 +151,9 @@ function ProductDetails() {
 
           <button
             type="button"
-            onClick={() => navigate("/products")}
+            onClick={() =>
+              navigate("/products")
+            }
           >
             BACK TO PRODUCTS
           </button>
@@ -129,6 +164,11 @@ function ProductDetails() {
     );
   }
 
+  /*
+   * SUPABASE STORAGE URLS ARE ALREADY COMPLETE.
+   * KEEPING THIS FUNCTION ALSO MAKES THE PAGE
+   * COMPATIBLE WITH RELATIVE IMAGE PATHS.
+   */
   const getImageUrl = (
     imageUrl?: string
   ) => {
@@ -138,7 +178,7 @@ function ProductDetails() {
 
     return imageUrl.startsWith("http")
       ? imageUrl
-      : `http://localhost:8080${imageUrl}`;
+      : imageUrl;
   };
 
   const productImages = [
@@ -173,29 +213,39 @@ function ProductDetails() {
   };
 
   const increaseQuantity = () => {
-    setQuantity((current) => current + 1);
+    setQuantity((current) =>
+      current + 1
+    );
   };
 
   const decreaseQuantity = () => {
     setQuantity((current) =>
-      current > 1 ? current - 1 : 1
+      current > 1
+        ? current - 1
+        : 1
     );
   };
 
+  /*
+   * ADD TO CART
+   */
   const addToCart = () => {
     try {
       const existingCart: CartProduct[] =
         JSON.parse(
-          localStorage.getItem("cart") || "[]"
+          localStorage.getItem("cart") ||
+            "[]"
         );
 
       const existingProduct =
         existingCart.find(
-          (item) => item.id === product.id
+          (item) =>
+            item.id === product.id
         );
 
       if (existingProduct) {
-        existingProduct.quantity += quantity;
+        existingProduct.quantity +=
+          quantity;
       } else {
         existingCart.push({
           ...product,
@@ -206,10 +256,6 @@ function ProductDetails() {
       localStorage.setItem(
         "cart",
         JSON.stringify(existingCart)
-      );
-
-      alert(
-        `${product.name} added to cart.`
       );
     } catch (cartError) {
       console.error(
@@ -224,37 +270,47 @@ function ProductDetails() {
     navigate("/cart");
   };
 
+  /*
+   * PRODUCT TYPE
+   */
   const productType =
     product.type?.trim() ||
     product.concentration?.trim() ||
     product.collection?.trim() ||
     "Perfume";
 
+  /*
+   * RATING
+   */
   const rating =
     typeof product.rating === "number"
       ? product.rating
       : 0;
 
   const reviewCount =
-    typeof product.reviewCount === "number"
+    typeof product.reviewCount ===
+    "number"
       ? product.reviewCount
       : 0;
 
+  /*
+   * OPTIONAL SECTIONS
+   */
   const hasFragranceNotes =
     Boolean(
       product.topNotes ||
-      product.heartNotes ||
-      product.baseNotes
+        product.heartNotes ||
+        product.baseNotes
     );
 
   const hasProductDetails =
     Boolean(
       product.concentration ||
-      product.volume ||
-      product.fragranceFamily ||
-      product.gender ||
-      product.occasion ||
-      product.longevity
+        product.volume ||
+        product.fragranceFamily ||
+        product.gender ||
+        product.occasion ||
+        product.longevity
     );
 
   return (
@@ -453,7 +509,9 @@ function ProductDetails() {
               ₹
               {Number(
                 product.price
-              ).toLocaleString("en-IN")}
+              ).toLocaleString(
+                "en-IN"
+              )}
             </p>
 
             <div className="product-details-line" />

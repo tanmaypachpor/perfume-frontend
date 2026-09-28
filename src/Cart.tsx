@@ -1,15 +1,31 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Navbar, Footer } from "./App";
 import "./Cart.css";
 
 interface Product {
     id: number;
     name: string;
     category: string;
+    collection?: string;
+    type?: string;
     price: number;
     description: string;
     imageUrl: string;
+    secondUrl?: string;
     tag: string;
+
+    rating?: number;
+    reviewCount?: number;
+    topNotes?: string;
+    heartNotes?: string;
+    baseNotes?: string;
+    fragranceFamily?: string;
+    concentration?: string;
+    volume?: string;
+    gender?: string;
+    occasion?: string;
+    longevity?: string;
 }
 
 interface CartItem extends Product {
@@ -20,187 +36,240 @@ function Cart() {
     const [cart, setCart] = useState<CartItem[]>([]);
     const navigate = useNavigate();
 
-    // =========================
-    // LOAD CART
-    // =========================
+    /* =========================================================
+       LOAD CART
+    ========================================================= */
+
     useEffect(() => {
         loadCart();
     }, []);
 
     const loadCart = () => {
-        const savedCart = JSON.parse(
-            localStorage.getItem("cart") || "[]"
-        );
+        try {
+            const savedCart = JSON.parse(
+                localStorage.getItem("cart") || "[]"
+            );
 
-        setCart(savedCart);
+            if (Array.isArray(savedCart)) {
+                setCart(savedCart);
+            } else {
+                setCart([]);
+            }
+        } catch (error) {
+            console.error(
+                "Unable to load cart:",
+                error
+            );
+
+            setCart([]);
+        }
     };
 
-    // =========================
-    // UPDATE LOCAL STORAGE
-    // =========================
-    const updateCart = (updatedCart: CartItem[]) => {
+    /* =========================================================
+       UPDATE CART
+    ========================================================= */
+
+    const updateCart = (
+        updatedCart: CartItem[]
+    ) => {
         setCart(updatedCart);
+
         localStorage.setItem(
             "cart",
             JSON.stringify(updatedCart)
         );
+
+        window.dispatchEvent(
+            new Event("cartUpdated")
+        );
     };
 
-    // =========================
-    // INCREASE QUANTITY
-    // =========================
-    const increaseQuantity = (id: number) => {
-        const updatedCart = cart.map((item) =>
-            item.id === id
-                ? {
-                    ...item,
-                    quantity: item.quantity + 1,
-                }
-                : item
+    /* =========================================================
+       INCREASE QUANTITY
+    ========================================================= */
+
+    const increaseQuantity = (
+        id: number
+    ) => {
+        const updatedCart = cart.map(
+            (item) =>
+                item.id === id
+                    ? {
+                        ...item,
+                        quantity:
+                            item.quantity + 1,
+                    }
+                    : item
         );
 
         updateCart(updatedCart);
     };
 
-    // =========================
-    // DECREASE QUANTITY
-    // =========================
-    const decreaseQuantity = (id: number) => {
+    /* =========================================================
+       DECREASE QUANTITY
+    ========================================================= */
+
+    const decreaseQuantity = (
+        id: number
+    ) => {
         const updatedCart = cart
             .map((item) =>
                 item.id === id
                     ? {
                         ...item,
-                        quantity: item.quantity - 1,
+                        quantity:
+                            item.quantity - 1,
                     }
                     : item
             )
-            .filter((item) => item.quantity > 0);
+            .filter(
+                (item) =>
+                    item.quantity > 0
+            );
 
         updateCart(updatedCart);
     };
 
-    // =========================
-    // REMOVE PRODUCT
-    // =========================
-    const removeFromCart = (id: number) => {
-        const updatedCart = cart.filter(
-            (item) => item.id !== id
+    /* =========================================================
+       REMOVE PRODUCT
+    ========================================================= */
+
+    const removeFromCart = (
+        id: number
+    ) => {
+        const updatedCart =
+            cart.filter(
+                (item) =>
+                    item.id !== id
+            );
+
+        updateCart(updatedCart);
+    };
+
+    /* =========================================================
+       CLEAR CART
+    ========================================================= */
+
+    const clearCart = () => {
+        localStorage.removeItem(
+            "cart"
         );
 
-        updateCart(updatedCart);
-    };
-
-    // =========================
-    // CLEAR CART
-    // =========================
-    const clearCart = () => {
-        localStorage.removeItem("cart");
         setCart([]);
+
+        window.dispatchEvent(
+            new Event("cartUpdated")
+        );
     };
 
-    // =========================
-    // TOTAL ITEMS
-    // =========================
-    const totalItems = cart.reduce(
-        (total, item) => total + item.quantity,
-        0
-    );
+    /* =========================================================
+       TOTAL ITEMS
+    ========================================================= */
 
-    // =========================
-    // SUBTOTAL
-    // =========================
-    const subtotal = cart.reduce(
-        (total, item) =>
-            total + item.price * item.quantity,
-        0
-    );
+    const totalItems =
+        cart.reduce(
+            (total, item) =>
+                total + item.quantity,
+            0
+        );
 
-    // =========================
-    // SHIPPING
-    // =========================
+    /* =========================================================
+       SUBTOTAL
+    ========================================================= */
+
+    const subtotal =
+        cart.reduce(
+            (total, item) =>
+                total +
+                Number(item.price) *
+                    item.quantity,
+            0
+        );
+
+    /* =========================================================
+       SHIPPING
+    ========================================================= */
+
+    const freeShippingThreshold =
+        1999;
+
     const shipping =
         subtotal === 0
             ? 0
-            : subtotal >= 1999
+            : subtotal >=
+              freeShippingThreshold
                 ? 0
                 : 99;
 
-    // =========================
-    // FINAL TOTAL
-    // =========================
-    const total = subtotal + shipping;
+    /* =========================================================
+       TOTAL
+    ========================================================= */
+
+    const total =
+        subtotal + shipping;
+
+    /* =========================================================
+       SHIPPING PROGRESS
+    ========================================================= */
+
+    const shippingProgress =
+        Math.min(
+            (subtotal /
+                freeShippingThreshold) *
+                100,
+            100
+        );
+
+    const amountRemaining =
+        Math.max(
+            freeShippingThreshold -
+                subtotal,
+            0
+        );
+
+    /* =========================================================
+       FORMAT PRICE
+    ========================================================= */
+
+    const formatPrice = (
+        value: number
+    ) => {
+        return `₹${Number(
+            value
+        ).toLocaleString("en-IN")}`;
+    };
 
     return (
         <div className="cart-page">
 
-            {/* =========================
-              NAVBAR
-          ========================= */}
-            <header className="cart-navbar">
+            {/* =================================================
+                SHARED KEIAN NAVBAR
+            ================================================= */}
 
-                <Link to="/" className="cart-logo">
-                    KEIAN
-                </Link>
+            <Navbar />
 
-                <nav className="cart-nav-links">
 
-                    <Link to="/">
-                        HOME
-                    </Link>
+            {/* =================================================
+                MAIN
+            ================================================= */}
 
-                    <Link to="/products">
-                        SHOP
-                    </Link>
-
-                    <Link to="/#collections">
-                        COLLECTIONS
-                    </Link>
-
-                    <Link to="/#about">
-                        OUR STORY
-                    </Link>
-
-                </nav>
-
-                <div className="cart-nav-actions">
-
-                    <button
-                        type="button"
-                        onClick={() => navigate("/products")}
-                        aria-label="Continue shopping"
-                    >
-                        ←
-                    </button>
-
-                    <Link
-                        to="/cart"
-                        className="cart-icon"
-                        aria-label="Shopping cart"
-                    >
-                        ♧
-                        {totalItems > 0 && (
-                            <span className="cart-count">
-                                {totalItems}
-                            </span>
-                        )}
-                    </Link>
-
-                </div>
-
-            </header>
-
-            {/* =========================
-              CART CONTENT
-          ========================= */}
             <main className="cart-container">
 
-                {/* HEADER */}
-                <div className="cart-header">
+                {/* =================================================
+                    HEADER
+                ================================================= */}
 
-                    <span className="section-label">
-                        YOUR SELECTION
-                    </span>
+                <section className="cart-header">
+
+                    <div className="cart-header-label">
+
+                        <span className="header-line"></span>
+
+                        <span>
+                            YOUR SELECTION
+                        </span>
+
+                    </div>
 
                     <h1>
                         Shopping <em>Bag</em>
@@ -208,337 +277,512 @@ function Cart() {
 
                     <p>
                         {totalItems === 0
-                            ? "Your bag is currently empty."
-                            : `${totalItems} ${totalItems === 1
-                                ? "item"
-                                : "items"
-                            } in your bag`}
+                            ? "Your selection is currently empty."
+                            : `${totalItems} ${
+                                totalItems === 1
+                                    ? "piece"
+                                    : "pieces"
+                            } selected`}
                     </p>
 
-                </div>
+                </section>
 
-                {/* =========================
-                EMPTY CART
-            ========================= */}
+
+                {/* =================================================
+                    EMPTY CART
+                ================================================= */}
+
                 {cart.length === 0 && (
 
-                    <div className="empty-cart">
+                    <section className="empty-cart">
 
-                        <div className="empty-cart-icon">
-                            ♧
+                        <div className="empty-cart-index">
+                            01
                         </div>
 
-                        <h2>
-                            Your bag is empty
-                        </h2>
+                        <div className="empty-cart-content">
 
-                        <p>
-                            Discover a fragrance that feels
-                            uniquely yours.
-                        </p>
+                            <span>
+                                YOUR BAG IS EMPTY
+                            </span>
 
-                        <Link
-                            to="/products"
-                            className="continue-shopping-button"
-                        >
-                            EXPLORE FRAGRANCES
-                            <span>→</span>
-                        </Link>
+                            <h2>
+                                Begin with a
+                                <em>
+                                    {" "}fragrance.
+                                </em>
+                            </h2>
 
-                    </div>
+                            <p>
+                                Explore the KEIAN collection
+                                and find a scent that feels
+                                distinctly yours.
+                            </p>
 
-                )}
-
-                {/* =========================
-                CART WITH PRODUCTS
-            ========================= */}
-                {cart.length > 0 && (
-
-                    <div className="cart-layout">
-
-                        {/* =========================
-                    LEFT: PRODUCTS
-                ========================= */}
-                        <div className="cart-products">
-
-                            <div className="cart-products-top">
-
-                                <span>
-                                    PRODUCT
-                                </span>
-
-                                <button
-                                    type="button"
-                                    onClick={clearCart}
-                                >
-                                    CLEAR BAG
-                                </button>
-
-                            </div>
-
-                            {cart.map((item, index) => {
-
-                                const productClasses = [
-                                    "product-noir",
-                                    "product-rose",
-                                    "product-oud",
-                                    "product-bloom",
-                                ];
-
-                                const className =
-                                    productClasses[
-                                    index % productClasses.length
-                                    ];
-
-                                return (
-
-                                    <div
-                                        className="cart-item"
-                                        key={item.id}
-                                    >
-
-                                        {/* PRODUCT IMAGE */}
-                                        <div
-                                            className={`cart-product-image ${className}`}
-                                            onClick={() =>
-                                                navigate(
-                                                    `/products/${item.id}`
-                                                )
-                                            }
-                                        >
-
-                                            <div className="cart-bottle">
-
-                                                <div className="cart-mini-cap"></div>
-
-                                                <div className="cart-mini-neck"></div>
-
-                                                <div className="cart-mini-body">
-                                                    <span>K</span>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-                                        {/* PRODUCT INFO */}
-                                        <div className="cart-item-info">
-
-                                            <span className="cart-item-category">
-                                                {item.category}
-                                            </span>
-
-                                            <h2>
-                                                {item.name}
-                                            </h2>
-
-                                            <p>
-                                                {item.description}
-                                            </p>
-
-                                            {item.tag && (
-                                                <span className="cart-item-tag">
-                                                    {item.tag}
-                                                </span>
-                                            )}
-
-                                        </div>
-
-                                        {/* PRICE */}
-                                        <div className="cart-item-price">
-
-                                            <span>
-                                                PRICE
-                                            </span>
-
-                                            <strong>
-                                                ₹
-                                                {item.price.toLocaleString(
-                                                    "en-IN"
-                                                )}
-                                            </strong>
-
-                                        </div>
-
-                                        {/* QUANTITY */}
-                                        <div className="cart-item-quantity">
-
-                                            <span>
-                                                QTY
-                                            </span>
-
-                                            <div className="cart-quantity-control">
-
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        decreaseQuantity(
-                                                            item.id
-                                                        )
-                                                    }
-                                                >
-                                                    −
-                                                </button>
-
-                                                <strong>
-                                                    {item.quantity}
-                                                </strong>
-
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        increaseQuantity(
-                                                            item.id
-                                                        )
-                                                    }
-                                                >
-                                                    +
-                                                </button>
-
-                                            </div>
-
-                                        </div>
-
-                                        {/* ITEM TOTAL */}
-                                        <div className="cart-item-total">
-
-                                            <span>
-                                                TOTAL
-                                            </span>
-
-                                            <strong>
-                                                ₹
-                                                {(
-                                                    item.price *
-                                                    item.quantity
-                                                ).toLocaleString(
-                                                    "en-IN"
-                                                )}
-                                            </strong>
-
-                                        </div>
-
-                                        {/* REMOVE */}
-                                        <button
-                                            type="button"
-                                            className="remove-cart-item"
-                                            onClick={() =>
-                                                removeFromCart(item.id)
-                                            }
-                                            aria-label={`Remove ${item.name}`}
-                                        >
-                                            ×
-                                        </button>
-
-                                    </div>
-
-                                );
-                            })}
-
-                            {/* CONTINUE SHOPPING */}
                             <Link
                                 to="/products"
-                                className="continue-shopping"
+                                className="empty-cart-link"
                             >
-                                ← CONTINUE SHOPPING
+
+                                <span>
+                                    Explore fragrances
+                                </span>
+
+                                <strong>
+                                    →
+                                </strong>
+
                             </Link>
 
                         </div>
 
-                        {/* =========================
-                    RIGHT: SUMMARY
-                ========================= */}
+                    </section>
+
+                )}
+
+
+                {/* =================================================
+                    CART
+                ================================================= */}
+
+                {cart.length > 0 && (
+
+                    <div className="cart-layout">
+
+                        {/* =================================================
+                            PRODUCTS
+                        ================================================= */}
+
+                        <section className="cart-products">
+
+                            <div className="cart-products-heading">
+
+                                <div>
+
+                                    <span>
+                                        YOUR FRAGRANCES
+                                    </span>
+
+                                    <strong>
+                                        {totalItems}{" "}
+                                        {totalItems === 1
+                                            ? "piece"
+                                            : "pieces"}
+                                    </strong>
+
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={
+                                        clearCart
+                                    }
+                                    className="clear-bag-button"
+                                >
+                                    Clear bag
+                                </button>
+
+                            </div>
+
+
+                            {/* =================================================
+                                PRODUCT ITEMS
+                            ================================================= */}
+
+                            <div className="cart-items">
+
+                                {cart.map(
+                                    (item) => (
+
+                                        <article
+                                            className="cart-item"
+                                            key={item.id}
+                                        >
+
+                                            {/* PRODUCT IMAGE */}
+
+                                            <button
+                                                type="button"
+                                                className="cart-product-image"
+                                                onClick={() =>
+                                                    navigate(
+                                                        `/products/${item.id}`
+                                                    )
+                                                }
+                                                aria-label={`View ${item.name}`}
+                                            >
+
+                                                <img
+                                                    src={
+                                                        item.imageUrl
+                                                    }
+                                                    alt={
+                                                        item.name
+                                                    }
+                                                    onError={(
+                                                        event
+                                                    ) => {
+                                                        event.currentTarget.style.opacity =
+                                                            "0";
+                                                    }}
+                                                />
+
+                                            </button>
+
+
+                                            {/* PRODUCT INFORMATION */}
+
+                                            <div className="cart-item-info">
+
+                                                <span className="cart-item-category">
+
+                                                    {item.category ||
+                                                        "FRAGRANCE"}
+
+                                                </span>
+
+                                                <h2>
+                                                    {item.name}
+                                                </h2>
+
+                                                {item.description && (
+                                                    <p>
+                                                        {
+                                                            item.description
+                                                        }
+                                                    </p>
+                                                )}
+
+                                                {item.tag && (
+                                                    <span className="cart-item-tag">
+                                                        {
+                                                            item.tag
+                                                        }
+                                                    </span>
+                                                )}
+
+                                                <button
+                                                    type="button"
+                                                    className="mobile-remove-button"
+                                                    onClick={() =>
+                                                        removeFromCart(
+                                                            item.id
+                                                        )
+                                                    }
+                                                >
+                                                    Remove
+                                                </button>
+
+                                            </div>
+
+
+                                            {/* UNIT PRICE */}
+
+                                            <div className="cart-item-price">
+
+                                                <span>
+                                                    PRICE
+                                                </span>
+
+                                                <strong>
+                                                    {formatPrice(
+                                                        Number(
+                                                            item.price
+                                                        )
+                                                    )}
+                                                </strong>
+
+                                            </div>
+
+
+                                            {/* QUANTITY */}
+
+                                            <div className="cart-item-quantity">
+
+                                                <span>
+                                                    QTY
+                                                </span>
+
+                                                <div className="cart-quantity-control">
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            decreaseQuantity(
+                                                                item.id
+                                                            )
+                                                        }
+                                                        aria-label={`Decrease quantity of ${item.name}`}
+                                                    >
+                                                        −
+                                                    </button>
+
+                                                    <strong>
+                                                        {
+                                                            item.quantity
+                                                        }
+                                                    </strong>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            increaseQuantity(
+                                                                item.id
+                                                            )
+                                                        }
+                                                        aria-label={`Increase quantity of ${item.name}`}
+                                                    >
+                                                        +
+                                                    </button>
+
+                                                </div>
+
+                                            </div>
+
+
+                                            {/* TOTAL */}
+
+                                            <div className="cart-item-total">
+
+                                                <span>
+                                                    TOTAL
+                                                </span>
+
+                                                <strong>
+                                                    {formatPrice(
+                                                        Number(
+                                                            item.price
+                                                        ) *
+                                                            item.quantity
+                                                    )}
+                                                </strong>
+
+                                            </div>
+
+
+                                            {/* REMOVE */}
+
+                                            <button
+                                                type="button"
+                                                className="remove-cart-item"
+                                                onClick={() =>
+                                                    removeFromCart(
+                                                        item.id
+                                                    )
+                                                }
+                                                aria-label={`Remove ${item.name}`}
+                                            >
+                                                ×
+                                            </button>
+
+                                        </article>
+
+                                    )
+                                )}
+
+                            </div>
+
+
+                            {/* =================================================
+                                CONTINUE SHOPPING
+                            ================================================= */}
+
+                            <div className="cart-continue-row">
+
+                                <Link
+                                    to="/products"
+                                    className="continue-shopping"
+                                >
+
+                                    <span>
+                                        ←
+                                    </span>
+
+                                    Continue shopping
+
+                                </Link>
+
+                            </div>
+
+                        </section>
+
+
+                        {/* =================================================
+                            ORDER SUMMARY
+                        ================================================= */}
+
                         <aside className="cart-summary">
 
-                            <span className="summary-label">
-                                ORDER SUMMARY
-                            </span>
+                            <div className="summary-top">
 
-                            <h2>
-                                Your <em>Order</em>
-                            </h2>
-
-                            <div className="summary-line">
                                 <span>
-                                    Subtotal
+                                    ORDER SUMMARY
                                 </span>
 
-                                <strong>
-                                    ₹
-                                    {subtotal.toLocaleString(
-                                        "en-IN"
-                                    )}
-                                </strong>
+                                <h2>
+                                    Your <em>Order</em>
+                                </h2>
+
                             </div>
 
-                            <div className="summary-line">
-                                <span>
-                                    Shipping
-                                </span>
 
-                                <strong>
-                                    {shipping === 0
-                                        ? "FREE"
-                                        : `₹${shipping}`}
-                                </strong>
-                            </div>
+                            {/* =================================================
+                                SHIPPING MESSAGE
+                            ================================================= */}
 
                             {shipping > 0 && (
-                                <p className="shipping-note">
-                                    Add ₹
-                                    {(
-                                        1999 - subtotal
-                                    ).toLocaleString(
-                                        "en-IN"
-                                    )}{" "}
-                                    more for free shipping.
-                                </p>
+
+                                <div className="shipping-message">
+
+                                    <p>
+
+                                        Add{" "}
+
+                                        <strong>
+                                            {formatPrice(
+                                                amountRemaining
+                                            )}
+                                        </strong>{" "}
+
+                                        more for complimentary
+                                        shipping.
+
+                                    </p>
+
+                                    <div className="shipping-track">
+
+                                        <div
+                                            className="shipping-fill"
+                                            style={{
+                                                width: `${shippingProgress}%`,
+                                            }}
+                                        />
+
+                                    </div>
+
+                                </div>
+
                             )}
 
-                            {shipping === 0 && (
-                                <p className="shipping-note free">
-                                    ✦ You qualify for free shipping.
-                                </p>
-                            )}
 
-                            <div className="summary-divider"></div>
+                            {shipping === 0 &&
+                                subtotal > 0 && (
+
+                                    <div className="shipping-message shipping-complete">
+
+                                        <span>
+                                            ✓
+                                        </span>
+
+                                        <p>
+                                            Complimentary shipping
+                                            has been applied.
+                                        </p>
+
+                                    </div>
+
+                                )}
+
+
+                            {/* =================================================
+                                PRICE DETAILS
+                            ================================================= */}
+
+                            <div className="summary-details">
+
+                                <div className="summary-row">
+
+                                    <span>
+                                        Subtotal
+                                    </span>
+
+                                    <strong>
+                                        {formatPrice(
+                                            subtotal
+                                        )}
+                                    </strong>
+
+                                </div>
+
+
+                                <div className="summary-row">
+
+                                    <span>
+                                        Shipping
+                                    </span>
+
+                                    <strong>
+                                        {shipping === 0
+                                            ? "Complimentary"
+                                            : formatPrice(
+                                                shipping
+                                            )}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* =================================================
+                                TOTAL
+                            ================================================= */}
 
                             <div className="summary-total">
 
                                 <span>
-                                    TOTAL
+                                    Total
                                 </span>
 
                                 <strong>
-                                    ₹
-                                    {total.toLocaleString(
-                                        "en-IN"
+                                    {formatPrice(
+                                        total
                                     )}
                                 </strong>
 
                             </div>
 
-                            {/* CHECKOUT */}
+
+                            {/* =================================================
+                                CHECKOUT
+                            ================================================= */}
+
                             <button
                                 type="button"
                                 className="checkout-button"
-                                onClick={() => navigate("/checkout")}
+                                onClick={() =>
+                                    navigate(
+                                        "/checkout"
+                                    )
+                                }
                             >
-                                PROCEED TO CHECKOUT
-                                <span>→</span>
+
+                                <span>
+                                    Proceed to checkout
+                                </span>
+
+                                <strong>
+                                    →
+                                </strong>
+
                             </button>
 
 
-                            <div className="cart-security">
+                            {/* =================================================
+                                SMALL SERVICE NOTE
+                            ================================================= */}
 
-                                <span>✦</span>
+                            <div className="summary-note">
+
+                                <span>
+                                    KEIAN
+                                </span>
 
                                 <p>
-                                    <strong>
-                                        SECURE CHECKOUT
-                                    </strong>
-                                    <br />
-                                    Your information is protected.
+                                    Secure checkout ·
+                                    Carefully packed ·
+                                    Complimentary shipping
+                                    over ₹1,999
                                 </p>
 
                             </div>
@@ -549,27 +793,38 @@ function Cart() {
 
                 )}
 
+
+                {/* =================================================
+                    BRAND NOTE
+                ================================================= */}
+
+                {cart.length > 0 && (
+
+                    <section className="cart-brand-note">
+
+                        <div className="brand-note-mark">
+                            K
+                        </div>
+
+                        <div className="brand-note-line"></div>
+
+                        <p>
+                            Fragrance, considered
+                            from first note to final detail.
+                        </p>
+
+                    </section>
+
+                )}
+
             </main>
 
-            {/* =========================
-              FOOTER
-          ========================= */}
-            <footer className="cart-footer">
 
-                <div className="cart-footer-logo">
-                    KEIAN
-                </div>
+            {/* =================================================
+                SHARED KEIAN FOOTER
+            ================================================= */}
 
-                <p>
-                    The art of fragrance,
-                    captured in a bottle.
-                </p>
-
-                <span>
-                    © 2026 KEIAN. ALL RIGHTS RESERVED.
-                </span>
-
-            </footer>
+            <Footer />
 
         </div>
     );
