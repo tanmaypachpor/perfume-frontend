@@ -10,23 +10,52 @@ function AdminProtectedRoute({
     children,
 }: AdminProtectedRouteProps) {
     const [loading, setLoading] = useState(true);
-    const [session, setSession] = useState<any>(null);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        const checkSession = async () => {
-            const {
-                data: { session },
-                error,
-            } = await supabase.auth.getSession();
+        const checkAdmin = async () => {
+            try {
+                const {
+                    data: { session },
+                    error: sessionError,
+                } = await supabase.auth.getSession();
 
-            console.log("Admin session:", session);
-            console.log("Session error:", error);
+                console.log("Session:", session);
+                console.log("Session error:", sessionError);
 
-            setSession(session);
-            setLoading(false);
+                if (!session) {
+                    setIsAdmin(false);
+                    setLoading(false);
+                    return;
+                }
+
+                const { data, error } = await supabase.rpc(
+                    "is_admin"
+                );
+
+                console.log("Admin check:", data);
+                console.log("Admin check error:", error);
+
+                if (error) {
+                    setIsAdmin(false);
+                    setLoading(false);
+                    return;
+                }
+
+                setIsAdmin(data === true);
+            } catch (error) {
+                console.error(
+                    "Admin authentication error:",
+                    error
+                );
+
+                setIsAdmin(false);
+            } finally {
+                setLoading(false);
+            }
         };
 
-        checkSession();
+        checkAdmin();
     }, []);
 
     if (loading) {
@@ -42,18 +71,13 @@ function AdminProtectedRoute({
                     fontFamily: "Arial, sans-serif",
                 }}
             >
-                Checking authentication...
+                Checking admin access...
             </div>
         );
     }
 
-    if (!session) {
-        return (
-            <Navigate
-                to="/admin/login"
-                replace
-            />
-        );
+    if (!isAdmin) {
+        return <Navigate to="/" replace />;
     }
 
     return <>{children}</>;
