@@ -19,7 +19,12 @@ import {
   FaEnvelope,
   FaPhone,
   FaMapMarkerAlt,
+  FaShoppingBag,
 } from "react-icons/fa";
+
+/* =========================================================
+   PRODUCT INTERFACE
+========================================================= */
 
 interface Product {
   id: number;
@@ -114,7 +119,9 @@ function ProductCard({
           <div className="bakhoor-product">
             <div className="bakhoor-burner">
               <div className="bakhoor-smoke smoke-one"></div>
+
               <div className="bakhoor-smoke smoke-two"></div>
+
               <div className="bakhoor-smoke smoke-three"></div>
 
               <div className="burner-top">
@@ -130,13 +137,13 @@ function ProductCard({
           </div>
         ) : (
           /* =================================================
-             PERFUME PRODUCT IMAGE FROM SUPABASE
+             PERFUME PRODUCT IMAGE
           ================================================= */
 
           <div className="product-image-wrapper">
             {product.imageUrl ? (
               <>
-                {/* FIRST IMAGE - DEFAULT */}
+                {/* FIRST IMAGE */}
 
                 <img
                   src={product.imageUrl}
@@ -148,7 +155,7 @@ function ProductCard({
                   }}
                 />
 
-                {/* SECOND IMAGE - HOVER */}
+                {/* SECOND IMAGE */}
 
                 {product.secondUrl && (
                   <img
@@ -236,6 +243,10 @@ export function Navbar() {
   const isHomePage =
     window.location.pathname === "/";
 
+  /* =====================================================
+     NAVBAR SCROLL
+  ===================================================== */
+
   useEffect(() => {
     if (!isHomePage) {
       setIsScrolled(true);
@@ -260,6 +271,10 @@ export function Navbar() {
       );
     };
   }, [isHomePage]);
+
+  /* =====================================================
+     SECTION NAVIGATION
+  ===================================================== */
 
   const handleSectionNavigation = (
     event: React.MouseEvent<HTMLAnchorElement>,
@@ -298,6 +313,10 @@ export function Navbar() {
         isScrolled ? "scrolled" : ""
       }`}
     >
+      {/* =================================================
+          LOGO
+      ================================================= */}
+
       <div className="nav-top-row">
         <a
           href="/"
@@ -311,15 +330,25 @@ export function Navbar() {
         </a>
       </div>
 
-      <span className="logo-text">KEIAN</span>
+      <span className="logo-text">
+        KEIAN
+      </span>
+
+      {/* =================================================
+          NAVIGATION
+      ================================================= */}
 
       <nav
         className="nav-links"
         aria-label="Main navigation"
       >
-        <a href="/">Home</a>
+        <a href="/">
+          Home
+        </a>
 
-        <a href="/products">Shop</a>
+        <a href="/products">
+          Shop
+        </a>
 
         <a
           href="/#collections"
@@ -346,38 +375,49 @@ export function Navbar() {
         </a>
       </nav>
 
+      {/* =================================================
+          NAV ACTIONS
+      ================================================= */}
+
       <div className="nav-actions">
-        <button
-          aria-label="Search"
-          onClick={() => {
-            window.location.href =
-              "/products";
-          }}
-        >
-          ⌕
-        </button>
+
+        {/* LOGIN */}
 
         <button
-          aria-label="Wishlist"
+          type="button"
+          className="nav-auth-button nav-login-button"
           onClick={() => {
-            alert(
-              "Wishlist feature coming soon."
-            );
+            navigate("/login");
           }}
         >
-          ♡
+          LOGIN
         </button>
 
+        {/* REGISTER */}
+
         <button
+          type="button"
+          className="nav-auth-button nav-register-button"
+          onClick={() => {
+            navigate("/register");
+          }}
+        >
+          REGISTER
+        </button>
+
+        {/* SHOPPING BAG */}
+
+        <button
+          type="button"
+          className="nav-bag-button"
           aria-label="Shopping bag"
           onClick={() => {
-            alert(
-              "Shopping bag feature coming soon."
-            );
+            navigate("/cart");
           }}
         >
-          ♧
+          <FaShoppingBag />
         </button>
+
       </div>
     </header>
   );
@@ -388,25 +428,26 @@ export function Navbar() {
 ========================================================= */
 
 async function fetchProducts(): Promise<Product[]> {
-  const { data, error } = await supabase
-    .from("products")
-    .select(
-      `
-      id,
-      name,
-      category,
-      collection,
-      price,
-      description,
-      "imageUrl",
-      "secondUrl",
-      tag
-      `
-    )
-    .eq("active", true)
-    .order("id", {
-      ascending: true,
-    });
+  const { data, error } =
+    await supabase
+      .from("products")
+      .select(
+        `
+        id,
+        name,
+        category,
+        collection,
+        price,
+        description,
+        "imageUrl",
+        "secondUrl",
+        tag
+        `
+      )
+      .eq("active", true)
+      .order("id", {
+        ascending: true,
+      });
 
   if (error) {
     console.error(
@@ -546,15 +587,11 @@ function HomePage() {
   const [error, setError] =
     useState("");
 
-  /* =====================================================
-     BEST SELLER ACTIVE CATEGORY
-  ===================================================== */
-
   const [activeCategory, setActiveCategory] =
     useState<BestSellerCategory>("HIM");
 
   /* =====================================================
-     FETCH PRODUCTS FROM SUPABASE
+     FETCH PRODUCTS
   ===================================================== */
 
   useEffect(() => {
@@ -583,7 +620,7 @@ function HomePage() {
   }, []);
 
   /* =====================================================
-     FILTER BEST SELLER PRODUCTS
+     FILTER PRODUCTS
   ===================================================== */
 
   const filteredProducts =
@@ -615,17 +652,14 @@ function HomePage() {
           <div className="hero-content">
 
             <div className="eyebrow">
-
               <span></span>
 
               THE ART OF FRAGRANCE
 
               <span></span>
-
             </div>
 
             <h1>
-
               <span>
                 A Scent
               </span>
@@ -637,15 +671,12 @@ function HomePage() {
               <span>
                 You.
               </span>
-
             </h1>
 
             <p className="hero-description">
-
               Discover extraordinary fragrances crafted
               with exquisite ingredients and timeless
               elegance.
-
             </p>
 
             <div className="hero-buttons">
@@ -659,7 +690,6 @@ function HomePage() {
                 <span>
                   →
                 </span>
-
               </a>
 
               <a
@@ -681,10 +711,7 @@ function HomePage() {
         <section className="trust-bar">
 
           <div>
-
-            <span>
-              ✦
-            </span>
+            <span>✦</span>
 
             <strong>
               LONG LASTING
@@ -693,14 +720,10 @@ function HomePage() {
             <small>
               Up to 12 hours
             </small>
-
           </div>
 
           <div>
-
-            <span>
-              ✧
-            </span>
+            <span>✧</span>
 
             <strong>
               PREMIUM QUALITY
@@ -709,14 +732,10 @@ function HomePage() {
             <small>
               Finest ingredients
             </small>
-
           </div>
 
           <div>
-
-            <span>
-              ◇
-            </span>
+            <span>◇</span>
 
             <strong>
               FREE SHIPPING
@@ -725,14 +744,10 @@ function HomePage() {
             <small>
               On orders above ₹1,999
             </small>
-
           </div>
 
           <div>
-
-            <span>
-              ✦
-            </span>
+            <span>✦</span>
 
             <strong>
               CRAFTED WITH CARE
@@ -741,7 +756,6 @@ function HomePage() {
             <small>
               Made for you
             </small>
-
           </div>
 
         </section>
@@ -1020,13 +1034,9 @@ function HomePage() {
           {!loading &&
             !error &&
             products.length > 0 && (
-
               <>
-
                 {filteredProducts.length > 0 ? (
-
                   <>
-
                     <div className="product-grid">
 
                       {filteredProducts
@@ -1036,19 +1046,15 @@ function HomePage() {
                             product,
                             index
                           ) => (
-
                             <ProductCard
                               key={product.id}
                               product={product}
                               index={index}
                             />
-
                           )
                         )}
 
                     </div>
-
-                    {/* VIEW ALL FRAGRANCES */}
 
                     <div className="view-all-fragrances">
 
@@ -1061,40 +1067,29 @@ function HomePage() {
                       </a>
 
                     </div>
-
                   </>
-
                 ) : (
-
                   <div className="no-products-message">
 
                     No products available in{" "}
 
                     <strong>
                       {activeCategory}
-                    </strong>
-                    .
+                    </strong>.
 
                   </div>
-
                 )}
-
               </>
-
             )}
 
-          {/* NO PRODUCTS FROM SUPABASE */}
+          {/* NO PRODUCTS */}
 
           {!loading &&
             !error &&
             products.length === 0 && (
-
               <div className="no-products-message">
-
                 No fragrances available.
-
               </div>
-
             )}
 
         </section>
@@ -1126,7 +1121,6 @@ function HomePage() {
             </span>
 
             <h2>
-
               More Than
 
               <br />
@@ -1134,38 +1128,31 @@ function HomePage() {
               <em>
                 A Fragrance.
               </em>
-
             </h2>
 
             <div className="gold-line"></div>
 
             <p>
-
               We believe a fragrance is more than a scent.
               It is a memory, an emotion, a feeling that
               stays long after you've left the room.
-
             </p>
 
             <p>
-
               Every Keian creation is carefully composed
               using exceptional ingredients to create
               something truly unforgettable.
-
             </p>
 
             <a
               href="/our-story"
               className="text-link"
             >
-
               OUR STORY
 
               <span>
                 →
               </span>
-
             </a>
 
           </div>
@@ -1183,7 +1170,6 @@ function HomePage() {
           </span>
 
           <h2>
-
             Your next signature
 
             <br />
@@ -1191,26 +1177,21 @@ function HomePage() {
             <em>
               is waiting.
             </em>
-
           </h2>
 
           <p>
-
             Subscribe for exclusive launches, fragrance
             stories, and special offers.
-
           </p>
 
           <form
             className="newsletter-form"
             onSubmit={(event) => {
-
               event.preventDefault();
 
               alert(
                 "Thank you for subscribing to Keian."
               );
-
             }}
           >
 
@@ -1222,13 +1203,11 @@ function HomePage() {
             />
 
             <button type="submit">
-
               SUBSCRIBE
 
               <span>
                 →
               </span>
-
             </button>
 
           </form>
@@ -1267,13 +1246,11 @@ export function Footer() {
           </div>
 
           <p>
-
             The art of fragrance,
 
             <br />
 
             captured in a bottle.
-
           </p>
 
         </div>
@@ -1350,7 +1327,6 @@ export function Footer() {
             href="#instagram"
             aria-label="Instagram"
           >
-
             <FaInstagram />
 
             <span>
@@ -1363,7 +1339,6 @@ export function Footer() {
             href="#facebook"
             aria-label="Facebook"
           >
-
             <FaFacebookF />
 
             <span>
@@ -1376,7 +1351,6 @@ export function Footer() {
             href="#pinterest"
             aria-label="Pinterest"
           >
-
             <FaPinterestP />
 
             <span>
@@ -1400,7 +1374,6 @@ export function Footer() {
             <FaMapMarkerAlt />
 
             <span>
-
               KEIAN Fragrances
 
               <br />
@@ -1410,7 +1383,6 @@ export function Footer() {
               <br />
 
               India
-
             </span>
 
           </div>
