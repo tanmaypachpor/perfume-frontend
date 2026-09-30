@@ -4,9 +4,7 @@ import {
   useState,
 } from "react";
 
-import {
-  useNavigate,
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import "./Checkout.css";
 
@@ -32,6 +30,18 @@ interface Product {
   imageUrl: string;
   secondUrl?: string;
   tag: string;
+}
+
+// =========================
+// SUPABASE CART ITEM
+// =========================
+
+interface SupabaseCartItem {
+  id: number;
+  user_id: string;
+  product_id: number;
+  quantity: number;
+  created_at: string;
 }
 
 // =========================
@@ -67,8 +77,7 @@ function Checkout() {
   // CART STATE
   // =========================
 
-  const [cart, setCart] =
-    useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
   // =========================
   // CUSTOMER STATE
@@ -96,42 +105,234 @@ function Checkout() {
   // ERROR STATE
   // =========================
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   // =========================
   // LOADING STATE
   // =========================
 
+  const [isLoadingCart, setIsLoadingCart] =
+    useState(true);
+
   const [isPlacingOrder, setIsPlacingOrder] =
     useState(false);
 
   // =========================
-  // LOAD CART
+  // LOAD CART FROM SUPABASE
   // =========================
 
   useEffect(() => {
-    try {
-      const savedCart = JSON.parse(
-        localStorage.getItem("cart") || "[]"
-      );
+    let isMounted = true;
 
-      if (
-        Array.isArray(savedCart) &&
-        savedCart.length > 0
-      ) {
-        setCart(savedCart);
-      } else {
-        navigate("/cart");
+    const loadCart = async () => {
+      try {
+        setIsLoadingCart(true);
+        setError("");
+
+        // =========================
+        // GET LOGGED-IN USER
+        // =========================
+
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError) {
+          console.error(
+            "Unable to get user:",
+            userError
+          );
+
+          if (isMounted) {
+            setError(
+              "Unable to verify your account. Please login again."
+            );
+            setIsLoadingCart(false);
+          }
+
+          return;
+        }
+
+        // =========================
+        // USER NOT LOGGED IN
+        // =========================
+
+        if (!user) {
+          navigate("/login");
+          return;
+        }
+
+        // =========================
+        // LOAD USER CART
+        // =========================
+
+        const {
+          data: cartItems,
+          error: cartError,
+        } = await supabase
+          .from("cart_items")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", {
+            ascending: true,
+          });
+
+        if (cartError) {
+          console.error(
+            "CART LOAD ERROR:",
+            cartError
+          );
+
+          if (isMounted) {
+            setError(
+              cartError.message ||
+              "Unable to load your cart."
+            );
+            setIsLoadingCart(false);
+          }
+
+          return;
+        }
+
+        // =========================
+        // EMPTY CART
+        // =========================
+
+        if (
+          !cartItems ||
+          cartItems.length === 0
+        ) {
+          navigate("/cart");
+          return;
+        }
+
+        // =========================
+        // GET PRODUCT IDS
+        // =========================
+
+        const productIds = (
+          cartItems as SupabaseCartItem[]
+        ).map(
+          (item) => item.product_id
+        );
+
+        // =========================
+        // LOAD PRODUCTS
+        // =========================
+
+        const {
+          data: products,
+          error: productsError,
+        } = await supabase
+          .from("products")
+          .select(`
+    id,
+    name,
+    category,
+    collection,
+    price,
+    description,
+    "imageUrl",
+    "secondUrl",
+    tag
+  `)
+          .in("id", productIds)
+          .eq("active", true);
+
+        if (productsError) {
+          console.error(
+            "PRODUCT LOAD ERROR:",
+            productsError
+          );
+
+          if (isMounted) {
+            setError(
+              productsError.message ||
+              "Unable to load cart products."
+            );
+            setIsLoadingCart(false);
+          }
+
+          return;
+        }
+
+        if (
+          !products ||
+          products.length === 0
+        ) {
+          navigate("/cart");
+          return;
+        }
+
+        // =========================
+        // COMBINE CART + PRODUCTS
+        // =========================
+
+        const combinedCart: CartItem[] = (
+          cartItems as SupabaseCartItem[]
+        )
+          .map((cartItem) => {
+            const product = products.find(
+              (item) =>
+                item.id ===
+                cartItem.product_id
+            );
+
+            if (!product) {
+              return null;
+            }
+
+            return {
+              ...(product as Product),
+              quantity:
+                Number(cartItem.quantity) || 1,
+            };
+          })
+          .filter(
+            (
+              item
+            ): item is CartItem =>
+              item !== null
+          );
+
+        // =========================
+        // FINAL EMPTY CHECK
+        // =========================
+
+        if (combinedCart.length === 0) {
+          navigate("/cart");
+          return;
+        }
+
+        // =========================
+        // SET CART
+        // =========================
+
+        if (isMounted) {
+          setCart(combinedCart);
+          setIsLoadingCart(false);
+        }
+      } catch (loadError) {
+        console.error(
+          "Unable to load checkout cart:",
+          loadError
+        );
+
+        if (isMounted) {
+          setError(
+            "Unable to load your cart. Please try again."
+          );
+          setIsLoadingCart(false);
+        }
       }
-    } catch (loadError) {
-      console.error(
-        "Unable to load cart:",
-        loadError
-      );
+    };
 
-      navigate("/cart");
-    }
+    loadCart();
+
+    return () => {
+      isMounted = false;
+    };
   }, [navigate]);
 
   // =========================
@@ -168,7 +369,7 @@ function Checkout() {
     (total, item) =>
       total +
       Number(item.price) *
-        Number(item.quantity),
+      Number(item.quantity),
     0
   );
 
@@ -356,7 +557,7 @@ function Checkout() {
        * payment_status = PENDING
        * order_status   = PENDING
        *
-       * Razorpay will be integrated later.
+       * Razorpay can be integrated later.
        */
 
       const paymentStatus =
@@ -368,7 +569,7 @@ function Checkout() {
           : "PENDING";
 
       // =========================
-      // CREATE ORDER IN SUPABASE
+      // CREATE ORDER
       // =========================
 
       const {
@@ -379,7 +580,8 @@ function Checkout() {
           id: orderId,
 
           // IMPORTANT:
-          // Connect order with logged-in user
+          // This connects the order
+          // to the logged-in user.
           user_id: user.id,
 
           customer_name:
@@ -434,7 +636,7 @@ function Checkout() {
 
         throw new Error(
           orderError.message ||
-            "Unable to create order."
+          "Unable to create order."
         );
       }
 
@@ -482,7 +684,7 @@ function Checkout() {
 
         throw new Error(
           orderItemsError.message ||
-            "Unable to save order items."
+          "Unable to save order items."
         );
       }
 
@@ -491,8 +693,7 @@ function Checkout() {
       // =========================
 
       const localOrder = {
-        orderId:
-          orderId,
+        orderId: orderId,
 
         customer: {
           name:
@@ -592,8 +793,8 @@ function Checkout() {
       // SAVE LOCAL ORDER HISTORY
       // =========================
 
-      let existingOrders:
-        any[] = [];
+      let existingOrders: any[] =
+        [];
 
       try {
         existingOrders =
@@ -623,12 +824,42 @@ function Checkout() {
       );
 
       // =========================
-      // CLEAR CART
+      // CLEAR SUPABASE CART
+      // =========================
+
+      const {
+        error: clearCartError,
+      } = await supabase
+        .from("cart_items")
+        .delete()
+        .eq("user_id", user.id);
+
+      if (clearCartError) {
+        console.error(
+          "CLEAR CART ERROR:",
+          clearCartError
+        );
+
+        /*
+         * Do not fail the order here.
+         *
+         * The order was already created
+         * successfully. We only report the
+         * cart clearing issue.
+         */
+      }
+
+      // =========================
+      // ALSO CLEAR OLD LOCAL CART
       // =========================
 
       localStorage.removeItem(
         "cart"
       );
+
+      // =========================
+      // UPDATE CART UI
+      // =========================
 
       window.dispatchEvent(
         new Event("cartUpdated")
@@ -641,9 +872,8 @@ function Checkout() {
       navigate(
         "/order-success"
       );
-
     } catch (
-      supabaseError: any
+    supabaseError: unknown
     ) {
       // =========================
       // SHOW REAL ERROR
@@ -654,14 +884,42 @@ function Checkout() {
         supabaseError
       );
 
-      setError(
-        supabaseError?.message ||
-          "Unable to place your order. Please try again."
-      );
+      const message =
+        supabaseError instanceof Error
+          ? supabaseError.message
+          : "Unable to place your order. Please try again.";
+
+      setError(message);
 
       setIsPlacingOrder(false);
     }
   };
+
+  // =========================
+  // LOADING SCREEN
+  // =========================
+
+  if (isLoadingCart) {
+    return (
+      <div className="checkout-page">
+        <Navbar />
+
+        <main className="checkout-container">
+          <div className="checkout-loading">
+            <span>
+              LOADING YOUR ORDER...
+            </span>
+
+            <p>
+              Preparing your checkout.
+            </p>
+          </div>
+        </main>
+
+        <Footer />
+      </div>
+    );
+  }
 
   // =========================
   // EMPTY CART
@@ -1090,11 +1348,10 @@ function Checkout() {
 
               <button
                 type="button"
-                className={`payment-option ${
-                  paymentMethod === "cod"
+                className={`payment-option ${paymentMethod === "cod"
                     ? "selected"
                     : ""
-                }`}
+                  }`}
                 onClick={() =>
                   setPaymentMethod(
                     "cod"
@@ -1106,7 +1363,8 @@ function Checkout() {
 
                   <span
                     className={
-                      paymentMethod === "cod"
+                      paymentMethod ===
+                        "cod"
                         ? "active"
                         : ""
                     }
@@ -1136,11 +1394,11 @@ function Checkout() {
 
               <button
                 type="button"
-                className={`payment-option ${
-                  paymentMethod === "online"
+                className={`payment-option ${paymentMethod ===
+                    "online"
                     ? "selected"
                     : ""
-                }`}
+                  }`}
                 onClick={() =>
                   setPaymentMethod(
                     "online"
@@ -1152,7 +1410,8 @@ function Checkout() {
 
                   <span
                     className={
-                      paymentMethod === "online"
+                      paymentMethod ===
+                        "online"
                         ? "active"
                         : ""
                     }
@@ -1205,10 +1464,10 @@ function Checkout() {
               {isPlacingOrder
                 ? "PLACING ORDER..."
                 : paymentMethod ===
-                    "online"
+                  "online"
                   ? `PAY ₹${total.toLocaleString(
-                      "en-IN"
-                    )}`
+                    "en-IN"
+                  )}`
                   : "PLACE ORDER"}
 
               {!isPlacingOrder && (
@@ -1267,11 +1526,12 @@ function Checkout() {
 
                     const className =
                       productClasses[
-                        index %
-                          productClasses.length
+                      index %
+                      productClasses.length
                       ];
 
                     return (
+
                       <div
                         className="checkout-item"
                         key={item.id}
@@ -1293,8 +1553,10 @@ function Checkout() {
                             onError={(
                               event
                             ) => {
+
                               event.currentTarget.style.display =
                                 "none";
+
                             }}
                           />
 
@@ -1323,7 +1585,6 @@ function Checkout() {
                         {/* PRICE */}
 
                         <strong>
-
                           ₹
                           {(
                             Number(
@@ -1335,10 +1596,10 @@ function Checkout() {
                           ).toLocaleString(
                             "en-IN"
                           )}
-
                         </strong>
 
                       </div>
+
                     );
                   }
                 )}
@@ -1403,8 +1664,10 @@ function Checkout() {
 
               {shipping === 0 && (
                 <p className="shipping-note free">
+
                   ✦ You qualify for free
                   shipping.
+
                 </p>
               )}
 
@@ -1440,6 +1703,7 @@ function Checkout() {
               <div className="checkout-item-count">
 
                 {totalItems}{" "}
+
                 {totalItems === 1
                   ? "ITEM"
                   : "ITEMS"}
