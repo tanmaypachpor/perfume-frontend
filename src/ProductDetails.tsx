@@ -33,10 +33,6 @@ interface Product {
   longevity?: string;
 }
 
-interface CartProduct extends Product {
-  quantity: number;
-}
-
 function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -58,6 +54,9 @@ function ProductDetails() {
 
   const [activeImageIndex, setActiveImageIndex] =
     useState(0);
+
+  const [addingToCart, setAddingToCart] =
+    useState(false);
 
   /*
    * FETCH PRODUCT FROM SUPABASE
@@ -192,6 +191,9 @@ function ProductDetails() {
   const hasMultipleImages =
     productImages.length > 1;
 
+  /*
+   * IMAGE CAROUSEL
+   */
   const showPreviousImage = () => {
     setImageError(false);
 
@@ -212,6 +214,9 @@ function ProductDetails() {
     );
   };
 
+  /*
+   * QUANTITY
+   */
   const increaseQuantity = () => {
     setQuantity((current) =>
       current + 1
@@ -228,46 +233,158 @@ function ProductDetails() {
 
   /*
    * ADD TO CART
+   *
+   * Cart is stored in Supabase.
+   *
+   * Every cart item belongs to the
+   * currently logged-in Supabase user.
    */
-  const addToCart = () => {
+  const addToCart = async (): Promise<boolean> => {
+    if (addingToCart) {
+      return false;
+    }
+
+    setAddingToCart(true);
+
     try {
-      const existingCart: CartProduct[] =
-        JSON.parse(
-          localStorage.getItem("cart") ||
-            "[]"
+      /*
+       * GET CURRENT LOGGED-IN USER
+       */
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError) {
+        console.error(
+          "User error:",
+          userError
         );
 
-      const existingProduct =
-        existingCart.find(
-          (item) =>
-            item.id === product.id
-        );
-
-      if (existingProduct) {
-        existingProduct.quantity +=
-          quantity;
-      } else {
-        existingCart.push({
-          ...product,
-          quantity,
-        });
+        navigate("/login");
+        return false;
       }
 
-      localStorage.setItem(
-        "cart",
-        JSON.stringify(existingCart)
+      /*
+       * USER MUST BE LOGGED IN
+       */
+      if (!user) {
+        navigate("/login");
+        return false;
+      }
+
+      /*
+       * CHECK IF PRODUCT ALREADY EXISTS
+       * IN THIS USER'S CART
+       */
+      const {
+        data: existingItem,
+        error: existingError,
+      } = await supabase
+        .from("cart_items")
+        .select("id, quantity")
+        .eq("user_id", user.id)
+        .eq("product_id", product.id)
+        .maybeSingle();
+
+      if (existingError) {
+        console.error(
+          "Cart lookup error:",
+          existingError
+        );
+
+        return false;
+      }
+
+      /*
+       * PRODUCT ALREADY EXISTS
+       *
+       * Example:
+       * Existing quantity = 2
+       * Selected quantity = 3
+       * New quantity = 5
+       */
+      if (existingItem) {
+        const {
+          error: updateError,
+        } = await supabase
+          .from("cart_items")
+          .update({
+            quantity:
+              existingItem.quantity +
+              quantity,
+          })
+          .eq("id", existingItem.id);
+
+        if (updateError) {
+          console.error(
+            "Cart update error:",
+            updateError
+          );
+
+          return false;
+        }
+      }
+
+      /*
+       * PRODUCT DOES NOT EXIST
+       *
+       * CREATE NEW CART ITEM
+       */
+      else {
+        const {
+          error: insertError,
+        } = await supabase
+          .from("cart_items")
+          .insert({
+            user_id: user.id,
+            product_id: product.id,
+            quantity,
+          });
+
+        if (insertError) {
+          console.error(
+            "Cart insert error:",
+            insertError
+          );
+
+          return false;
+        }
+      }
+
+      /*
+       * INFORM OTHER COMPONENTS THAT
+       * THE CART HAS BEEN UPDATED.
+       */
+      window.dispatchEvent(
+        new Event("cartUpdated")
       );
+
+      return true;
     } catch (cartError) {
       console.error(
         "Cart error:",
         cartError
       );
+
+      return false;
+    } finally {
+      setAddingToCart(false);
     }
   };
 
-  const buyNow = () => {
-    addToCart();
-    navigate("/cart");
+  /*
+   * BUY NOW
+   *
+   * Add product to Supabase cart
+   * and then open cart page.
+   */
+  const buyNow = async () => {
+    const added = await addToCart();
+
+    if (added) {
+      navigate("/cart");
+    }
   };
 
   /*
@@ -634,6 +751,7 @@ function ProductDetails() {
                   onClick={
                     decreaseQuantity
                   }
+                  disabled={addingToCart}
                 >
                   −
                 </button>
@@ -648,6 +766,7 @@ function ProductDetails() {
                   onClick={
                     increaseQuantity
                   }
+                  disabled={addingToCart}
                 >
                   +
                 </button>
@@ -663,21 +782,23 @@ function ProductDetails() {
               <button
                 className="add-to-cart-button"
                 type="button"
-                onClick={
-                  addToCart
-                }
+                onClick={addToCart}
+                disabled={addingToCart}
               >
-                ADD TO CART
+                {addingToCart
+                  ? "ADDING..."
+                  : "ADD TO CART"}
               </button>
 
               <button
                 className="buy-now-button"
                 type="button"
-                onClick={
-                  buyNow
-                }
+                onClick={buyNow}
+                disabled={addingToCart}
               >
-                BUY NOW
+                {addingToCart
+                  ? "PLEASE WAIT..."
+                  : "BUY NOW"}
               </button>
 
             </div>

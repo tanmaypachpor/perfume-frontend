@@ -3,6 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { Navbar, Footer } from "./App";
 import "./Cart.css";
 
+import { supabase } from "./lib/supabaseClient";
+
+/* =========================================================
+   PRODUCT INTERFACE
+========================================================= */
+
 interface Product {
     id: number;
     name: string;
@@ -28,12 +34,35 @@ interface Product {
     longevity?: string;
 }
 
+/* =========================================================
+   SUPABASE CART ITEM
+========================================================= */
+
+interface SupabaseCartItem {
+    id: number;
+    user_id: string;
+    product_id: number;
+    quantity: number;
+    created_at: string;
+}
+
+/* =========================================================
+   CART ITEM USED BY UI
+========================================================= */
+
 interface CartItem extends Product {
     quantity: number;
+    cartItemId: number;
 }
+
+/* =========================================================
+   CART
+========================================================= */
 
 function Cart() {
     const [cart, setCart] = useState<CartItem[]>([]);
+    const [loading, setLoading] = useState(true);
+
     const navigate = useNavigate();
 
     /* =========================================================
@@ -44,122 +73,416 @@ function Cart() {
         loadCart();
     }, []);
 
-    const loadCart = () => {
+    const loadCart = async () => {
+        setLoading(true);
+
         try {
-            const savedCart = JSON.parse(
-                localStorage.getItem("cart") || "[]"
+            /* =================================================
+               GET LOGGED-IN USER
+            ================================================= */
+
+            const {
+                data: { user },
+                error: userError,
+            } = await supabase.auth.getUser();
+
+            if (userError) {
+                console.error(
+                    "Unable to get user:",
+                    userError
+                );
+
+                setCart([]);
+                return;
+            }
+
+            /* =================================================
+               USER NOT LOGGED IN
+            ================================================= */
+
+            if (!user) {
+                setCart([]);
+                return;
+            }
+
+            /* =================================================
+               GET USER CART
+            ================================================= */
+
+            const {
+                data: cartItems,
+                error: cartError,
+            } = await supabase
+                .from("cart_items")
+                .select("*")
+                .eq("user_id", user.id)
+                .order("created_at", {
+                    ascending: true,
+                });
+
+            if (cartError) {
+                console.error(
+                    "Unable to load cart:",
+                    cartError
+                );
+
+                setCart([]);
+                return;
+            }
+
+            if (!cartItems || cartItems.length === 0) {
+                setCart([]);
+                return;
+            }
+
+            /* =================================================
+               GET PRODUCT IDS
+            ================================================= */
+
+            const productIds = cartItems.map(
+                (item: SupabaseCartItem) =>
+                    item.product_id
             );
 
-            if (Array.isArray(savedCart)) {
-                setCart(savedCart);
-            } else {
+            /* =================================================
+               GET PRODUCTS
+            ================================================= */
+
+            const {
+                data: products,
+                error: productsError,
+            } = await supabase
+                .from("products")
+                .select(
+                    `
+                    id,
+                    name,
+                    category,
+                    collection,
+                    price,
+                    description,
+                    "imageUrl",
+                    "secondUrl",
+                    tag
+                    `
+                )
+                .in("id", productIds)
+                .eq("active", true);
+
+            if (productsError) {
+                console.error(
+                    "Unable to load cart products:",
+                    productsError
+                );
+
                 setCart([]);
+                return;
             }
+
+            /* =================================================
+               COMBINE CART + PRODUCT DATA
+            ================================================= */
+
+            const combinedCart: CartItem[] =
+                cartItems
+                    .map(
+                        (
+                            cartItem: SupabaseCartItem
+                        ) => {
+                            const product =
+                                products?.find(
+                                    (item) =>
+                                        Number(
+                                            item.id
+                                        ) ===
+                                        Number(
+                                            cartItem.product_id
+                                        )
+                                );
+
+                            if (!product) {
+                                return null;
+                            }
+
+                            return {
+                                ...(product as Product),
+                                quantity:
+                                    cartItem.quantity,
+                                cartItemId:
+                                    cartItem.id,
+                            };
+                        }
+                    )
+                    .filter(
+                        (
+                            item
+                        ): item is CartItem =>
+                            item !== null
+                    );
+
+            setCart(combinedCart);
+
         } catch (error) {
             console.error(
-                "Unable to load cart:",
+                "Cart loading error:",
                 error
             );
 
             setCart([]);
+
+        } finally {
+            setLoading(false);
         }
     };
 
     /* =========================================================
-       UPDATE CART
+       REFRESH CART EVENT
     ========================================================= */
 
-    const updateCart = (
-        updatedCart: CartItem[]
-    ) => {
-        setCart(updatedCart);
+    useEffect(() => {
+        const handleCartUpdated = () => {
+            loadCart();
+        };
 
-        localStorage.setItem(
-            "cart",
-            JSON.stringify(updatedCart)
+        window.addEventListener(
+            "cartUpdated",
+            handleCartUpdated
         );
 
-        window.dispatchEvent(
-            new Event("cartUpdated")
-        );
-    };
+        return () => {
+            window.removeEventListener(
+                "cartUpdated",
+                handleCartUpdated
+            );
+        };
+    }, []);
 
     /* =========================================================
        INCREASE QUANTITY
     ========================================================= */
 
-    const increaseQuantity = (
-        id: number
+    const increaseQuantity = async (
+        cartItemId: number
     ) => {
-        const updatedCart = cart.map(
-            (item) =>
-                item.id === id
-                    ? {
-                        ...item,
-                        quantity:
-                            item.quantity + 1,
-                    }
-                    : item
-        );
+        try {
+            const item = cart.find(
+                (cartItem) =>
+                    cartItem.cartItemId ===
+                    cartItemId
+            );
 
-        updateCart(updatedCart);
+            if (!item) {
+                return;
+            }
+
+            const newQuantity =
+                item.quantity + 1;
+
+            const { error } =
+                await supabase
+                    .from("cart_items")
+                    .update({
+                        quantity: newQuantity,
+                    })
+                    .eq("id", cartItemId);
+
+            if (error) {
+                console.error(
+                    "Unable to increase quantity:",
+                    error
+                );
+
+                return;
+            }
+
+            setCart((currentCart) =>
+                currentCart.map(
+                    (cartItem) =>
+                        cartItem.cartItemId ===
+                        cartItemId
+                            ? {
+                                ...cartItem,
+                                quantity:
+                                    newQuantity,
+                            }
+                            : cartItem
+                )
+            );
+
+            window.dispatchEvent(
+                new Event("cartUpdated")
+            );
+
+        } catch (error) {
+            console.error(
+                "Increase quantity error:",
+                error
+            );
+        }
     };
 
     /* =========================================================
        DECREASE QUANTITY
     ========================================================= */
 
-    const decreaseQuantity = (
-        id: number
+    const decreaseQuantity = async (
+        cartItemId: number
     ) => {
-        const updatedCart = cart
-            .map((item) =>
-                item.id === id
-                    ? {
-                        ...item,
-                        quantity:
-                            item.quantity - 1,
-                    }
-                    : item
-            )
-            .filter(
-                (item) =>
-                    item.quantity > 0
+        try {
+            const item = cart.find(
+                (cartItem) =>
+                    cartItem.cartItemId ===
+                    cartItemId
             );
 
-        updateCart(updatedCart);
+            if (!item) {
+                return;
+            }
+
+            const newQuantity =
+                item.quantity - 1;
+
+            /* ===============================================
+               REMOVE WHEN QUANTITY BECOMES ZERO
+            =============================================== */
+
+            if (newQuantity <= 0) {
+                await removeFromCart(
+                    cartItemId
+                );
+
+                return;
+            }
+
+            const { error } =
+                await supabase
+                    .from("cart_items")
+                    .update({
+                        quantity:
+                            newQuantity,
+                    })
+                    .eq("id", cartItemId);
+
+            if (error) {
+                console.error(
+                    "Unable to decrease quantity:",
+                    error
+                );
+
+                return;
+            }
+
+            setCart((currentCart) =>
+                currentCart.map(
+                    (cartItem) =>
+                        cartItem.cartItemId ===
+                        cartItemId
+                            ? {
+                                ...cartItem,
+                                quantity:
+                                    newQuantity,
+                            }
+                            : cartItem
+                )
+            );
+
+            window.dispatchEvent(
+                new Event("cartUpdated")
+            );
+
+        } catch (error) {
+            console.error(
+                "Decrease quantity error:",
+                error
+            );
+        }
     };
 
     /* =========================================================
        REMOVE PRODUCT
     ========================================================= */
 
-    const removeFromCart = (
-        id: number
+    const removeFromCart = async (
+        cartItemId: number
     ) => {
-        const updatedCart =
-            cart.filter(
-                (item) =>
-                    item.id !== id
+        try {
+            const { error } =
+                await supabase
+                    .from("cart_items")
+                    .delete()
+                    .eq("id", cartItemId);
+
+            if (error) {
+                console.error(
+                    "Unable to remove cart item:",
+                    error
+                );
+
+                return;
+            }
+
+            setCart((currentCart) =>
+                currentCart.filter(
+                    (item) =>
+                        item.cartItemId !==
+                        cartItemId
+                )
             );
 
-        updateCart(updatedCart);
+            window.dispatchEvent(
+                new Event("cartUpdated")
+            );
+
+        } catch (error) {
+            console.error(
+                "Remove cart item error:",
+                error
+            );
+        }
     };
 
     /* =========================================================
        CLEAR CART
     ========================================================= */
 
-    const clearCart = () => {
-        localStorage.removeItem(
-            "cart"
-        );
+    const clearCart = async () => {
+        try {
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
 
-        setCart([]);
+            if (!user) {
+                setCart([]);
+                return;
+            }
 
-        window.dispatchEvent(
-            new Event("cartUpdated")
-        );
+            const { error } =
+                await supabase
+                    .from("cart_items")
+                    .delete()
+                    .eq("user_id", user.id);
+
+            if (error) {
+                console.error(
+                    "Unable to clear cart:",
+                    error
+                );
+
+                return;
+            }
+
+            setCart([]);
+
+            window.dispatchEvent(
+                new Event("cartUpdated")
+            );
+
+        } catch (error) {
+            console.error(
+                "Clear cart error:",
+                error
+            );
+        }
     };
 
     /* =========================================================
@@ -238,6 +561,46 @@ function Cart() {
             value
         ).toLocaleString("en-IN")}`;
     };
+
+    /* =========================================================
+       LOADING
+    ========================================================= */
+
+    if (loading) {
+        return (
+            <div className="cart-page">
+                <Navbar />
+
+                <main className="cart-container">
+
+                    <section className="cart-header">
+
+                        <div className="cart-header-label">
+
+                            <span className="header-line"></span>
+
+                            <span>
+                                YOUR SELECTION
+                            </span>
+
+                        </div>
+
+                        <h1>
+                            Shopping <em>Bag</em>
+                        </h1>
+
+                        <p>
+                            Loading your selection...
+                        </p>
+
+                    </section>
+
+                </main>
+
+                <Footer />
+            </div>
+        );
+    }
 
     return (
         <div className="cart-page">
@@ -396,7 +759,7 @@ function Cart() {
 
                                         <article
                                             className="cart-item"
-                                            key={item.id}
+                                            key={item.cartItemId}
                                         >
 
                                             {/* PRODUCT IMAGE */}
@@ -466,7 +829,7 @@ function Cart() {
                                                     className="mobile-remove-button"
                                                     onClick={() =>
                                                         removeFromCart(
-                                                            item.id
+                                                            item.cartItemId
                                                         )
                                                     }
                                                 >
@@ -509,7 +872,7 @@ function Cart() {
                                                         type="button"
                                                         onClick={() =>
                                                             decreaseQuantity(
-                                                                item.id
+                                                                item.cartItemId
                                                             )
                                                         }
                                                         aria-label={`Decrease quantity of ${item.name}`}
@@ -527,7 +890,7 @@ function Cart() {
                                                         type="button"
                                                         onClick={() =>
                                                             increaseQuantity(
-                                                                item.id
+                                                                item.cartItemId
                                                             )
                                                         }
                                                         aria-label={`Increase quantity of ${item.name}`}
@@ -567,7 +930,7 @@ function Cart() {
                                                 className="remove-cart-item"
                                                 onClick={() =>
                                                     removeFromCart(
-                                                        item.id
+                                                        item.cartItemId
                                                     )
                                                 }
                                                 aria-label={`Remove ${item.name}`}

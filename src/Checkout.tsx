@@ -311,6 +311,25 @@ function Checkout() {
     }
 
     // =========================
+    // CHECK LOGGED-IN USER
+    // =========================
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      setError(
+        "Please login to place your order."
+      );
+
+      navigate("/login");
+
+      return;
+    }
+
+    // =========================
     // START LOADING
     // =========================
 
@@ -358,6 +377,10 @@ function Checkout() {
         .from("orders")
         .insert({
           id: orderId,
+
+          // IMPORTANT:
+          // Connect order with logged-in user
+          user_id: user.id,
 
           customer_name:
             customer.name.trim(),
@@ -618,6 +641,7 @@ function Checkout() {
       navigate(
         "/order-success"
       );
+
     } catch (
       supabaseError: any
     ) {
@@ -1416,7 +1440,6 @@ function Checkout() {
               <div className="checkout-item-count">
 
                 {totalItems}{" "}
-
                 {totalItems === 1
                   ? "ITEM"
                   : "ITEMS"}

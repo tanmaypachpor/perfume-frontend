@@ -1,0 +1,228 @@
+.account-page {
+    min-height: calc(100vh - 80px);
+    background: #f8f5f0;
+    padding: 80px 20px;
+}
+
+.account-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.account-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.account-eyebrow {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: #8b7355;
+    margin-bottom: 14px;
+}
+
+.account-header h1 {
+    margin: 0;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 52px;
+    font-weight: 500;
+    color: #241b16;
+}
+
+.account-header p {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #77706a;
+}
+
+.account-content {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 30px;
+    align-items: start;
+}
+
+.account-card {
+    background: #ffffff;
+    padding: 40px;
+    border: 1px solid #e8e0d7;
+}
+
+.account-card-header {
+    padding-bottom: 25px;
+    border-bottom: 1px solid #eee7df;
+    margin-bottom: 30px;
+}
+
+.account-card-header h2 {
+    margin: 0;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 30px;
+    font-weight: 500;
+    color: #241b16;
+}
+
+.account-card-header p {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: #817971;
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.account-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.account-field label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #55483e;
+}
+
+.account-field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 15px;
+    border: 1px solid #dcd3ca;
+    background: #fff;
+    color: #2b211b;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.account-field input:focus {
+    border-color: #8b7355;
+}
+
+.account-field input:disabled {
+    background: #f5f1ec;
+    color: #77706a;
+    cursor: not-allowed;
+}
+
+.account-field small {
+    font-size: 11px;
+    color: #99918a;
+}
+
+.account-save-btn {
+    margin-top: 8px;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    background: #241b16;
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.account-save-btn:hover {
+    background: #3a2b22;
+}
+
+.account-save-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.account-success {
+    padding: 12px 15px;
+    background: #f1f7f1;
+    border: 1px solid #d5e5d5;
+    color: #4d704d;
+    font-size: 13px;
+}
+
+.account-error {
+    padding: 12px 15px;
+    background: #faf0ee;
+    border: 1px solid #ead5d0;
+    color: #9a4d42;
+    font-size: 13px;
+}
+
+.account-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.account-action-card {
+    width: 100%;
+    padding: 25px;
+    background: #241b16;
+    color: #fff;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.account-action-card:hover {
+    background: #3a2b22;
+    transform: translateY(-2px);
+}
+
+.account-action-card span {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    opacity: 0.7;
+}
+
+.account-action-card strong {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.account-loading {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6e6259;
+    font-size: 14px;
+}
+
+@media (max-width: 800px) {
+    .account-page {
+        padding: 60px 15px;
+    }
+
+    .account-header h1 {
+        font-size: 42px;
+    }
+
+    .account-content {
+        grid-template-columns: 1fr;
+    }
+
+    .account-card {
+        padding: 25px;
+    }
+}
+
+@media (max-width: 480px) {
+    .account-header h1 {
+        font-size: 36px;
+    }
+
+    .account-header {
+        margin-bottom: 35px;
+    }
+}

@@ -1,0 +1,301 @@
+.my-orders-page {
+    min-height: calc(100vh - 80px);
+    background: #f8f5f0;
+    padding: 80px 20px;
+}
+
+.my-orders-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* HEADER */
+
+.orders-header {
+    text-align: center;
+    margin-bottom: 55px;
+}
+
+.orders-eyebrow {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: #8b7355;
+    margin-bottom: 14px;
+}
+
+.orders-header h1 {
+    margin: 0;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 52px;
+    font-weight: 500;
+    color: #241b16;
+}
+
+.orders-header p {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #77706a;
+}
+
+/* ERROR */
+
+.orders-error {
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    background: #faf0ee;
+    border: 1px solid #ead5d0;
+    color: #9a4d42;
+    font-size: 13px;
+}
+
+/* ORDERS LIST */
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ORDER CARD */
+
+.order-card {
+    background: #ffffff;
+    border: 1px solid #e6ded6;
+    padding: 30px;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(36, 27, 22, 0.07);
+}
+
+/* TOP */
+
+.order-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.order-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #96887d;
+    margin-bottom: 6px;
+}
+
+.order-card-top h2 {
+    margin: 0;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: #241b16;
+}
+
+.order-date {
+    font-size: 12px;
+    color: #817971;
+}
+
+/* DIVIDER */
+
+.order-divider {
+    height: 1px;
+    background: #eee7df;
+    margin: 25px 0;
+}
+
+/* INFO */
+
+.order-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.order-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.order-info-item span {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: #96887d;
+}
+
+.order-info-item strong {
+    font-size: 14px;
+    font-weight: 500;
+    color: #30251e;
+}
+
+/* STATUS */
+
+.status {
+    text-transform: capitalize;
+}
+
+.status.pending {
+    color: #a07836;
+}
+
+.status.confirmed {
+    color: #55744e;
+}
+
+.status.processing {
+    color: #74613e;
+}
+
+.status.shipped {
+    color: #506d85;
+}
+
+.status.delivered {
+    color: #4e7548;
+}
+
+.status.cancelled {
+    color: #a04d43;
+}
+
+/* BOTTOM */
+
+.order-card-bottom {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #eee7df;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.order-card-bottom span {
+    font-size: 12px;
+    color: #8b8179;
+}
+
+.order-card-bottom button {
+    border: none;
+    background: transparent;
+    color: #241b16;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    padding: 5px 0;
+}
+
+.order-card-bottom button:hover {
+    color: #8b7355;
+}
+
+/* NO ORDERS */
+
+.no-orders {
+    background: #ffffff;
+    border: 1px solid #e6ded6;
+    text-align: center;
+    padding: 80px 30px;
+}
+
+.no-orders-icon {
+    font-size: 30px;
+    color: #8b7355;
+    margin-bottom: 20px;
+}
+
+.no-orders h2 {
+    margin: 0;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: #241b16;
+}
+
+.no-orders p {
+    margin: 10px 0 30px;
+    color: #817971;
+    font-size: 13px;
+}
+
+.no-orders button {
+    border: none;
+    background: #241b16;
+    color: #ffffff;
+    padding: 14px 25px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+}
+
+.no-orders button:hover {
+    background: #3a2b22;
+}
+
+/* LOADING */
+
+.orders-loading {
+    min-height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #6e6259;
+    font-size: 14px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+
+    .my-orders-page {
+        padding: 60px 15px;
+    }
+
+    .orders-header h1 {
+        font-size: 42px;
+    }
+
+    .order-card {
+        padding: 22px;
+    }
+
+    .order-card-top {
+        flex-direction: column;
+    }
+
+    .order-info {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .order-card-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .orders-header h1 {
+        font-size: 36px;
+    }
+
+    .orders-header {
+        margin-bottom: 40px;
+    }
+
+    .no-orders {
+        padding: 60px 20px;
+    }
+}

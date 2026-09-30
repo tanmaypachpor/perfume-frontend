@@ -3576,3 +3576,229 @@ a {
   transform: translateX(-50%);
   text-align: center;
 }
+
+
+/* =========================================================
+   KEIAN ACCOUNT MENU
+========================================================= */
+
+.account-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+
+/* =========================================================
+   ACCOUNT BUTTON
+========================================================= */
+
+.account-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.account-arrow {
+  display: inline-block;
+  font-size: 10px;
+  line-height: 1;
+  transition: transform 0.25s ease;
+}
+
+.account-arrow.open {
+  transform: rotate(180deg);
+}
+
+
+/* =========================================================
+   ACCOUNT DROPDOWN
+========================================================= */
+
+.account-dropdown {
+  position: absolute;
+
+  top: calc(100% + 14px);
+  right: 0;
+
+  width: 215px;
+
+  background: #f7f4ec;
+
+  border: 1px solid rgba(44, 43, 35, 0.14);
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.14);
+
+  padding: 8px;
+
+  z-index: 9999;
+
+  animation: keianAccountDropdown 0.22s ease forwards;
+}
+
+
+/* =========================================================
+   DROPDOWN ANIMATION
+========================================================= */
+
+@keyframes keianAccountDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================================================
+   DROPDOWN BUTTON
+========================================================= */
+
+.account-dropdown button {
+  width: 100%;
+
+  border: none;
+
+  background: transparent;
+
+  padding: 14px 13px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  font-family: inherit;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  letter-spacing: 1.6px;
+
+  color: #25251d;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+
+/* =========================================================
+   DROPDOWN HOVER
+========================================================= */
+
+.account-dropdown button:hover {
+  background: rgba(42, 42, 32, 0.055);
+}
+
+
+/* =========================================================
+   DROPDOWN ARROW
+========================================================= */
+
+.account-dropdown button span:last-child {
+  font-size: 14px;
+
+  transition:
+    transform 0.25s ease;
+}
+
+.account-dropdown button:hover span:last-child {
+  transform: translateX(4px);
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.account-dropdown-divider {
+  height: 1px;
+
+  background: rgba(42, 42, 32, 0.12);
+
+  margin: 5px 8px;
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+.account-dropdown .logout-dropdown-button {
+  color: #7c4038;
+}
+
+.account-dropdown .logout-dropdown-button:hover {
+  background: rgba(124, 64, 56, 0.07);
+}
+
+
+/* =========================================================
+   DISABLED / LOGGING OUT
+========================================================= */
+
+.account-dropdown button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   ACCOUNT BUTTON HOVER
+========================================================= */
+
+.account-button:hover {
+  opacity: 0.75;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .account-dropdown {
+    top: calc(100% + 10px);
+
+    right: -5px;
+
+    width: 200px;
+  }
+
+  .account-dropdown button {
+    padding: 13px 11px;
+
+    font-size: 9px;
+
+    letter-spacing: 1.4px;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .account-dropdown {
+    width: 190px;
+  }
+
+}

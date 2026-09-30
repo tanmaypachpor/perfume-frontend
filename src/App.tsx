@@ -238,10 +238,55 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] =
     useState(false);
 
+  const [user, setUser] =
+    useState<any>(null);
+
+  const [accountOpen, setAccountOpen] =
+    useState(false);
+
+  const [loggingOut, setLoggingOut] =
+    useState(false);
+
   const navigate = useNavigate();
 
   const isHomePage =
     window.location.pathname === "/";
+
+  /* =====================================================
+     CHECK AUTHENTICATION
+  ===================================================== */
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setUser(user);
+    };
+
+    getCurrentUser();
+
+    /* ===================================================
+       LISTEN FOR LOGIN / LOGOUT
+    =================================================== */
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+
+        if (!session?.user) {
+          setAccountOpen(false);
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   /* =====================================================
      NAVBAR SCROLL
@@ -271,6 +316,37 @@ export function Navbar() {
       );
     };
   }, [isHomePage]);
+
+  /* =====================================================
+     CLOSE ACCOUNT DROPDOWN WHEN CLICKING OUTSIDE
+  ===================================================== */
+
+  useEffect(() => {
+    const handleClickOutside = (
+      event: MouseEvent
+    ) => {
+      const target =
+        event.target as HTMLElement;
+
+      if (
+        !target.closest(".account-menu")
+      ) {
+        setAccountOpen(false);
+      }
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+    };
+  }, []);
 
   /* =====================================================
      SECTION NAVIGATION
@@ -305,6 +381,40 @@ export function Navbar() {
     );
 
     navigate("/");
+  };
+
+  /* =====================================================
+     LOGOUT
+  ===================================================== */
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+
+    try {
+      const { error } =
+        await supabase.auth.signOut();
+
+      if (error) {
+        console.error(
+          "Logout error:",
+          error
+        );
+
+        return;
+      }
+
+      setUser(null);
+      setAccountOpen(false);
+
+      navigate("/");
+    } catch (error) {
+      console.error(
+        "Logout error:",
+        error
+      );
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
   return (
@@ -381,31 +491,144 @@ export function Navbar() {
 
       <div className="nav-actions">
 
-        {/* LOGIN */}
+        {/* =================================================
+            LOGGED OUT
+        ================================================= */}
 
-        <button
-          type="button"
-          className="nav-auth-button nav-login-button"
-          onClick={() => {
-            navigate("/login");
-          }}
-        >
-          LOGIN
-        </button>
+        {!user && (
+          <>
+            {/* LOGIN */}
 
-        {/* REGISTER */}
+            <button
+              type="button"
+              className="nav-auth-button nav-login-button"
+              onClick={() => {
+                navigate("/login");
+              }}
+            >
+              LOGIN
+            </button>
 
-        <button
-          type="button"
-          className="nav-auth-button nav-register-button"
-          onClick={() => {
-            navigate("/register");
-          }}
-        >
-          REGISTER
-        </button>
+            {/* REGISTER */}
 
-        {/* SHOPPING BAG */}
+            <button
+              type="button"
+              className="nav-auth-button nav-register-button"
+              onClick={() => {
+                navigate("/register");
+              }}
+            >
+              REGISTER
+            </button>
+          </>
+        )}
+
+        {/* =================================================
+            LOGGED IN ACCOUNT
+        ================================================= */}
+
+        {user && (
+          <div className="account-menu">
+
+            {/* ACCOUNT BUTTON */}
+
+            <button
+              type="button"
+              className="nav-auth-button account-button"
+              onClick={() =>
+                setAccountOpen(
+                  (current) => !current
+                )
+              }
+              aria-expanded={accountOpen}
+              aria-haspopup="true"
+            >
+              ACCOUNT
+
+              <span
+                className={`account-arrow ${
+                  accountOpen
+                    ? "open"
+                    : ""
+                }`}
+              >
+                ↓
+              </span>
+            </button>
+
+            {/* ACCOUNT DROPDOWN */}
+
+            {accountOpen && (
+              <div className="account-dropdown">
+
+                {/* MY ACCOUNT */}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAccountOpen(false);
+                    navigate("/account");
+                  }}
+                >
+                  <span>
+                    MY ACCOUNT
+                  </span>
+
+                  <span>
+                    →
+                  </span>
+                </button>
+
+                {/* MY ORDERS */}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAccountOpen(false);
+                    navigate("/orders");
+                  }}
+                >
+                  <span>
+                    MY ORDERS
+                  </span>
+
+                  <span>
+                    →
+                  </span>
+                </button>
+
+                {/* DIVIDER */}
+
+                <div className="account-dropdown-divider"></div>
+
+                {/* LOGOUT */}
+
+                <button
+                  type="button"
+                  className="logout-dropdown-button"
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                >
+                  <span>
+                    {loggingOut
+                      ? "LOGGING OUT..."
+                      : "LOGOUT"}
+                  </span>
+
+                  <span>
+                    →
+                  </span>
+                </button>
+
+              </div>
+            )}
+
+          </div>
+        )}
+
+        {/* =================================================
+            SHOPPING BAG
+        ================================================= */}
 
         <button
           type="button"

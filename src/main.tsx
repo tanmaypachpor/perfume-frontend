@@ -22,6 +22,9 @@ import AdminProtectedRoute from "./AdminProtectedRoute";
 import Register from "./Register";
 import "./index.css";
 import Login from "./Login";
+import Account from "./Account";
+import MyOrders from "./MyOrders";
+import OrderDetails from "./OrderDetails";
 
 ReactDOM.createRoot(
   document.getElementById("root")!
@@ -108,12 +111,12 @@ ReactDOM.createRoot(
           path="/order-success"
           element={<OrderSuccess />}
         />
-
+        <Route path="/orders" element={<MyOrders />} />
         <Route
           path="/contact"
           element={<ContactPage />}
         />
-
+        <Route path="/account" element={<Account />} />
 
         {/* =========================
                     ADMIN LOGIN
@@ -154,7 +157,10 @@ ReactDOM.createRoot(
             </AdminProtectedRoute>
           }
         />
-
+        <Route
+          path="/orders/:id"
+          element={<OrderDetails />}
+        />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
