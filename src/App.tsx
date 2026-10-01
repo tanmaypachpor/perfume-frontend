@@ -461,7 +461,7 @@ export function Navbar() {
         </a>
 
         <a
-          href="/#collections"
+          href="/collections"
           onClick={(event) =>
             handleSectionNavigation(
               event,

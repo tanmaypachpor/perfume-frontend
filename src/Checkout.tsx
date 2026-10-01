@@ -1,30 +1,14 @@
-import {
-  FormEvent,
-  useEffect,
-  useState,
-} from "react";
-
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import "./Checkout.css";
-
-import {
-  Navbar,
-  Footer,
-} from "./App";
-
-import { supabase } from "./lib/supabaseClient";
-
-// =========================
-// PRODUCT INTERFACE
-// =========================
+import { Navbar, Footer } from "./App";
+import { supabase } from "./supabaseClient";
 
 interface Product {
   id: number;
   name: string;
   category: string;
   collection?: string;
-  type?: string;
   price: number;
   description: string;
   imageUrl: string;
@@ -32,29 +16,16 @@ interface Product {
   tag: string;
 }
 
-// =========================
-// SUPABASE CART ITEM
-// =========================
-
 interface SupabaseCartItem {
-  id: number;
+  id: string;
   user_id: string;
   product_id: number;
   quantity: number;
-  created_at: string;
 }
-
-// =========================
-// CART ITEM
-// =========================
 
 interface CartItem extends Product {
   quantity: number;
 }
-
-// =========================
-// CUSTOMER DETAILS
-// =========================
 
 interface CustomerDetails {
   name: string;
@@ -66,22 +37,73 @@ interface CustomerDetails {
   pincode: string;
 }
 
-// =========================
-// CHECKOUT COMPONENT
-// =========================
+interface RazorpayOrderResponse {
+  success: boolean;
+  id: string;
+  amount: number;
+  currency: string;
+  receipt: string;
+  error?: string;
+}
+
+interface RazorpayVerifyResponse {
+  success: boolean;
+  message?: string;
+  orderId?: string;
+  error?: string;
+}
+
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  prefill: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  notes?: {
+    order_id?: string;
+  };
+  theme?: {
+    color?: string;
+  };
+  handler: (response: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  }) => void;
+  modal?: {
+    ondismiss?: () => void;
+  };
+}
+
+interface RazorpayInstance {
+  open: () => void;
+}
+
+declare global {
+  interface Window {
+    Razorpay: new (
+      options: RazorpayOptions
+    ) => RazorpayInstance;
+  }
+}
 
 function Checkout() {
   const navigate = useNavigate();
 
-  // =========================
-  // CART STATE
-  // =========================
-
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  // =========================
-  // CUSTOMER STATE
-  // =========================
+  const [paymentMethod, setPaymentMethod] = useState<
+    "COD" | "ONLINE"
+  >("ONLINE");
 
   const [customer, setCustomer] =
     useState<CustomerDetails>({
@@ -94,1495 +116,1318 @@ function Checkout() {
       pincode: "",
     });
 
-  // =========================
-  // PAYMENT STATE
-  // =========================
-
-  const [paymentMethod, setPaymentMethod] =
-    useState<"cod" | "online">("cod");
-
-  // =========================
-  // ERROR STATE
-  // =========================
-
   const [error, setError] = useState("");
 
-  // =========================
-  // LOADING STATE
-  // =========================
-
-  const [isLoadingCart, setIsLoadingCart] =
-    useState(true);
-
-  const [isPlacingOrder, setIsPlacingOrder] =
-    useState(false);
-
-  // =========================
-  // LOAD CART FROM SUPABASE
-  // =========================
+  /* ---------------------------------------------
+     LOAD USER + CART
+  --------------------------------------------- */
 
   useEffect(() => {
-    let isMounted = true;
+    loadCheckoutData();
+  }, []);
 
-    const loadCart = async () => {
-      try {
-        setIsLoadingCart(true);
-        setError("");
-
-        // =========================
-        // GET LOGGED-IN USER
-        // =========================
-
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
-
-        if (userError) {
-          console.error(
-            "Unable to get user:",
-            userError
-          );
-
-          if (isMounted) {
-            setError(
-              "Unable to verify your account. Please login again."
-            );
-            setIsLoadingCart(false);
-          }
-
-          return;
-        }
-
-        // =========================
-        // USER NOT LOGGED IN
-        // =========================
-
-        if (!user) {
-          navigate("/login");
-          return;
-        }
-
-        // =========================
-        // LOAD USER CART
-        // =========================
-
-        const {
-          data: cartItems,
-          error: cartError,
-        } = await supabase
-          .from("cart_items")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", {
-            ascending: true,
-          });
-
-        if (cartError) {
-          console.error(
-            "CART LOAD ERROR:",
-            cartError
-          );
-
-          if (isMounted) {
-            setError(
-              cartError.message ||
-              "Unable to load your cart."
-            );
-            setIsLoadingCart(false);
-          }
-
-          return;
-        }
-
-        // =========================
-        // EMPTY CART
-        // =========================
-
-        if (
-          !cartItems ||
-          cartItems.length === 0
-        ) {
-          navigate("/cart");
-          return;
-        }
-
-        // =========================
-        // GET PRODUCT IDS
-        // =========================
-
-        const productIds = (
-          cartItems as SupabaseCartItem[]
-        ).map(
-          (item) => item.product_id
-        );
-
-        // =========================
-        // LOAD PRODUCTS
-        // =========================
-
-        const {
-          data: products,
-          error: productsError,
-        } = await supabase
-          .from("products")
-          .select(`
-    id,
-    name,
-    category,
-    collection,
-    price,
-    description,
-    "imageUrl",
-    "secondUrl",
-    tag
-  `)
-          .in("id", productIds)
-          .eq("active", true);
-
-        if (productsError) {
-          console.error(
-            "PRODUCT LOAD ERROR:",
-            productsError
-          );
-
-          if (isMounted) {
-            setError(
-              productsError.message ||
-              "Unable to load cart products."
-            );
-            setIsLoadingCart(false);
-          }
-
-          return;
-        }
-
-        if (
-          !products ||
-          products.length === 0
-        ) {
-          navigate("/cart");
-          return;
-        }
-
-        // =========================
-        // COMBINE CART + PRODUCTS
-        // =========================
-
-        const combinedCart: CartItem[] = (
-          cartItems as SupabaseCartItem[]
-        )
-          .map((cartItem) => {
-            const product = products.find(
-              (item) =>
-                item.id ===
-                cartItem.product_id
-            );
-
-            if (!product) {
-              return null;
-            }
-
-            return {
-              ...(product as Product),
-              quantity:
-                Number(cartItem.quantity) || 1,
-            };
-          })
-          .filter(
-            (
-              item
-            ): item is CartItem =>
-              item !== null
-          );
-
-        // =========================
-        // FINAL EMPTY CHECK
-        // =========================
-
-        if (combinedCart.length === 0) {
-          navigate("/cart");
-          return;
-        }
-
-        // =========================
-        // SET CART
-        // =========================
-
-        if (isMounted) {
-          setCart(combinedCart);
-          setIsLoadingCart(false);
-        }
-      } catch (loadError) {
-        console.error(
-          "Unable to load checkout cart:",
-          loadError
-        );
-
-        if (isMounted) {
-          setError(
-            "Unable to load your cart. Please try again."
-          );
-          setIsLoadingCart(false);
-        }
-      }
-    };
-
-    loadCart();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [navigate]);
-
-  // =========================
-  // HANDLE INPUT
-  // =========================
-
-  const handleChange = (
-    event: React.ChangeEvent<
-      HTMLInputElement |
-      HTMLTextAreaElement |
-      HTMLSelectElement
-    >
-  ) => {
-    const {
-      name,
-      value,
-    } = event.target;
-
-    setCustomer((current) => ({
-      ...current,
-      [name]: value,
-    }));
-
-    if (error) {
+  const loadCheckoutData = async () => {
+    try {
+      setLoading(true);
       setError("");
+
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        navigate("/login");
+        return;
+      }
+
+      setUserId(user.id);
+
+      setCustomer((prev) => ({
+        ...prev,
+        email: user.email || "",
+      }));
+
+      const {
+        data: cartItems,
+        error: cartError,
+      } = await supabase
+        .from("cart_items")
+        .select(
+          "id, user_id, product_id, quantity"
+        )
+        .eq("user_id", user.id);
+
+      if (cartError) {
+        throw new Error(cartError.message);
+      }
+
+      if (!cartItems || cartItems.length === 0) {
+        setCart([]);
+        setLoading(false);
+        return;
+      }
+
+      const productIds = cartItems.map(
+        (item: SupabaseCartItem) =>
+          item.product_id
+      );
+
+      const {
+        data: products,
+        error: productsError,
+      } = await supabase
+        .from("products")
+        .select(`
+          id,
+          name,
+          category,
+          collection,
+          price,
+          description,
+          "imageUrl",
+          "secondUrl",
+          tag
+        `)
+        .in("id", productIds)
+        .eq("active", true);
+
+      if (productsError) {
+        throw new Error(productsError.message);
+      }
+
+      const mergedCart: CartItem[] = (
+        cartItems as SupabaseCartItem[]
+      )
+        .map((cartItem) => {
+          const product = products?.find(
+            (item) =>
+              item.id === cartItem.product_id
+          );
+
+          if (!product) {
+            return null;
+          }
+
+          return {
+            ...product,
+            quantity: cartItem.quantity,
+          };
+        })
+        .filter(Boolean) as CartItem[];
+
+      setCart(mergedCart);
+    } catch (err) {
+      console.error(
+        "Checkout loading error:",
+        err
+      );
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to load checkout"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
-  // =========================
-  // CALCULATE SUBTOTAL
-  // =========================
+  /* ---------------------------------------------
+     CART CALCULATIONS
+  --------------------------------------------- */
 
   const subtotal = cart.reduce(
-    (total, item) =>
-      total +
-      Number(item.price) *
-      Number(item.quantity),
+    (sum, item) =>
+      sum +
+      Number(item.price) * item.quantity,
     0
   );
 
-  // =========================
-  // CALCULATE SHIPPING
-  // =========================
-
   const shipping =
-    subtotal === 0
-      ? 0
-      : subtotal >= 1999
-        ? 0
-        : 99;
+    subtotal >= 1999 ? 0 : 99;
 
-  // =========================
-  // FINAL TOTAL
-  // =========================
+  const total = subtotal + shipping;
 
-  const total =
-    subtotal + shipping;
+  const totalItems = cart.reduce(
+    (sum, item) =>
+      sum + item.quantity,
+    0
+  );
 
-  // =========================
-  // TOTAL ITEMS
-  // =========================
+  /* ---------------------------------------------
+     INPUT HANDLER
+  --------------------------------------------- */
 
-  const totalItems =
-    cart.reduce(
-      (total, item) =>
-        total +
-        Number(item.quantity),
-      0
-    );
-
-  // =========================
-  // PLACE ORDER
-  // =========================
-
-  const handlePlaceOrder = async (
-    event: FormEvent<HTMLFormElement>
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement
+    >
   ) => {
-    event.preventDefault();
+    const { name, value } = e.target;
 
-    // =========================
-    // PREVENT DOUBLE CLICK
-    // =========================
+    setCustomer((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-    if (isPlacingOrder) {
-      return;
-    }
+  /* ---------------------------------------------
+     VALIDATION
+  --------------------------------------------- */
 
-    setError("");
-
-    // =========================
-    // REQUIRED FIELD VALIDATION
-    // =========================
-
-    if (
-      !customer.name.trim() ||
-      !customer.email.trim() ||
-      !customer.phone.trim() ||
-      !customer.address.trim() ||
-      !customer.city.trim() ||
-      !customer.state.trim() ||
-      !customer.pincode.trim()
-    ) {
+  const validateCheckout = () => {
+    if (!userId) {
       setError(
-        "Please fill in all required fields."
+        "Please login before placing an order."
       );
-
-      return;
+      return false;
     }
 
-    // =========================
-    // EMAIL VALIDATION
-    // =========================
+    if (cart.length === 0) {
+      setError("Your cart is empty.");
+      return false;
+    }
+
+    if (!customer.name.trim()) {
+      setError("Please enter your full name.");
+      return false;
+    }
+
+    if (!customer.email.trim()) {
+      setError("Please enter your email.");
+      return false;
+    }
 
     const emailRegex =
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (
-      !emailRegex.test(
-        customer.email.trim()
-      )
-    ) {
+    if (!emailRegex.test(customer.email)) {
       setError(
         "Please enter a valid email address."
       );
-
-      return;
+      return false;
     }
 
-    // =========================
-    // PHONE VALIDATION
-    // =========================
-
-    const phoneRegex =
-      /^[0-9]{10}$/;
-
-    if (
-      !phoneRegex.test(
-        customer.phone.trim()
-      )
-    ) {
+    if (!customer.phone.trim()) {
       setError(
-        "Please enter a valid 10-digit phone number."
+        "Please enter your phone number."
       );
-
-      return;
+      return false;
     }
 
-    // =========================
-    // PINCODE VALIDATION
-    // =========================
+    const phoneRegex = /^[6-9]\d{9}$/;
 
-    const pincodeRegex =
-      /^[0-9]{6}$/;
+    if (!phoneRegex.test(customer.phone)) {
+      setError(
+        "Please enter a valid 10-digit Indian mobile number."
+      );
+      return false;
+    }
 
-    if (
-      !pincodeRegex.test(
-        customer.pincode.trim()
-      )
-    ) {
+    if (!customer.address.trim()) {
+      setError("Please enter your address.");
+      return false;
+    }
+
+    if (!customer.city.trim()) {
+      setError("Please enter your city.");
+      return false;
+    }
+
+    if (!customer.state.trim()) {
+      setError("Please enter your state.");
+      return false;
+    }
+
+    if (!customer.pincode.trim()) {
+      setError("Please enter your pincode.");
+      return false;
+    }
+
+    const pincodeRegex = /^\d{6}$/;
+
+    if (!pincodeRegex.test(customer.pincode)) {
       setError(
         "Please enter a valid 6-digit pincode."
       );
-
-      return;
+      return false;
     }
 
-    // =========================
-    // CHECK CART
-    // =========================
+    return true;
+  };
 
-    if (cart.length === 0) {
-      setError(
-        "Your cart is empty."
-      );
+  /* ---------------------------------------------
+     CREATE RAZORPAY ORDER
+  --------------------------------------------- */
 
-      return;
-    }
-
-    // =========================
-    // CHECK LOGGED-IN USER
-    // =========================
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      setError(
-        "Please login to place your order."
-      );
-
-      navigate("/login");
-
-      return;
-    }
-
-    // =========================
-    // START LOADING
-    // =========================
-
-    setIsPlacingOrder(true);
-
+  const createRazorpayOrder = async (
+    orderId: string
+  ): Promise<RazorpayOrderResponse> => {
     try {
-      // =========================
-      // CREATE ORDER UUID
-      // =========================
+      /*
+       * Get the current Supabase session.
+       */
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-      const orderId =
-        crypto.randomUUID();
+      if (sessionError) {
+        throw new Error(
+          sessionError.message
+        );
+      }
 
-      // =========================
-      // PAYMENT STATUS
-      // =========================
+      if (!session?.access_token) {
+        throw new Error(
+          "Your login session has expired. Please login again."
+        );
+      }
+
+      console.log(
+        "Logged-in user ID:",
+        session.user.id
+      );
+
+      console.log(
+        "Access token available:",
+        !!session.access_token
+      );
 
       /*
-       * COD:
-       * payment_status = PENDING
-       * order_status   = CONFIRMED
-       *
-       * ONLINE:
-       * payment_status = PENDING
-       * order_status   = PENDING
-       *
-       * Razorpay can be integrated later.
+       * Call Supabase Edge Function.
        */
-
-      const paymentStatus =
-        "PENDING";
-
-      const orderStatus =
-        paymentMethod === "cod"
-          ? "CONFIRMED"
-          : "PENDING";
-
-      // =========================
-      // CREATE ORDER
-      // =========================
-
       const {
-        error: orderError,
-      } = await supabase
-        .from("orders")
-        .insert({
-          id: orderId,
+        data,
+        error: functionError,
+      } = await supabase.functions.invoke(
+        "create-razorpay-order",
+        {
+          body: {
+            amount: total,
+            currency: "INR",
+            receipt: `KEIAN-${orderId}`,
+            orderId: orderId,
+          },
 
-          // IMPORTANT:
-          // This connects the order
-          // to the logged-in user.
-          user_id: user.id,
-
-          customer_name:
-            customer.name.trim(),
-
-          customer_email:
-            customer.email.trim(),
-
-          customer_phone:
-            customer.phone.trim(),
-
-          address:
-            customer.address.trim(),
-
-          city:
-            customer.city.trim(),
-
-          state:
-            customer.state.trim(),
-
-          pincode:
-            customer.pincode.trim(),
-
-          subtotal:
-            Number(subtotal),
-
-          shipping:
-            Number(shipping),
-
-          total:
-            Number(total),
-
-          currency:
-            "INR",
-
-          payment_status:
-            paymentStatus,
-
-          order_status:
-            orderStatus,
-        });
-
-      // =========================
-      // CHECK ORDER ERROR
-      // =========================
-
-      if (orderError) {
-        console.error(
-          "ORDER INSERT ERROR:",
-          orderError
-        );
-
-        throw new Error(
-          orderError.message ||
-          "Unable to create order."
-        );
-      }
-
-      // =========================
-      // CREATE ORDER ITEMS
-      // =========================
-
-      const orderItems =
-        cart.map((item) => ({
-          order_id:
-            orderId,
-
-          product_id:
-            item.id,
-
-          product_name:
-            item.name,
-
-          quantity:
-            Number(item.quantity),
-
-          price:
-            Number(item.price),
-        }));
-
-      // =========================
-      // INSERT ORDER ITEMS
-      // =========================
-
-      const {
-        error: orderItemsError,
-      } = await supabase
-        .from("order_items")
-        .insert(orderItems);
-
-      // =========================
-      // CHECK ORDER ITEMS ERROR
-      // =========================
-
-      if (orderItemsError) {
-        console.error(
-          "ORDER ITEMS INSERT ERROR:",
-          orderItemsError
-        );
-
-        throw new Error(
-          orderItemsError.message ||
-          "Unable to save order items."
-        );
-      }
-
-      // =========================
-      // CREATE LOCAL ORDER OBJECT
-      // =========================
-
-      const localOrder = {
-        orderId: orderId,
-
-        customer: {
-          name:
-            customer.name.trim(),
-
-          email:
-            customer.email.trim(),
-
-          phone:
-            customer.phone.trim(),
-
-          address:
-            customer.address.trim(),
-
-          city:
-            customer.city.trim(),
-
-          state:
-            customer.state.trim(),
-
-          pincode:
-            customer.pincode.trim(),
-        },
-
-        items:
-          cart.map((item) => ({
-            id:
-              item.id,
-
-            name:
-              item.name,
-
-            category:
-              item.category,
-
-            collection:
-              item.collection,
-
-            price:
-              Number(item.price),
-
-            quantity:
-              Number(item.quantity),
-
-            description:
-              item.description,
-
-            imageUrl:
-              item.imageUrl,
-
-            secondUrl:
-              item.secondUrl,
-
-            tag:
-              item.tag,
-          })),
-
-        subtotal:
-          Number(subtotal),
-
-        shipping:
-          Number(shipping),
-
-        total:
-          Number(total),
-
-        totalItems:
-          Number(totalItems),
-
-        paymentMethod:
-          paymentMethod === "online"
-            ? "Online Payment"
-            : "Cash on Delivery",
-
-        paymentStatus:
-          paymentStatus,
-
-        orderStatus:
-          orderStatus,
-
-        orderDate:
-          new Date().toISOString(),
-      };
-
-      // =========================
-      // SAVE LAST ORDER
-      // =========================
-
-      localStorage.setItem(
-        "lastOrder",
-        JSON.stringify(
-          localOrder
-        )
-      );
-
-      // =========================
-      // SAVE LOCAL ORDER HISTORY
-      // =========================
-
-      let existingOrders: any[] =
-        [];
-
-      try {
-        existingOrders =
-          JSON.parse(
-            localStorage.getItem(
-              "orders"
-            ) || "[]"
-          );
-
-        if (
-          !Array.isArray(
-            existingOrders
-          )
-        ) {
-          existingOrders = [];
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
         }
-      } catch {
-        existingOrders = [];
-      }
-
-      localStorage.setItem(
-        "orders",
-        JSON.stringify([
-          ...existingOrders,
-          localOrder,
-        ])
       );
 
-      // =========================
-      // CLEAR SUPABASE CART
-      // =========================
-
-      const {
-        error: clearCartError,
-      } = await supabase
-        .from("cart_items")
-        .delete()
-        .eq("user_id", user.id);
-
-      if (clearCartError) {
+      if (functionError) {
         console.error(
-          "CLEAR CART ERROR:",
-          clearCartError
+          "Create Razorpay order function error:",
+          functionError
         );
 
-        /*
-         * Do not fail the order here.
-         *
-         * The order was already created
-         * successfully. We only report the
-         * cart clearing issue.
-         */
+        throw new Error(
+          functionError.message ||
+          "Failed to create Razorpay order"
+        );
       }
 
-      // =========================
-      // ALSO CLEAR OLD LOCAL CART
-      // =========================
+      /*
+       * IMPORTANT:
+       * Razorpay must return both success
+       * and a valid Razorpay order ID.
+       */
+      if (!data?.success || !data?.id) {
+        throw new Error(
+          data?.error ||
+          "Failed to create Razorpay order"
+        );
+      }
 
-      localStorage.removeItem(
-        "cart"
+      console.log(
+        "Razorpay order created successfully:",
+        data
       );
 
-      // =========================
-      // UPDATE CART UI
-      // =========================
-
-      window.dispatchEvent(
-        new Event("cartUpdated")
-      );
-
-      // =========================
-      // GO TO SUCCESS PAGE
-      // =========================
-
-      navigate(
-        "/order-success"
-      );
-    } catch (
-    supabaseError: unknown
-    ) {
-      // =========================
-      // SHOW REAL ERROR
-      // =========================
-
+      return data as RazorpayOrderResponse;
+    } catch (error) {
       console.error(
-        "SUPABASE CHECKOUT ERROR:",
-        supabaseError
+        "createRazorpayOrder error:",
+        error
       );
 
-      const message =
-        supabaseError instanceof Error
-          ? supabaseError.message
-          : "Unable to place your order. Please try again.";
-
-      setError(message);
-
-      setIsPlacingOrder(false);
+      throw error;
     }
   };
 
-  // =========================
-  // LOADING SCREEN
-  // =========================
+  /* ---------------------------------------------
+     VERIFY RAZORPAY PAYMENT
+  --------------------------------------------- */
 
-  if (isLoadingCart) {
+  const verifyRazorpayPayment = async (
+    orderId: string,
+    razorpayOrderId: string,
+    razorpayPaymentId: string,
+    razorpaySignature: string
+  ): Promise<RazorpayVerifyResponse> => {
+    try {
+      /*
+       * Get current Supabase session.
+       */
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError) {
+        throw new Error(
+          sessionError.message
+        );
+      }
+
+      if (!session?.access_token) {
+        throw new Error(
+          "Your login session has expired. Please login again."
+        );
+      }
+
+      /*
+       * Call payment verification Edge Function.
+       */
+      const {
+        data,
+        error: functionError,
+      } = await supabase.functions.invoke(
+        "verify-razorpay-payment",
+        {
+          body: {
+            orderId,
+            razorpayOrderId,
+            razorpayPaymentId,
+            razorpaySignature,
+          },
+
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        }
+      );
+
+      if (functionError) {
+        console.error(
+          "Verify Razorpay payment error:",
+          functionError
+        );
+
+        throw new Error(
+          functionError.message ||
+          "Payment verification failed"
+        );
+      }
+
+      if (!data?.success) {
+        throw new Error(
+          data?.error ||
+          "Payment verification failed"
+        );
+      }
+
+      console.log(
+        "Razorpay payment verified successfully:",
+        data
+      );
+
+      return data as RazorpayVerifyResponse;
+    } catch (error) {
+      console.error(
+        "verifyRazorpayPayment error:",
+        error
+      );
+
+      throw error;
+    }
+  };
+
+  /* ---------------------------------------------
+     SAVE ORDER ITEMS
+  --------------------------------------------- */
+
+  const saveOrderItems = async (
+    orderId: string
+  ) => {
+    const orderItems = cart.map((item) => ({
+      order_id: orderId,
+      product_id: item.id,
+      product_name: item.name,
+      quantity: item.quantity,
+      price: Number(item.price),
+    }));
+
+    const { error } = await supabase
+      .from("order_items")
+      .insert(orderItems);
+
+    if (error) {
+      throw new Error(
+        `Failed to save order items: ${error.message}`
+      );
+    }
+  };
+
+  /* ---------------------------------------------
+     CLEAR CART
+  --------------------------------------------- */
+
+  const clearCart = async () => {
+    if (!userId) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from("cart_items")
+      .delete()
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error(
+        "Failed to clear Supabase cart:",
+        error
+      );
+    }
+
+    localStorage.removeItem("cart");
+  };
+
+  /* ---------------------------------------------
+     SAVE LOCAL ORDER
+  --------------------------------------------- */
+
+  const saveLocalOrder = (
+    orderId: string,
+    paymentStatus: string,
+    orderStatus: string
+  ) => {
+    const localOrder = {
+      id: orderId,
+
+      customer_name: customer.name,
+      customer_email: customer.email,
+      customer_phone: customer.phone,
+
+      address: customer.address,
+      city: customer.city,
+      state: customer.state,
+      pincode: customer.pincode,
+
+      subtotal,
+      shipping,
+      total,
+
+      currency: "INR",
+
+      payment_status: paymentStatus,
+      order_status: orderStatus,
+
+      created_at:
+        new Date().toISOString(),
+
+      items: cart.map((item) => ({
+        product_id: item.id,
+        product_name: item.name,
+        quantity: item.quantity,
+        price: Number(item.price),
+        imageUrl: item.imageUrl,
+      })),
+    };
+
+    localStorage.setItem(
+      `order_${orderId}`,
+      JSON.stringify(localOrder)
+    );
+  };
+
+  /* ---------------------------------------------
+     HANDLE COD ORDER
+  --------------------------------------------- */
+
+  const placeCODOrder = async (
+    orderId: string
+  ) => {
+    if (!userId) {
+      throw new Error(
+        "User is not authenticated."
+      );
+    }
+
+    const { error: orderError } =
+      await supabase
+        .from("orders")
+        .insert({
+          id: orderId,
+          user_id: userId,
+
+          customer_name: customer.name,
+          customer_email: customer.email,
+          customer_phone: customer.phone,
+
+          address: customer.address,
+          city: customer.city,
+          state: customer.state,
+          pincode: customer.pincode,
+
+          subtotal,
+          shipping,
+          total,
+          currency: "INR",
+
+          payment_status: "PENDING",
+          order_status: "CONFIRMED",
+        });
+
+    if (orderError) {
+      throw new Error(
+        `Failed to create order: ${orderError.message}`
+      );
+    }
+
+    await saveOrderItems(orderId);
+
+    saveLocalOrder(
+      orderId,
+      "PENDING",
+      "CONFIRMED"
+    );
+
+    await clearCart();
+
+    navigate("/order-success", {
+      state: {
+        orderId,
+        paymentMethod: "COD",
+        total,
+      },
+    });
+  };
+
+  /* ---------------------------------------------
+     HANDLE RAZORPAY ONLINE ORDER
+  --------------------------------------------- */
+
+  const placeOnlineOrder = async (
+    orderId: string
+  ) => {
+    if (!userId) {
+      throw new Error(
+        "User is not authenticated."
+      );
+    }
+
+    /*
+     * STEP 1
+     * Create Razorpay order FIRST.
+     *
+     * IMPORTANT:
+     * If Razorpay returns 401 or any other error,
+     * execution stops here.
+     *
+     * Therefore:
+     * - No orders row is created.
+     * - No order_items are created.
+     * - Cart remains unchanged.
+     */
+    const razorpayOrder =
+      await createRazorpayOrder(orderId);
+
+    /*
+     * Extra safety check.
+     */
+    if (
+      !razorpayOrder ||
+      !razorpayOrder.id
+    ) {
+      throw new Error(
+        "Unable to create Razorpay payment order."
+      );
+    }
+
+    /*
+     * STEP 2
+     * Razorpay order successfully created.
+     *
+     * NOW create our own order in Supabase.
+     */
+    const { error: orderError } =
+      await supabase
+        .from("orders")
+        .insert({
+          id: orderId,
+          user_id: userId,
+
+          customer_name: customer.name,
+          customer_email: customer.email,
+          customer_phone: customer.phone,
+
+          address: customer.address,
+          city: customer.city,
+          state: customer.state,
+          pincode: customer.pincode,
+
+          subtotal,
+          shipping,
+          total,
+          currency: "INR",
+
+          /*
+           * Save Razorpay order ID.
+           */
+          razorpay_order_id:
+            razorpayOrder.id,
+
+          payment_status: "PENDING",
+          order_status: "PENDING",
+        });
+
+    if (orderError) {
+      throw new Error(
+        `Failed to create order: ${orderError.message}`
+      );
+    }
+
+    /*
+     * STEP 3
+     * Save order items.
+     */
+    await saveOrderItems(orderId);
+
+    /*
+     * STEP 4
+     * Check Razorpay checkout script.
+     */
+    if (!window.Razorpay) {
+      throw new Error(
+        "Razorpay checkout script is not loaded. Please check index.html."
+      );
+    }
+
+    /*
+     * STEP 5
+     * Razorpay Checkout Options.
+     */
+    const options: RazorpayOptions = {
+      key:
+        import.meta.env
+          .VITE_RAZORPAY_KEY_ID,
+
+      amount:
+        razorpayOrder.amount,
+
+      currency:
+        razorpayOrder.currency,
+
+      name: "KEIAN",
+
+      description:
+        "Premium Fragrance Order",
+
+      order_id:
+        razorpayOrder.id,
+
+      prefill: {
+        name: customer.name,
+        email: customer.email,
+        contact: customer.phone,
+      },
+
+      notes: {
+        order_id: orderId,
+      },
+
+      theme: {
+        color: "#1D211C",
+      },
+
+      /*
+       * STEP 6
+       * Razorpay successful payment handler.
+       */
+      handler: async (response) => {
+        try {
+          setPlacingOrder(true);
+          setError("");
+
+          /*
+           * STEP 7
+           * Verify payment on server.
+           */
+          await verifyRazorpayPayment(
+            orderId,
+            response.razorpay_order_id,
+            response.razorpay_payment_id,
+            response.razorpay_signature
+          );
+
+          /*
+           * STEP 8
+           * Payment successfully verified.
+           */
+          saveLocalOrder(
+            orderId,
+            "PAID",
+            "CONFIRMED"
+          );
+
+          /*
+           * STEP 9
+           * Clear cart only after
+           * successful payment verification.
+           */
+          await clearCart();
+
+          /*
+           * STEP 10
+           * Navigate to success page.
+           */
+          navigate("/order-success", {
+            state: {
+              orderId,
+              paymentMethod: "ONLINE",
+              total,
+              paymentId:
+                response.razorpay_payment_id,
+            },
+          });
+        } catch (error) {
+          console.error(
+            "Payment verification error:",
+            error
+          );
+
+          setError(
+            error instanceof Error
+              ? error.message
+              : "Payment verification failed."
+          );
+
+          setPlacingOrder(false);
+        }
+      },
+
+      /*
+       * User closes Razorpay popup.
+       */
+      modal: {
+        ondismiss: () => {
+          setPlacingOrder(false);
+
+          setError(
+            "Payment was cancelled. Your cart is still saved."
+          );
+        },
+      },
+    };
+
+    /*
+     * STEP 11
+     * Open Razorpay Checkout.
+     */
+    const razorpay =
+      new window.Razorpay(options);
+
+    razorpay.open();
+  };
+
+  /* ---------------------------------------------
+     PLACE ORDER
+  --------------------------------------------- */
+
+  const handlePlaceOrder = async (
+    e: FormEvent
+  ) => {
+    e.preventDefault();
+
+    setError("");
+
+    if (!validateCheckout()) {
+      return;
+    }
+
+    if (!userId) {
+      setError(
+        "Please login before placing your order."
+      );
+      return;
+    }
+
+    try {
+      setPlacingOrder(true);
+
+      /*
+       * Generate unique order ID.
+       *
+       * This is the order ID,
+       * NOT the user ID.
+       */
+      const orderId =
+        crypto.randomUUID();
+
+      if (paymentMethod === "COD") {
+        await placeCODOrder(orderId);
+      } else {
+        await placeOnlineOrder(orderId);
+      }
+    } catch (error) {
+      console.error(
+        "Place order error:",
+        error
+      );
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong while placing your order."
+      );
+
+      setPlacingOrder(false);
+    }
+  };
+
+  /* ---------------------------------------------
+     LOADING
+  --------------------------------------------- */
+
+  if (loading) {
     return (
-      <div className="checkout-page">
+      <>
         <Navbar />
 
-        <main className="checkout-container">
-          <div className="checkout-loading">
-            <span>
-              LOADING YOUR ORDER...
-            </span>
+        <div className="checkout-loading">
+          <div className="checkout-spinner"></div>
 
-            <p>
-              Preparing your checkout.
-            </p>
-          </div>
-        </main>
+          <p>
+            Loading checkout...
+          </p>
+        </div>
 
         <Footer />
-      </div>
+      </>
     );
   }
 
-  // =========================
-  // EMPTY CART
-  // =========================
+  /* ---------------------------------------------
+     EMPTY CART
+  --------------------------------------------- */
 
   if (cart.length === 0) {
-    return null;
-  }
+    return (
+      <>
+        <Navbar />
 
-  // =========================
-  // UI
-  // =========================
-
-  return (
-    <div className="checkout-page">
-
-      {/* =========================
-          SHARED NAVBAR
-      ========================= */}
-
-      <Navbar />
-
-      {/* =========================
-          MAIN
-      ========================= */}
-
-      <main className="checkout-container">
-
-        {/* =========================
-            PAGE HEADER
-        ========================= */}
-
-        <div className="checkout-header">
-
-          <span className="section-label">
-            COMPLETE YOUR ORDER
-          </span>
-
+        <section className="checkout-empty">
           <h1>
-            Checkout <em>Details</em>
+            Your Cart Is Empty
           </h1>
 
           <p>
-            Enter your details to complete
-            your Keian order.
+            Add some fragrances to your
+            cart before proceeding to
+            checkout.
           </p>
 
-        </div>
-
-        {/* =========================
-            CHECKOUT LAYOUT
-        ========================= */}
-
-        <div className="checkout-layout">
-
-          {/* =========================
-              LEFT SIDE
-          ========================= */}
-
-          <form
-            className="checkout-form"
-            onSubmit={
-              handlePlaceOrder
+          <button
+            type="button"
+            onClick={() =>
+              navigate("/products")
             }
           >
-
-            {/* =========================
-                CUSTOMER INFORMATION
-            ========================= */}
-
-            <section className="checkout-section">
-
-              <div className="checkout-section-heading">
-
-                <span>
-                  01
-                </span>
-
-                <div>
-
-                  <h2>
-                    Customer Information
-                  </h2>
-
-                  <p>
-                    Your contact details
-                  </p>
-
-                </div>
-
-              </div>
-
-              <div className="form-grid">
-
-                {/* NAME */}
-
-                <div className="form-group full-width">
-
-                  <label htmlFor="name">
-                    FULL NAME *
-                  </label>
-
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="Enter your full name"
-                    value={
-                      customer.name
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    required
-                  />
-
-                </div>
-
-                {/* EMAIL */}
-
-                <div className="form-group">
-
-                  <label htmlFor="email">
-                    EMAIL ADDRESS *
-                  </label>
-
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={
-                      customer.email
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    required
-                  />
-
-                </div>
-
-                {/* PHONE */}
-
-                <div className="form-group">
-
-                  <label htmlFor="phone">
-                    PHONE NUMBER *
-                  </label>
-
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="10 digit mobile number"
-                    value={
-                      customer.phone
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    maxLength={10}
-                    inputMode="numeric"
-                    required
-                  />
-
-                </div>
-
-              </div>
-
-            </section>
-
-            {/* =========================
-                SHIPPING ADDRESS
-            ========================= */}
-
-            <section className="checkout-section">
-
-              <div className="checkout-section-heading">
-
-                <span>
-                  02
-                </span>
-
-                <div>
-
-                  <h2>
-                    Shipping Address
-                  </h2>
-
-                  <p>
-                    Where should we deliver?
-                  </p>
-
-                </div>
-
-              </div>
-
-              <div className="form-grid">
-
-                {/* ADDRESS */}
-
-                <div className="form-group full-width">
-
-                  <label htmlFor="address">
-                    ADDRESS *
-                  </label>
-
-                  <textarea
-                    id="address"
-                    name="address"
-                    placeholder="House / Flat number, Street, Area"
-                    value={
-                      customer.address
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    rows={4}
-                    required
-                  />
-
-                </div>
-
-                {/* CITY */}
-
-                <div className="form-group">
-
-                  <label htmlFor="city">
-                    CITY *
-                  </label>
-
-                  <input
-                    id="city"
-                    name="city"
-                    type="text"
-                    placeholder="Your city"
-                    value={
-                      customer.city
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    required
-                  />
-
-                </div>
-
-                {/* STATE */}
-
-                <div className="form-group">
-
-                  <label htmlFor="state">
-                    STATE *
-                  </label>
-
-                  <select
-                    id="state"
-                    name="state"
-                    value={
-                      customer.state
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    required
-                  >
-
-                    <option value="">
-                      Select state
-                    </option>
-
-                    <option value="Andhra Pradesh">
-                      Andhra Pradesh
-                    </option>
-
-                    <option value="Assam">
-                      Assam
-                    </option>
-
-                    <option value="Bihar">
-                      Bihar
-                    </option>
-
-                    <option value="Chhattisgarh">
-                      Chhattisgarh
-                    </option>
-
-                    <option value="Delhi">
-                      Delhi
-                    </option>
-
-                    <option value="Goa">
-                      Goa
-                    </option>
-
-                    <option value="Gujarat">
-                      Gujarat
-                    </option>
-
-                    <option value="Haryana">
-                      Haryana
-                    </option>
-
-                    <option value="Himachal Pradesh">
-                      Himachal Pradesh
-                    </option>
-
-                    <option value="Jharkhand">
-                      Jharkhand
-                    </option>
-
-                    <option value="Karnataka">
-                      Karnataka
-                    </option>
-
-                    <option value="Kerala">
-                      Kerala
-                    </option>
-
-                    <option value="Madhya Pradesh">
-                      Madhya Pradesh
-                    </option>
-
-                    <option value="Maharashtra">
-                      Maharashtra
-                    </option>
-
-                    <option value="Odisha">
-                      Odisha
-                    </option>
-
-                    <option value="Punjab">
-                      Punjab
-                    </option>
-
-                    <option value="Rajasthan">
-                      Rajasthan
-                    </option>
-
-                    <option value="Tamil Nadu">
-                      Tamil Nadu
-                    </option>
-
-                    <option value="Telangana">
-                      Telangana
-                    </option>
-
-                    <option value="Uttar Pradesh">
-                      Uttar Pradesh
-                    </option>
-
-                    <option value="Uttarakhand">
-                      Uttarakhand
-                    </option>
-
-                    <option value="West Bengal">
-                      West Bengal
-                    </option>
-
-                    <option value="Other">
-                      Other
-                    </option>
-
-                  </select>
-
-                </div>
-
-                {/* PINCODE */}
-
-                <div className="form-group">
-
-                  <label htmlFor="pincode">
-                    PINCODE *
-                  </label>
-
-                  <input
-                    id="pincode"
-                    name="pincode"
-                    type="text"
-                    placeholder="6 digit pincode"
-                    value={
-                      customer.pincode
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    maxLength={6}
-                    inputMode="numeric"
-                    required
-                  />
-
-                </div>
-
-              </div>
-
-            </section>
-
-            {/* =========================
-                PAYMENT
-            ========================= */}
-
-            <section className="checkout-section">
-
-              <div className="checkout-section-heading">
-
-                <span>
-                  03
-                </span>
-
-                <div>
-
-                  <h2>
-                    Payment
-                  </h2>
-
-                  <p>
-                    Payment options
-                  </p>
-
-                </div>
-
-              </div>
-
-              {/* CASH ON DELIVERY */}
-
-              <button
-                type="button"
-                className={`payment-option ${paymentMethod === "cod"
-                    ? "selected"
-                    : ""
-                  }`}
-                onClick={() =>
-                  setPaymentMethod(
-                    "cod"
-                  )
-                }
-              >
-
-                <div className="payment-radio">
-
-                  <span
-                    className={
-                      paymentMethod ===
-                        "cod"
-                        ? "active"
-                        : ""
-                    }
-                  />
-
-                </div>
-
-                <div>
-
-                  <strong>
-                    Cash on Delivery
-                  </strong>
-
-                  <p>
-                    Pay when your order arrives.
-                  </p>
-
-                </div>
-
-                <span className="payment-badge">
-                  AVAILABLE
-                </span>
-
-              </button>
-
-              {/* ONLINE PAYMENT */}
-
-              <button
-                type="button"
-                className={`payment-option ${paymentMethod ===
-                    "online"
-                    ? "selected"
-                    : ""
-                  }`}
-                onClick={() =>
-                  setPaymentMethod(
-                    "online"
-                  )
-                }
-              >
-
-                <div className="payment-radio">
-
-                  <span
-                    className={
-                      paymentMethod ===
-                        "online"
-                        ? "active"
-                        : ""
-                    }
-                  />
-
-                </div>
-
-                <div>
-
-                  <strong>
-                    Online Payment
-                  </strong>
-
-                  <p>
-                    UPI / Cards / Net Banking
-                  </p>
-
-                </div>
-
-                <span className="payment-badge">
-                  AVAILABLE
-                </span>
-
-              </button>
-
-            </section>
-
-            {/* =========================
-                ERROR
-            ========================= */}
-
-            {error && (
-              <div className="checkout-error">
-                {error}
-              </div>
-            )}
-
-            {/* =========================
-                PLACE ORDER
-            ========================= */}
-
-            <button
-              type="submit"
-              className="place-order-button"
-              disabled={
-                isPlacingOrder
-              }
-            >
-
-              {isPlacingOrder
-                ? "PLACING ORDER..."
-                : paymentMethod ===
-                  "online"
-                  ? `PAY ₹${total.toLocaleString(
-                    "en-IN"
-                  )}`
-                  : "PLACE ORDER"}
-
-              {!isPlacingOrder && (
-                <span>
-                  →
-                </span>
-              )}
-
-            </button>
-
-            {/* =========================
-                NOTE
-            ========================= */}
-
-            <p className="checkout-note">
-              By placing your order, you agree
-              to our terms and conditions.
+            SHOP PERFUMES
+          </button>
+        </section>
+
+        <Footer />
+      </>
+    );
+  }
+
+  /* ---------------------------------------------
+     UI
+  --------------------------------------------- */
+
+  return (
+    <>
+      <Navbar />
+
+      <main className="checkout-page">
+        <div className="checkout-container">
+
+          {/* ---------------------------------------
+              PAGE HEADER
+          --------------------------------------- */}
+
+          <div className="checkout-header">
+            <span className="checkout-eyebrow">
+              KEIAN
+            </span>
+
+            <h1>
+              Checkout
+            </h1>
+
+            <p>
+              Complete your details to
+              place your fragrance order.
             </p>
+          </div>
 
-          </form>
+          {/* ---------------------------------------
+              ERROR
+          --------------------------------------- */}
 
-          {/* =========================
-              RIGHT SIDE
-          ========================= */}
+          {error && (
+            <div className="checkout-error">
+              {error}
+            </div>
+          )}
 
-          <aside className="checkout-summary">
+          <form
+            className="checkout-layout"
+            onSubmit={handlePlaceOrder}
+          >
 
-            <div className="summary-card">
+            {/* =====================================
+                LEFT SIDE
+            ====================================== */}
 
-              <span className="summary-label">
-                YOUR SELECTION
-              </span>
+            <div className="checkout-left">
 
-              <h2>
-                Order <em>Summary</em>
-              </h2>
+              {/* CUSTOMER INFORMATION */}
 
-              {/* =========================
-                  ITEMS
-              ========================= */}
+              <section className="checkout-card">
+                <div className="checkout-section-title">
+                  <span>
+                    01
+                  </span>
 
-              <div className="checkout-items">
+                  <div>
+                    <h2>
+                      Customer Information
+                    </h2>
 
-                {cart.map(
-                  (
-                    item,
-                    index
-                  ) => {
+                    <p>
+                      Enter your contact
+                      details.
+                    </p>
+                  </div>
+                </div>
 
-                    const productClasses = [
-                      "product-noir",
-                      "product-rose",
-                      "product-oud",
-                      "product-bloom",
-                    ];
+                <div className="checkout-form-grid">
 
-                    const className =
-                      productClasses[
-                      index %
-                      productClasses.length
-                      ];
+                  <div className="checkout-field full">
+                    <label>
+                      Full Name
+                    </label>
 
-                    return (
+                    <input
+                      type="text"
+                      name="name"
+                      value={customer.name}
+                      onChange={
+                        handleInputChange
+                      }
+                      placeholder="Enter your full name"
+                      autoComplete="name"
+                    />
+                  </div>
 
-                      <div
-                        className="checkout-item"
-                        key={item.id}
-                      >
+                  <div className="checkout-field">
+                    <label>
+                      Email Address
+                    </label>
 
-                        {/* IMAGE */}
+                    <input
+                      type="email"
+                      name="email"
+                      value={customer.email}
+                      onChange={
+                        handleInputChange
+                      }
+                      placeholder="you@example.com"
+                      autoComplete="email"
+                    />
+                  </div>
 
-                        <div
-                          className={`checkout-item-image ${className}`}
-                        >
+                  <div className="checkout-field">
+                    <label>
+                      Phone Number
+                    </label>
 
-                          <img
-                            src={
-                              item.imageUrl
-                            }
-                            alt={
-                              item.name
-                            }
-                            onError={(
-                              event
-                            ) => {
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={customer.phone}
+                      onChange={
+                        handleInputChange
+                      }
+                      placeholder="10-digit mobile number"
+                      maxLength={10}
+                      autoComplete="tel"
+                    />
+                  </div>
 
-                              event.currentTarget.style.display =
-                                "none";
+                </div>
+              </section>
 
-                            }}
-                          />
+              {/* SHIPPING ADDRESS */}
 
-                        </div>
+              <section className="checkout-card">
+                <div className="checkout-section-title">
+                  <span>
+                    02
+                  </span>
 
-                        {/* PRODUCT INFO */}
+                  <div>
+                    <h2>
+                      Shipping Address
+                    </h2>
 
-                        <div className="checkout-item-info">
+                    <p>
+                      Where should we
+                      deliver your
+                      fragrance?
+                    </p>
+                  </div>
+                </div>
 
-                          <span>
-                            {item.category ||
-                              "FRAGRANCE"}
-                          </span>
+                <div className="checkout-form-grid">
 
-                          <h3>
-                            {item.name}
-                          </h3>
+                  <div className="checkout-field full">
+                    <label>
+                      Address
+                    </label>
 
-                          <p>
-                            QTY:{" "}
-                            {item.quantity}
-                          </p>
+                    <textarea
+                      name="address"
+                      value={customer.address}
+                      onChange={
+                        handleInputChange
+                      }
+                      placeholder="House / Flat / Street / Area"
+                      rows={4}
+                      autoComplete="street-address"
+                    />
+                  </div>
 
-                        </div>
+                  <div className="checkout-field">
+                    <label>
+                      City
+                    </label>
 
-                        {/* PRICE */}
+                    <input
+                      type="text"
+                      name="city"
+                      value={customer.city}
+                      onChange={
+                        handleInputChange
+                      }
+                      placeholder="City"
+                      autoComplete="address-level2"
+                    />
+                  </div>
+
+                  <div className="checkout-field">
+                    <label>
+                      State
+                    </label>
+
+                    <input
+                      type="text"
+                      name="state"
+                      value={customer.state}
+                      onChange={
+                        handleInputChange
+                      }
+                      placeholder="State"
+                      autoComplete="address-level1"
+                    />
+                  </div>
+
+                  <div className="checkout-field">
+                    <label>
+                      Pincode
+                    </label>
+
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={customer.pincode}
+                      onChange={
+                        handleInputChange
+                      }
+                      placeholder="6-digit pincode"
+                      maxLength={6}
+                      autoComplete="postal-code"
+                    />
+                  </div>
+
+                </div>
+              </section>
+
+              {/* PAYMENT */}
+
+              <section className="checkout-card">
+                <div className="checkout-section-title">
+                  <span>
+                    03
+                  </span>
+
+                  <div>
+                    <h2>
+                      Payment Method
+                    </h2>
+
+                    <p>
+                      Choose how you want
+                      to pay.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="payment-methods">
+
+                  {/* ONLINE */}
+
+                  <label
+                    className={`payment-option ${paymentMethod ===
+                        "ONLINE"
+                        ? "selected"
+                        : ""
+                      }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="ONLINE"
+                      checked={
+                        paymentMethod ===
+                        "ONLINE"
+                      }
+                      onChange={() =>
+                        setPaymentMethod(
+                          "ONLINE"
+                        )
+                      }
+                    />
+
+                    <div className="payment-option-content">
+                      <div>
+                        <strong>
+                          Online Payment
+                        </strong>
+
+                        <span>
+                          Pay securely
+                          using Razorpay
+                        </span>
+                      </div>
+
+                      <span className="payment-radio"></span>
+                    </div>
+                  </label>
+
+                  {/* COD */}
+
+                  <label
+                    className={`payment-option ${paymentMethod ===
+                        "COD"
+                        ? "selected"
+                        : ""
+                      }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="COD"
+                      checked={
+                        paymentMethod ===
+                        "COD"
+                      }
+                      onChange={() =>
+                        setPaymentMethod(
+                          "COD"
+                        )
+                      }
+                    />
+
+                    <div className="payment-option-content">
+                      <div>
+                        <strong>
+                          Cash on Delivery
+                        </strong>
+
+                        <span>
+                          Pay when your
+                          order arrives
+                        </span>
+                      </div>
+
+                      <span className="payment-radio"></span>
+                    </div>
+                  </label>
+
+                </div>
+              </section>
+            </div>
+
+            {/* =====================================
+                RIGHT SIDE — ORDER SUMMARY
+            ====================================== */}
+
+            <aside className="checkout-right">
+
+              <section className="checkout-summary">
+
+                <div className="summary-header">
+                  <div>
+                    <span>
+                      YOUR ORDER
+                    </span>
+
+                    <h2>
+                      Order Summary
+                    </h2>
+                  </div>
+
+                  <span className="summary-count">
+                    {totalItems}{" "}
+                    {totalItems === 1
+                      ? "Item"
+                      : "Items"}
+                  </span>
+                </div>
+
+                {/* PRODUCTS */}
+
+                <div className="checkout-products">
+
+                  {cart.map((item) => (
+                    <div
+                      className="checkout-product"
+                      key={item.id}
+                    >
+
+                      <div className="checkout-product-image">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                        />
+                      </div>
+
+                      <div className="checkout-product-info">
+
+                        <h3>
+                          {item.name}
+                        </h3>
+
+                        <span>
+                          Qty:{" "}
+                          {item.quantity}
+                        </span>
 
                         <strong>
                           ₹
@@ -1590,165 +1435,106 @@ function Checkout() {
                             Number(
                               item.price
                             ) *
-                            Number(
-                              item.quantity
-                            )
+                            item.quantity
                           ).toLocaleString(
                             "en-IN"
                           )}
                         </strong>
 
                       </div>
+                    </div>
+                  ))}
 
-                    );
-                  }
+                </div>
+
+                {/* PRICE */}
+
+                <div className="summary-prices">
+
+                  <div>
+                    <span>
+                      Subtotal
+                    </span>
+
+                    <strong>
+                      ₹
+                      {subtotal.toLocaleString(
+                        "en-IN"
+                      )}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>
+                      Shipping
+                    </span>
+
+                    <strong>
+                      {shipping === 0
+                        ? "FREE"
+                        : `₹${shipping}`}
+                    </strong>
+                  </div>
+
+                </div>
+
+                {shipping === 0 && (
+                  <div className="free-shipping-note">
+                    Free shipping applied
+                    on orders above
+                    ₹1,999.
+                  </div>
                 )}
 
-              </div>
-
-              {/* =========================
-                  TOTALS
-              ========================= */}
-
-              <div className="checkout-summary-lines">
-
-                <div>
-
+                <div className="summary-total">
                   <span>
-                    Subtotal
+                    Total
                   </span>
 
                   <strong>
                     ₹
-                    {subtotal.toLocaleString(
+                    {total.toLocaleString(
                       "en-IN"
                     )}
                   </strong>
-
                 </div>
 
-                <div>
+                {/* PLACE ORDER */}
 
+                <button
+                  type="submit"
+                  className="place-order-button"
+                  disabled={placingOrder}
+                >
+                  {placingOrder
+                    ? "PROCESSING..."
+                    : paymentMethod ===
+                      "ONLINE"
+                      ? "PAY SECURELY"
+                      : "PLACE ORDER"}
+                </button>
+
+                <div className="checkout-security">
                   <span>
-                    Shipping
+                    🔒
                   </span>
 
-                  <strong>
-                    {shipping === 0
-                      ? "FREE"
-                      : `₹${shipping}`}
-                  </strong>
-
+                  <p>
+                    Your payment and
+                    personal information
+                    are securely protected.
+                  </p>
                 </div>
 
-              </div>
+              </section>
+            </aside>
 
-              {/* =========================
-                  SHIPPING NOTE
-              ========================= */}
-
-              {shipping > 0 && (
-                <p className="shipping-note">
-
-                  Add ₹
-                  {(
-                    1999 -
-                    subtotal
-                  ).toLocaleString(
-                    "en-IN"
-                  )}{" "}
-                  more for free shipping.
-
-                </p>
-              )}
-
-              {shipping === 0 && (
-                <p className="shipping-note free">
-
-                  ✦ You qualify for free
-                  shipping.
-
-                </p>
-              )}
-
-              {/* =========================
-                  DIVIDER
-              ========================= */}
-
-              <div className="summary-divider" />
-
-              {/* =========================
-                  TOTAL
-              ========================= */}
-
-              <div className="checkout-total">
-
-                <span>
-                  TOTAL
-                </span>
-
-                <strong>
-                  ₹
-                  {total.toLocaleString(
-                    "en-IN"
-                  )}
-                </strong>
-
-              </div>
-
-              {/* =========================
-                  ITEM COUNT
-              ========================= */}
-
-              <div className="checkout-item-count">
-
-                {totalItems}{" "}
-
-                {totalItems === 1
-                  ? "ITEM"
-                  : "ITEMS"}
-
-              </div>
-
-              {/* =========================
-                  SECURITY
-              ========================= */}
-
-              <div className="checkout-security">
-
-                <span>
-                  ✦
-                </span>
-
-                <p>
-
-                  <strong>
-                    SECURE ORDER
-                  </strong>
-
-                  <br />
-
-                  Your information is protected.
-
-                </p>
-
-              </div>
-
-            </div>
-
-          </aside>
-
+          </form>
         </div>
-
       </main>
 
-      {/* =========================
-          SHARED FOOTER
-      ========================= */}
-
       <Footer />
-
-    </div>
+    </>
   );
 }
 
