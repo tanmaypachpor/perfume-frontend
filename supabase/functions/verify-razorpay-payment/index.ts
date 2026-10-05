@@ -242,21 +242,22 @@ Deno.serve(async (req) => {
     // Prevent duplicate payment verification
     // --------------------------------------------------
 
-    if (existingOrder.payment_status === "PAID") {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Order has already been paid",
-        }),
-        {
-          status: 400,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+   if (existingOrder.payment_status === "PAID") {
+  return new Response(
+    JSON.stringify({
+      success: true,
+      message: "Payment already verified",
+      orderId: existingOrder.id,
+    }),
+    {
+      status: 200,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+      },
     }
+  );
+}
 
     // --------------------------------------------------
     // Verify Razorpay Order ID

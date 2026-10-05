@@ -11,20 +11,24 @@ Deno.serve(async (req) => {
   console.log("====================================");
   console.log("CREATE RAZORPAY ORDER START");
   console.log("Method:", req.method);
+  console.log(
+    "Authorization header exists:",
+    !!req.headers.get("Authorization")
+  );
   console.log("====================================");
 
-  // --------------------------------------------------
+  // ---------------------------------------------
   // CORS
-  // --------------------------------------------------
+  // ---------------------------------------------
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: corsHeaders,
     });
   }
 
-  // --------------------------------------------------
-  // Only POST allowed
-  // --------------------------------------------------
+  // ---------------------------------------------
+  // POST only
+  // ---------------------------------------------
   if (req.method !== "POST") {
     return new Response(
       JSON.stringify({
@@ -42,9 +46,9 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // --------------------------------------------------
-    // Supabase environment variables
-    // --------------------------------------------------
+    // ---------------------------------------------
+    // SUPABASE CONFIG
+    // ---------------------------------------------
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
@@ -54,42 +58,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // --------------------------------------------------
-    // Razorpay credentials
-    // --------------------------------------------------
-    const razorpayKeyId =
-      Deno.env.get("RAZORPAY_KEY_ID");
-
-    const razorpayKeySecret =
-      Deno.env.get("RAZORPAY_KEY_SECRET");
-
-    console.log(
-      "Razorpay Key ID configured:",
-      !!razorpayKeyId
-    );
-
-    console.log(
-      "Razorpay Secret configured:",
-      !!razorpayKeySecret
-    );
-
-    if (!razorpayKeyId) {
-      throw new Error(
-        "RAZORPAY_KEY_ID is not configured"
-      );
-    }
-
-    if (!razorpayKeySecret) {
-      throw new Error(
-        "RAZORPAY_KEY_SECRET is not configured"
-      );
-    }
-
-    // --------------------------------------------------
-    // Get Authorization header
-    // --------------------------------------------------
-    const authHeader =
-      req.headers.get("Authorization");
+    // ---------------------------------------------
+    // AUTHORIZATION HEADER
+    // ---------------------------------------------
+    const authHeader = req.headers.get("Authorization");
 
     console.log(
       "Authorization header exists:",
@@ -117,9 +89,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // --------------------------------------------------
-    // Validate Bearer token
-    // --------------------------------------------------
     if (!authHeader.startsWith("Bearer ")) {
       return new Response(
         JSON.stringify({
@@ -136,28 +105,47 @@ Deno.serve(async (req) => {
       );
     }
 
-    // --------------------------------------------------
-    // Create Supabase client using user's JWT
-    // --------------------------------------------------
-    const supabase = createClient(
-      supabaseUrl,
-      supabaseAnonKey,
-      {
-        global: {
-          headers: {
-            Authorization: authHeader,
-          },
-        },
-      }
+    // ---------------------------------------------
+    // EXTRACT ACCESS TOKEN
+    // ---------------------------------------------
+    const accessToken = authHeader.substring(7);
+
+    console.log(
+      "Access token received:",
+      !!accessToken
     );
 
-    // --------------------------------------------------
-    // Verify logged-in user
-    // --------------------------------------------------
+    if (!accessToken) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Access token is missing",
+        }),
+        {
+          status: 401,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
+    // ---------------------------------------------
+    // CREATE SUPABASE CLIENT
+    // ---------------------------------------------
+    const supabase = createClient(
+      supabaseUrl,
+      supabaseAnonKey
+    );
+
+    // ---------------------------------------------
+    // VERIFY USER USING ACCESS TOKEN
+    // ---------------------------------------------
     const {
       data: { user },
       error: userError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getUser(accessToken);
 
     console.log(
       "Authenticated user ID:",
@@ -170,10 +158,16 @@ Deno.serve(async (req) => {
     );
 
     if (userError || !user) {
+      console.error(
+        "AUTH ERROR:",
+        userError?.message ?? "No authenticated user"
+      );
+
       return new Response(
         JSON.stringify({
           success: false,
           error: "User is not authenticated",
+          details: userError?.message ?? null,
         }),
         {
           status: 401,
@@ -185,31 +179,52 @@ Deno.serve(async (req) => {
       );
     }
 
-    // --------------------------------------------------
-    // Read request body
-    // --------------------------------------------------
+    // ---------------------------------------------
+    // RAZORPAY CREDENTIALS
+    // ---------------------------------------------
+    const razorpayKeyId =
+      Deno.env.get("RAZORPAY_KEY_ID");
+
+    const razorpayKeySecret =
+      Deno.env.get("RAZORPAY_KEY_SECRET");
+
+    console.log(
+      "Razorpay Key ID configured:",
+      !!razorpayKeyId
+    );
+
+    console.log(
+      "Razorpay Secret configured:",
+      !!razorpayKeySecret
+    );
+
+    if (!razorpayKeyId || !razorpayKeySecret) {
+      throw new Error(
+        "Razorpay credentials are not configured"
+      );
+    }
+
+    // ---------------------------------------------
+    // REQUEST BODY
+    // ---------------------------------------------
     const body = await req.json();
 
     const amount = Number(body.amount);
-    const currency =
-      body.currency || "INR";
+    const currency = body.currency || "INR";
     const receipt =
       body.receipt || `KEIAN-${Date.now()}`;
     const orderId = body.orderId;
 
-    console.log(
-      "Request body received:",
-      {
-        amount,
-        currency,
-        receipt,
-        orderId,
-      }
-    );
+    console.log("Request body:", {
+      amount,
+      currency,
+      receipt,
+      orderId,
+    });
 
-    // --------------------------------------------------
-    // Validate order ID
-    // --------------------------------------------------
+    // ---------------------------------------------
+    // VALIDATE ORDER ID
+    // ---------------------------------------------
     if (!orderId) {
       return new Response(
         JSON.stringify({
@@ -226,13 +241,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // --------------------------------------------------
-    // Validate amount
-    // --------------------------------------------------
-    if (
-      !Number.isFinite(amount) ||
-      amount <= 0
-    ) {
+    // ---------------------------------------------
+    // VALIDATE AMOUNT
+    // ---------------------------------------------
+    if (!Number.isFinite(amount) || amount <= 0) {
       return new Response(
         JSON.stringify({
           success: false,
@@ -248,70 +260,63 @@ Deno.serve(async (req) => {
       );
     }
 
-    // --------------------------------------------------
-    // Convert rupees to paise
-    // --------------------------------------------------
+    // ---------------------------------------------
+    // CONVERT RUPEES → PAISE
+    // ---------------------------------------------
     const amountInPaise =
       Math.round(amount * 100);
 
     console.log(
-      "Razorpay amount in paise:",
+      "Amount in paise:",
       amountInPaise
     );
 
-    // --------------------------------------------------
-    // Razorpay Basic Authentication
-    // --------------------------------------------------
+    // ---------------------------------------------
+    // RAZORPAY BASIC AUTH
+    // ---------------------------------------------
     const credentials = btoa(
       `${razorpayKeyId}:${razorpayKeySecret}`
     );
 
-    // --------------------------------------------------
-    // Create Razorpay order
-    // --------------------------------------------------
+    // ---------------------------------------------
+    // CREATE RAZORPAY ORDER
+    // ---------------------------------------------
     console.log(
       "Calling Razorpay Orders API..."
     );
 
-    const razorpayResponse =
-      await fetch(
-        "https://api.razorpay.com/v1/orders",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-
-            Authorization:
-              `Basic ${credentials}`,
+    const razorpayResponse = await fetch(
+      "https://api.razorpay.com/v1/orders",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${credentials}`,
+        },
+        body: JSON.stringify({
+          amount: amountInPaise,
+          currency,
+          receipt,
+          notes: {
+            source: "KEIAN",
+            user_id: user.id,
+            order_id: orderId,
           },
+        }),
+      }
+    );
 
-          body: JSON.stringify({
-            amount: amountInPaise,
-            currency,
-            receipt,
-
-            notes: {
-              source: "KEIAN",
-              user_id: user.id,
-              order_id: orderId,
-            },
-          }),
-        }
-      );
+    const razorpayData =
+      await razorpayResponse.json();
 
     console.log(
       "Razorpay response status:",
       razorpayResponse.status
     );
 
-    const razorpayData =
-      await razorpayResponse.json();
-
-    // --------------------------------------------------
-    // Razorpay API error
-    // --------------------------------------------------
+    // ---------------------------------------------
+    // RAZORPAY ERROR
+    // ---------------------------------------------
     if (!razorpayResponse.ok) {
       console.error(
         "Razorpay API error:",
@@ -322,26 +327,24 @@ Deno.serve(async (req) => {
         JSON.stringify({
           success: false,
           error:
-            razorpayData?.error
-              ?.description ||
-            "Failed to create Razorpay order",
+            razorpayData?.error?.description ||
+            "Razorpay order creation failed",
         }),
         {
           status: razorpayResponse.status,
           headers: {
             ...corsHeaders,
-            "Content-Type":
-              "application/json",
+            "Content-Type": "application/json",
           },
         }
       );
     }
 
-    // --------------------------------------------------
-    // Success
-    // --------------------------------------------------
+    // ---------------------------------------------
+    // SUCCESS
+    // ---------------------------------------------
     console.log(
-      "Razorpay order created successfully:",
+      "Razorpay order created:",
       razorpayData.id
     );
 
@@ -357,14 +360,13 @@ Deno.serve(async (req) => {
         status: 200,
         headers: {
           ...corsHeaders,
-          "Content-Type":
-            "application/json",
+          "Content-Type": "application/json",
         },
       }
     );
   } catch (error) {
     console.error(
-      "create-razorpay-order error:",
+      "CREATE RAZORPAY ORDER ERROR:",
       error
     );
 
@@ -374,14 +376,13 @@ Deno.serve(async (req) => {
         error:
           error instanceof Error
             ? error.message
-            : "Failed to create Razorpay order",
+            : "Internal server error",
       }),
       {
         status: 500,
         headers: {
           ...corsHeaders,
-          "Content-Type":
-            "application/json",
+          "Content-Type": "application/json",
         },
       }
     );
