@@ -1,6 +1,8 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import "./Checkout.css";
+
 import { Navbar, Footer } from "./App";
 import { supabase } from "./supabaseClient";
 
@@ -37,12 +39,27 @@ interface CustomerDetails {
   pincode: string;
 }
 
+interface RazorpayValidatedItem {
+  product_id: number;
+  product_name: string;
+  quantity: number;
+  price: number;
+  imageUrl?: string;
+}
+
 interface RazorpayOrderResponse {
   success: boolean;
   id: string;
   amount: number;
   currency: string;
   receipt: string;
+
+  subtotal: number;
+  shipping: number;
+  total: number;
+
+  items: RazorpayValidatedItem[];
+
   error?: string;
 }
 
@@ -60,22 +77,27 @@ interface RazorpayOptions {
   name: string;
   description: string;
   order_id: string;
+
   prefill: {
     name: string;
     email: string;
     contact: string;
   };
+
   notes?: {
     order_id?: string;
   };
+
   theme?: {
     color?: string;
   };
+
   handler: (response: {
     razorpay_payment_id: string;
     razorpay_order_id: string;
     razorpay_signature: string;
   }) => void;
+
   modal?: {
     ondismiss?: () => void;
   };
@@ -99,6 +121,7 @@ function Checkout() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
+
   const [userId, setUserId] = useState<string | null>(null);
 
   const [paymentMethod, setPaymentMethod] = useState<
@@ -118,9 +141,9 @@ function Checkout() {
 
   const [error, setError] = useState("");
 
-  /* ---------------------------------------------
+  /* =====================================================
      LOAD USER + CART
-  --------------------------------------------- */
+  ===================================================== */
 
   useEffect(() => {
     loadCheckoutData();
@@ -168,10 +191,9 @@ function Checkout() {
         return;
       }
 
-      const productIds = cartItems.map(
-        (item: SupabaseCartItem) =>
-          item.product_id
-      );
+      const productIds = (
+        cartItems as SupabaseCartItem[]
+      ).map((item) => item.product_id);
 
       const {
         data: products,
@@ -226,16 +248,21 @@ function Checkout() {
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to load checkout"
+          : "Failed to load checkout."
       );
     } finally {
       setLoading(false);
     }
   };
 
-  /* ---------------------------------------------
-     CART CALCULATIONS
-  --------------------------------------------- */
+  /* =====================================================
+     FRONTEND DISPLAY CALCULATIONS
+
+     These are only used for displaying the checkout page
+     and COD for now.
+
+     ONLINE PAYMENT AMOUNT IS CALCULATED AGAIN ON SERVER.
+  ===================================================== */
 
   const subtotal = cart.reduce(
     (sum, item) =>
@@ -255,9 +282,9 @@ function Checkout() {
     0
   );
 
-  /* ---------------------------------------------
+  /* =====================================================
      INPUT HANDLER
-  --------------------------------------------- */
+  ===================================================== */
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -272,9 +299,9 @@ function Checkout() {
     }));
   };
 
-  /* ---------------------------------------------
+  /* =====================================================
      VALIDATION
-  --------------------------------------------- */
+  ===================================================== */
 
   const validateCheckout = () => {
     if (!userId) {
@@ -357,17 +384,20 @@ function Checkout() {
     return true;
   };
 
-  /* ---------------------------------------------
+  /* =====================================================
      CREATE RAZORPAY ORDER
-  --------------------------------------------- */
+
+     IMPORTANT:
+     We do NOT send amount from frontend.
+
+     Edge Function calculates:
+     cart -> products -> prices -> subtotal -> shipping -> total
+  ===================================================== */
 
   const createRazorpayOrder = async (
     orderId: string
   ): Promise<RazorpayOrderResponse> => {
     try {
-      /*
-       * Get the current Supabase session.
-       */
       const {
         data: { session },
         error: sessionError,
@@ -386,18 +416,9 @@ function Checkout() {
       }
 
       console.log(
-        "Logged-in user ID:",
-        session.user.id
+        "Creating server-validated Razorpay order..."
       );
 
-      console.log(
-        "Access token available:",
-        !!session.access_token
-      );
-
-      /*
-       * Call Supabase Edge Function.
-       */
       const {
         data,
         error: functionError,
@@ -405,12 +426,8 @@ function Checkout() {
         "create-razorpay-order",
         {
           body: {
-            amount: total,
-            currency: "INR",
-            receipt: `KEIAN-${orderId}`,
-            orderId: orderId,
+            orderId,
           },
-
           headers: {
             Authorization: `Bearer ${session.access_token}`,
           },
@@ -425,19 +442,23 @@ function Checkout() {
 
         throw new Error(
           functionError.message ||
-          "Failed to create Razorpay order"
+            "Failed to create Razorpay order."
         );
       }
 
-      /*
-       * IMPORTANT:
-       * Razorpay must return both success
-       * and a valid Razorpay order ID.
-       */
       if (!data?.success || !data?.id) {
         throw new Error(
           data?.error ||
-          "Failed to create Razorpay order"
+            "Failed to create Razorpay order."
+        );
+      }
+
+      if (
+        !Array.isArray(data.items) ||
+        data.items.length === 0
+      ) {
+        throw new Error(
+          "No valid order items were returned by the server."
         );
       }
 
@@ -457,9 +478,9 @@ function Checkout() {
     }
   };
 
-  /* ---------------------------------------------
+  /* =====================================================
      VERIFY RAZORPAY PAYMENT
-  --------------------------------------------- */
+  ===================================================== */
 
   const verifyRazorpayPayment = async (
     orderId: string,
@@ -468,9 +489,6 @@ function Checkout() {
     razorpaySignature: string
   ): Promise<RazorpayVerifyResponse> => {
     try {
-      /*
-       * Get current Supabase session.
-       */
       const {
         data: { session },
         error: sessionError,
@@ -488,9 +506,6 @@ function Checkout() {
         );
       }
 
-      /*
-       * Call payment verification Edge Function.
-       */
       const {
         data,
         error: functionError,
@@ -503,7 +518,6 @@ function Checkout() {
             razorpayPaymentId,
             razorpaySignature,
           },
-
           headers: {
             Authorization: `Bearer ${session.access_token}`,
           },
@@ -518,14 +532,14 @@ function Checkout() {
 
         throw new Error(
           functionError.message ||
-          "Payment verification failed"
+            "Payment verification failed."
         );
       }
 
       if (!data?.success) {
         throw new Error(
           data?.error ||
-          "Payment verification failed"
+            "Payment verification failed."
         );
       }
 
@@ -545,20 +559,36 @@ function Checkout() {
     }
   };
 
-  /* ---------------------------------------------
+  /* =====================================================
      SAVE ORDER ITEMS
-  --------------------------------------------- */
+
+     ONLINE:
+     Uses server-validated prices.
+
+     COD:
+     Uses current cart prices.
+  ===================================================== */
 
   const saveOrderItems = async (
-    orderId: string
+    orderId: string,
+    validatedItems: RazorpayValidatedItem[] = []
   ) => {
-    const orderItems = cart.map((item) => ({
-      order_id: orderId,
-      product_id: item.id,
-      product_name: item.name,
-      quantity: item.quantity,
-      price: Number(item.price),
-    }));
+    const orderItems =
+      validatedItems.length > 0
+        ? validatedItems.map((item) => ({
+            order_id: orderId,
+            product_id: item.product_id,
+            product_name: item.product_name,
+            quantity: item.quantity,
+            price: Number(item.price),
+          }))
+        : cart.map((item) => ({
+            order_id: orderId,
+            product_id: item.id,
+            product_name: item.name,
+            quantity: item.quantity,
+            price: Number(item.price),
+          }));
 
     const { error } = await supabase
       .from("order_items")
@@ -571,9 +601,9 @@ function Checkout() {
     }
   };
 
-  /* ---------------------------------------------
+  /* =====================================================
      CLEAR CART
-  --------------------------------------------- */
+  ===================================================== */
 
   const clearCart = async () => {
     if (!userId) {
@@ -595,30 +625,51 @@ function Checkout() {
     localStorage.removeItem("cart");
   };
 
-  /* ---------------------------------------------
+  /* =====================================================
      SAVE LOCAL ORDER
-  --------------------------------------------- */
+
+     Optional local cache for order-success page.
+  ===================================================== */
 
   const saveLocalOrder = (
     orderId: string,
     paymentStatus: string,
-    orderStatus: string
+    orderStatus: string,
+    orderSubtotal = subtotal,
+    orderShipping = shipping,
+    orderTotal = total,
+    orderItems: RazorpayValidatedItem[] | null = null
   ) => {
+    const items =
+      orderItems && orderItems.length > 0
+        ? orderItems.map((item) => ({
+            product_id: item.product_id,
+            product_name: item.product_name,
+            quantity: item.quantity,
+            price: Number(item.price),
+            imageUrl: item.imageUrl,
+          }))
+        : cart.map((item) => ({
+            product_id: item.id,
+            product_name: item.name,
+            quantity: item.quantity,
+            price: Number(item.price),
+            imageUrl: item.imageUrl,
+          }));
+
     const localOrder = {
       id: orderId,
-
       customer_name: customer.name,
       customer_email: customer.email,
       customer_phone: customer.phone,
-
       address: customer.address,
       city: customer.city,
       state: customer.state,
       pincode: customer.pincode,
 
-      subtotal,
-      shipping,
-      total,
+      subtotal: orderSubtotal,
+      shipping: orderShipping,
+      total: orderTotal,
 
       currency: "INR",
 
@@ -628,13 +679,7 @@ function Checkout() {
       created_at:
         new Date().toISOString(),
 
-      items: cart.map((item) => ({
-        product_id: item.id,
-        product_name: item.name,
-        quantity: item.quantity,
-        price: Number(item.price),
-        imageUrl: item.imageUrl,
-      })),
+      items,
     };
 
     localStorage.setItem(
@@ -643,9 +688,14 @@ function Checkout() {
     );
   };
 
-  /* ---------------------------------------------
-     HANDLE COD ORDER
-  --------------------------------------------- */
+  /* =====================================================
+     COD ORDER
+
+     COD currently uses frontend calculations.
+
+     We can harden COD with the same server-side
+     calculation after the online payment flow is confirmed.
+  ===================================================== */
 
   const placeCODOrder = async (
     orderId: string
@@ -675,6 +725,7 @@ function Checkout() {
           subtotal,
           shipping,
           total,
+
           currency: "INR",
 
           payment_status: "PENDING",
@@ -706,9 +757,16 @@ function Checkout() {
     });
   };
 
-  /* ---------------------------------------------
-     HANDLE RAZORPAY ONLINE ORDER
-  --------------------------------------------- */
+  /* =====================================================
+     ONLINE RAZORPAY ORDER
+
+     Server is the source of truth for:
+     - subtotal
+     - shipping
+     - total
+     - product prices
+     - quantities
+  ===================================================== */
 
   const placeOnlineOrder = async (
     orderId: string
@@ -719,25 +777,14 @@ function Checkout() {
       );
     }
 
-    /*
-     * STEP 1
-     * Create Razorpay order FIRST.
-     *
-     * IMPORTANT:
-     * If Razorpay returns 401 or any other error,
-     * execution stops here.
-     *
-     * Therefore:
-     * - No orders row is created.
-     * - No order_items are created.
-     * - Cart remains unchanged.
-     */
+    /* -------------------------------------------------
+       STEP 1
+       Create Razorpay order using server-side pricing.
+    ------------------------------------------------- */
+
     const razorpayOrder =
       await createRazorpayOrder(orderId);
 
-    /*
-     * Extra safety check.
-     */
     if (
       !razorpayOrder ||
       !razorpayOrder.id
@@ -747,42 +794,86 @@ function Checkout() {
       );
     }
 
-    /*
-     * STEP 2
-     * Razorpay order successfully created.
-     *
-     * NOW create our own order in Supabase.
-     */
-    const { error: orderError } =
-      await supabase
-        .from("orders")
-        .insert({
-          id: orderId,
-          user_id: userId,
+    /* -------------------------------------------------
+       STEP 2
+       Validate server response.
+    ------------------------------------------------- */
 
-          customer_name: customer.name,
-          customer_email: customer.email,
-          customer_phone: customer.phone,
+    const serverSubtotal =
+      Number(
+        razorpayOrder.subtotal
+      );
 
-          address: customer.address,
-          city: customer.city,
-          state: customer.state,
-          pincode: customer.pincode,
+    const serverShipping =
+      Number(
+        razorpayOrder.shipping
+      );
 
-          subtotal,
-          shipping,
-          total,
-          currency: "INR",
+    const serverTotal =
+      Number(
+        razorpayOrder.total
+      );
 
-          /*
-           * Save Razorpay order ID.
-           */
-          razorpay_order_id:
-            razorpayOrder.id,
+    if (
+      !Number.isFinite(
+        serverSubtotal
+      ) ||
+      !Number.isFinite(
+        serverShipping
+      ) ||
+      !Number.isFinite(
+        serverTotal
+      ) ||
+      serverTotal <= 0
+    ) {
+      throw new Error(
+        "Invalid order amount received from server."
+      );
+    }
 
-          payment_status: "PENDING",
-          order_status: "PENDING",
-        });
+    console.log(
+      "Server-validated order:",
+      {
+        subtotal: serverSubtotal,
+        shipping: serverShipping,
+        total: serverTotal,
+      }
+    );
+
+    /* -------------------------------------------------
+       STEP 3
+       Create KEIAN order in Supabase.
+    ------------------------------------------------- */
+
+    const {
+      error: orderError,
+    } = await supabase
+      .from("orders")
+      .insert({
+        id: orderId,
+        user_id: userId,
+
+        customer_name: customer.name,
+        customer_email: customer.email,
+        customer_phone: customer.phone,
+
+        address: customer.address,
+        city: customer.city,
+        state: customer.state,
+        pincode: customer.pincode,
+
+        subtotal: serverSubtotal,
+        shipping: serverShipping,
+        total: serverTotal,
+
+        currency: "INR",
+
+        razorpay_order_id:
+          razorpayOrder.id,
+
+        payment_status: "PENDING",
+        order_status: "PENDING",
+      });
 
     if (orderError) {
       throw new Error(
@@ -790,31 +881,42 @@ function Checkout() {
       );
     }
 
-    /*
-     * STEP 3
-     * Save order items.
-     */
-    await saveOrderItems(orderId);
+    /* -------------------------------------------------
+       STEP 4
+       Save SERVER-VALIDATED order items.
+    ------------------------------------------------- */
 
-    /*
-     * STEP 4
-     * Check Razorpay checkout script.
-     */
+    await saveOrderItems(
+      orderId,
+      razorpayOrder.items
+    );
+
+    /* -------------------------------------------------
+       STEP 5
+       Check Razorpay script.
+    ------------------------------------------------- */
+
     if (!window.Razorpay) {
       throw new Error(
         "Razorpay checkout script is not loaded. Please check index.html."
       );
     }
 
-    /*
-     * STEP 5
-     * Razorpay Checkout Options.
-     */
+    /* -------------------------------------------------
+       STEP 6
+       Razorpay checkout options.
+    ------------------------------------------------- */
+
     const options: RazorpayOptions = {
       key:
         import.meta.env
           .VITE_RAZORPAY_KEY_ID,
 
+      /*
+       * IMPORTANT:
+       * Amount comes from Razorpay order created
+       * by the server.
+       */
       amount:
         razorpayOrder.amount,
 
@@ -843,19 +945,20 @@ function Checkout() {
         color: "#1D211C",
       },
 
-      /*
-       * STEP 6
-       * Razorpay successful payment handler.
-       */
+      /* ------------------------------------------------
+         PAYMENT SUCCESS
+      ------------------------------------------------ */
+
       handler: async (response) => {
         try {
           setPlacingOrder(true);
           setError("");
 
-          /*
-           * STEP 7
-           * Verify payment on server.
-           */
+          /* --------------------------------------------
+             STEP 7
+             Verify payment on server.
+          -------------------------------------------- */
+
           await verifyRazorpayPayment(
             orderId,
             response.razorpay_order_id,
@@ -863,32 +966,45 @@ function Checkout() {
             response.razorpay_signature
           );
 
-          /*
-           * STEP 8
-           * Payment successfully verified.
-           */
+          /* --------------------------------------------
+             STEP 8
+             Save local order using server totals.
+          -------------------------------------------- */
+
           saveLocalOrder(
             orderId,
             "PAID",
-            "CONFIRMED"
+            "CONFIRMED",
+            serverSubtotal,
+            serverShipping,
+            serverTotal,
+            razorpayOrder.items
           );
 
-          /*
-           * STEP 9
-           * Clear cart only after
-           * successful payment verification.
-           */
+          /* --------------------------------------------
+             STEP 9
+             Clear cart only after successful
+             payment verification.
+          -------------------------------------------- */
+
           await clearCart();
 
-          /*
-           * STEP 10
-           * Navigate to success page.
-           */
+          /* --------------------------------------------
+             STEP 10
+             Go to success page.
+          -------------------------------------------- */
+
           navigate("/order-success", {
             state: {
               orderId,
               paymentMethod: "ONLINE",
-              total,
+
+              /*
+               * IMPORTANT:
+               * Use server total, not frontend total.
+               */
+              total: serverTotal,
+
               paymentId:
                 response.razorpay_payment_id,
             },
@@ -909,9 +1025,10 @@ function Checkout() {
         }
       },
 
-      /*
-       * User closes Razorpay popup.
-       */
+      /* ------------------------------------------------
+         USER CLOSES RAZORPAY
+      ------------------------------------------------ */
+
       modal: {
         ondismiss: () => {
           setPlacingOrder(false);
@@ -923,19 +1040,20 @@ function Checkout() {
       },
     };
 
-    /*
-     * STEP 11
-     * Open Razorpay Checkout.
-     */
+    /* -------------------------------------------------
+       STEP 11
+       Open Razorpay.
+    ------------------------------------------------- */
+
     const razorpay =
       new window.Razorpay(options);
 
     razorpay.open();
   };
 
-  /* ---------------------------------------------
+  /* =====================================================
      PLACE ORDER
-  --------------------------------------------- */
+  ===================================================== */
 
   const handlePlaceOrder = async (
     e: FormEvent
@@ -959,7 +1077,7 @@ function Checkout() {
       setPlacingOrder(true);
 
       /*
-       * Generate unique order ID.
+       * Generate a unique order ID.
        *
        * This is the order ID,
        * NOT the user ID.
@@ -967,7 +1085,9 @@ function Checkout() {
       const orderId =
         crypto.randomUUID();
 
-      if (paymentMethod === "COD") {
+      if (
+        paymentMethod === "COD"
+      ) {
         await placeCODOrder(orderId);
       } else {
         await placeOnlineOrder(orderId);
@@ -988,9 +1108,9 @@ function Checkout() {
     }
   };
 
-  /* ---------------------------------------------
+  /* =====================================================
      LOADING
-  --------------------------------------------- */
+  ===================================================== */
 
   if (loading) {
     return (
@@ -1010,9 +1130,9 @@ function Checkout() {
     );
   }
 
-  /* ---------------------------------------------
+  /* =====================================================
      EMPTY CART
-  --------------------------------------------- */
+  ===================================================== */
 
   if (cart.length === 0) {
     return (
@@ -1045,9 +1165,9 @@ function Checkout() {
     );
   }
 
-  /* ---------------------------------------------
+  /* =====================================================
      UI
-  --------------------------------------------- */
+  ===================================================== */
 
   return (
     <>
@@ -1056,9 +1176,7 @@ function Checkout() {
       <main className="checkout-page">
         <div className="checkout-container">
 
-          {/* ---------------------------------------
-              PAGE HEADER
-          --------------------------------------- */}
+          {/* PAGE HEADER */}
 
           <div className="checkout-header">
             <span className="checkout-eyebrow">
@@ -1075,9 +1193,7 @@ function Checkout() {
             </p>
           </div>
 
-          {/* ---------------------------------------
-              ERROR
-          --------------------------------------- */}
+          {/* ERROR */}
 
           {error && (
             <div className="checkout-error">
@@ -1293,11 +1409,12 @@ function Checkout() {
                   {/* ONLINE */}
 
                   <label
-                    className={`payment-option ${paymentMethod ===
-                        "ONLINE"
+                    className={`payment-option ${
+                      paymentMethod ===
+                      "ONLINE"
                         ? "selected"
                         : ""
-                      }`}
+                    }`}
                   >
                     <input
                       type="radio"
@@ -1333,11 +1450,12 @@ function Checkout() {
                   {/* COD */}
 
                   <label
-                    className={`payment-option ${paymentMethod ===
-                        "COD"
+                    className={`payment-option ${
+                      paymentMethod ===
+                      "COD"
                         ? "selected"
                         : ""
-                      }`}
+                    }`}
                   >
                     <input
                       type="radio"
@@ -1372,6 +1490,7 @@ function Checkout() {
 
                 </div>
               </section>
+
             </div>
 
             {/* =====================================
@@ -1410,7 +1529,6 @@ function Checkout() {
                       className="checkout-product"
                       key={item.id}
                     >
-
                       <div className="checkout-product-image">
                         <img
                           src={item.imageUrl}
@@ -1486,6 +1604,8 @@ function Checkout() {
                   </div>
                 )}
 
+                {/* TOTAL */}
+
                 <div className="summary-total">
                   <span>
                     Total
@@ -1510,8 +1630,8 @@ function Checkout() {
                     ? "PROCESSING..."
                     : paymentMethod ===
                       "ONLINE"
-                      ? "PAY SECURELY"
-                      : "PLACE ORDER"}
+                    ? "PAY SECURELY"
+                    : "PLACE ORDER"}
                 </button>
 
                 <div className="checkout-security">
@@ -1527,6 +1647,7 @@ function Checkout() {
                 </div>
 
               </section>
+
             </aside>
 
           </form>
