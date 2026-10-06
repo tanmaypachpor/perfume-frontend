@@ -1,17 +1,239 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+
 import { Navbar, Footer } from "./App";
+import { supabase } from "./supabaseClient";
+
 import "./OrderSuccess.css";
 
+interface Order {
+  id: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+  subtotal: number;
+  shipping: number;
+  total: number;
+  currency: string;
+  razorpay_order_id: string | null;
+  razorpay_payment_id: string | null;
+  payment_status: string | null;
+  order_status: string | null;
+  created_at: string;
+}
+
+interface OrderItem {
+  id: string;
+  order_id: string;
+  product_id: number;
+  product_name: string;
+  quantity: number;
+  price: number;
+}
+
 function OrderSuccess() {
-  const orderData = localStorage.getItem("lastOrder");
+  const { orderId } =
+    useParams<{ orderId: string }>();
 
-  const order = orderData ? JSON.parse(orderData) : null;
+  const [order, setOrder] =
+    useState<Order | null>(null);
 
-  /* =========================================================
-     ORDER NOT FOUND
-  ========================================================= */
+  const [orderItems, setOrderItems] =
+    useState<OrderItem[]>([]);
 
-  if (!order) {
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  /* =====================================================
+     LOAD EXACT ORDER
+  ===================================================== */
+
+  useEffect(() => {
+    if (!orderId) {
+      setError("Order ID is missing.");
+      setLoading(false);
+      return;
+    }
+
+    loadOrder();
+  }, [orderId]);
+
+  const loadOrder = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      /* -----------------------------------------------
+         GET CURRENT USER
+      ----------------------------------------------- */
+
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError) {
+        throw new Error(
+          userError.message
+        );
+      }
+
+      if (!user) {
+        throw new Error(
+          "Please login to view your order."
+        );
+      }
+
+      /* -----------------------------------------------
+         GET EXACT ORDER
+      ----------------------------------------------- */
+
+      const {
+        data: orderData,
+        error: orderError,
+      } = await supabase
+        .from("orders")
+        .select(`
+          id,
+          customer_name,
+          customer_email,
+          customer_phone,
+          address,
+          city,
+          state,
+          pincode,
+          subtotal,
+          shipping,
+          total,
+          currency,
+          razorpay_order_id,
+          razorpay_payment_id,
+          payment_status,
+          order_status,
+          created_at
+        `)
+        .eq("id", orderId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (orderError) {
+        throw new Error(
+          orderError.message
+        );
+      }
+
+      if (!orderData) {
+        throw new Error(
+          "We could not find this order."
+        );
+      }
+
+      setOrder(orderData as Order);
+
+      /* -----------------------------------------------
+         GET EXACT ORDER ITEMS
+      ----------------------------------------------- */
+
+      const {
+        data: items,
+        error: itemsError,
+      } = await supabase
+        .from("order_items")
+        .select(`
+          id,
+          order_id,
+          product_id,
+          product_name,
+          quantity,
+          price
+        `)
+        .eq("order_id", orderId)
+        .order("id", {
+          ascending: true,
+        });
+
+      if (itemsError) {
+        throw new Error(
+          itemsError.message
+        );
+      }
+
+      setOrderItems(
+        (items || []) as OrderItem[]
+      );
+    } catch (err) {
+      console.error(
+        "Order success loading error:",
+        err
+      );
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to load your order."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* =====================================================
+     LOADING
+  ===================================================== */
+
+  if (loading) {
+    return (
+      <div className="success-page">
+
+        <Navbar />
+
+        <main className="success-container">
+
+          <section className="success-card">
+
+            <div className="confirmation-section">
+
+              <div className="confirmation-mark">
+                <span>✓</span>
+              </div>
+
+              <span className="success-eyebrow">
+                KEIAN
+              </span>
+
+              <h1>
+                Loading <em>your order</em>
+              </h1>
+
+              <p className="success-message">
+                Please wait while we retrieve
+                your order details.
+              </p>
+
+            </div>
+
+          </section>
+
+        </main>
+
+        <Footer />
+
+      </div>
+    );
+  }
+
+  /* =====================================================
+     ERROR / ORDER NOT FOUND
+  ===================================================== */
+
+  if (error || !order) {
     return (
       <div className="success-page">
 
@@ -34,16 +256,15 @@ function OrderSuccess() {
             </h1>
 
             <p className="success-message">
-              We couldn't find your recent order.
-              Please return to the collection and
-              continue shopping.
+              {error ||
+                "We couldn't find this order."}
             </p>
 
             <Link
-              to="/products"
+              to="/orders"
               className="success-button"
             >
-              Continue Shopping
+              View My Orders
               <span>→</span>
             </Link>
 
@@ -57,39 +278,37 @@ function OrderSuccess() {
     );
   }
 
-
-  /* =========================================================
-     PAYMENT TEXT
-  ========================================================= */
+  /* =====================================================
+     PAYMENT METHOD
+  ===================================================== */
 
   const paymentText =
-    order.paymentMethod === "Online Payment"
+    order.razorpay_order_id
       ? "Online Payment"
       : "Cash on Delivery";
 
+  /* =====================================================
+     ORDER STATUS
+  ===================================================== */
 
-  /* =========================================================
+  const paymentStatus =
+    order.payment_status || "PENDING";
+
+  const orderStatus =
+    order.order_status || "PENDING";
+
+  /* =====================================================
      MAIN
-  ========================================================= */
+  ===================================================== */
 
   return (
     <div className="success-page">
 
-      {/* =====================================================
-          SHARED NAVBAR FROM APP.TSX
-      ===================================================== */}
-
       <Navbar />
-
-
-      {/* =====================================================
-          MAIN CONTENT
-      ===================================================== */}
 
       <main className="success-container">
 
         <section className="success-card">
-
 
           {/* =================================================
               CONFIRMATION
@@ -106,7 +325,8 @@ function OrderSuccess() {
             </span>
 
             <h1>
-              Thank you, <em>{order.customer.name}</em>
+              Thank you,{" "}
+              <em>{order.customer_name}</em>
             </h1>
 
             <p className="success-message">
@@ -115,7 +335,6 @@ function OrderSuccess() {
             </p>
 
           </div>
-
 
           {/* =================================================
               ORDER NUMBER
@@ -128,14 +347,13 @@ function OrderSuccess() {
             </span>
 
             <strong>
-              {order.orderId}
+              {order.id}
             </strong>
 
           </div>
 
-
           {/* =================================================
-              ORDER SUMMARY
+              ORDER STATUS
           ================================================= */}
 
           <div className="section-block">
@@ -152,23 +370,25 @@ function OrderSuccess() {
 
             </div>
 
-
             <div className="summary-list">
 
               <div className="summary-row">
 
                 <span>
-                  {order.totalItems === 1
+                  {orderItems.length === 1
                     ? "Item"
                     : "Items"}
                 </span>
 
                 <strong>
-                  {order.totalItems}
+                  {orderItems.reduce(
+                    (sum, item) =>
+                      sum + item.quantity,
+                    0
+                  )}
                 </strong>
 
               </div>
-
 
               <div className="summary-row">
 
@@ -182,6 +402,29 @@ function OrderSuccess() {
 
               </div>
 
+              <div className="summary-row">
+
+                <span>
+                  Payment Status
+                </span>
+
+                <strong>
+                  {paymentStatus}
+                </strong>
+
+              </div>
+
+              <div className="summary-row">
+
+                <span>
+                  Order Status
+                </span>
+
+                <strong>
+                  {orderStatus}
+                </strong>
+
+              </div>
 
               <div className="summary-row">
 
@@ -190,15 +433,16 @@ function OrderSuccess() {
                 </span>
 
                 <strong>
-                  {order.shipping === 0
+                  {Number(order.shipping) === 0
                     ? "Complimentary"
-                    : `₹${order.shipping.toLocaleString(
+                    : `₹${Number(
+                        order.shipping
+                      ).toLocaleString(
                         "en-IN"
                       )}`}
                 </strong>
 
               </div>
-
 
               <div className="summary-row total-row">
 
@@ -207,7 +451,12 @@ function OrderSuccess() {
                 </span>
 
                 <strong>
-                  ₹{order.total.toLocaleString("en-IN")}
+                  ₹
+                  {Number(
+                    order.total
+                  ).toLocaleString(
+                    "en-IN"
+                  )}
                 </strong>
 
               </div>
@@ -216,6 +465,59 @@ function OrderSuccess() {
 
           </div>
 
+          {/* =================================================
+              PRODUCTS
+          ================================================= */}
+
+          {orderItems.length > 0 && (
+
+            <div className="section-block">
+
+              <div className="section-heading">
+
+                <span>
+                  02
+                </span>
+
+                <h2>
+                  Your fragrance
+                </h2>
+
+              </div>
+
+              <div className="summary-list">
+
+                {orderItems.map((item) => (
+
+                  <div
+                    className="summary-row"
+                    key={item.id}
+                  >
+
+                    <span>
+                      {item.product_name} ×{" "}
+                      {item.quantity}
+                    </span>
+
+                    <strong>
+                      ₹
+                      {(
+                        Number(item.price) *
+                        item.quantity
+                      ).toLocaleString(
+                        "en-IN"
+                      )}
+                    </strong>
+
+                  </div>
+
+                ))}
+
+              </div>
+
+            </div>
+
+          )}
 
           {/* =================================================
               DELIVERY DETAILS
@@ -226,7 +528,7 @@ function OrderSuccess() {
             <div className="section-heading">
 
               <span>
-                02
+                03
               </span>
 
               <h2>
@@ -235,13 +537,11 @@ function OrderSuccess() {
 
             </div>
 
-
             <div className="delivery-content">
 
               <div className="delivery-icon">
                 <span>↗</span>
               </div>
-
 
               <div className="delivery-info">
 
@@ -250,19 +550,22 @@ function OrderSuccess() {
                 </span>
 
                 <strong>
-                  {order.customer.name}
+                  {order.customer_name}
                 </strong>
 
                 <p>
-                  {order.customer.address}
-                  <br />
 
-                  {order.customer.city},{" "}
-                  {order.customer.state}
+                  {order.address}
 
                   <br />
 
-                  {order.customer.pincode}
+                  {order.city},{" "}
+                  {order.state}
+
+                  <br />
+
+                  {order.pincode}
+
                 </p>
 
               </div>
@@ -270,7 +573,6 @@ function OrderSuccess() {
             </div>
 
           </div>
-
 
           {/* =================================================
               WHAT HAPPENS NEXT
@@ -281,7 +583,7 @@ function OrderSuccess() {
             <div className="section-heading">
 
               <span>
-                03
+                04
               </span>
 
               <h2>
@@ -290,9 +592,7 @@ function OrderSuccess() {
 
             </div>
 
-
             <div className="order-journey">
-
 
               {/* STEP 1 */}
 
@@ -316,9 +616,7 @@ function OrderSuccess() {
 
               </div>
 
-
               <div className="journey-line" />
-
 
               {/* STEP 2 */}
 
@@ -335,16 +633,15 @@ function OrderSuccess() {
                   </strong>
 
                   <p>
-                    Your fragrance will be carefully prepared.
+                    Your fragrance will be
+                    carefully prepared.
                   </p>
 
                 </div>
 
               </div>
 
-
               <div className="journey-line" />
-
 
               {/* STEP 3 */}
 
@@ -361,16 +658,15 @@ function OrderSuccess() {
                   </strong>
 
                   <p>
-                    Your order will soon be on its way.
+                    Your order will soon be
+                    on its way.
                   </p>
 
                 </div>
 
               </div>
 
-
               <div className="journey-line" />
-
 
               {/* STEP 4 */}
 
@@ -387,7 +683,8 @@ function OrderSuccess() {
                   </strong>
 
                   <p>
-                    Your KEIAN fragrance arrives at your door.
+                    Your KEIAN fragrance arrives
+                    at your door.
                   </p>
 
                 </div>
@@ -398,7 +695,6 @@ function OrderSuccess() {
 
           </div>
 
-
           {/* =================================================
               ACTIONS
           ================================================= */}
@@ -406,27 +702,21 @@ function OrderSuccess() {
           <div className="success-actions">
 
             <Link
-              to="/products"
+              to="/orders"
               className="success-button"
             >
-              Continue Shopping
-
-              <span>
-                →
-              </span>
-
+              View My Orders
+              <span>→</span>
             </Link>
 
-
             <Link
-              to="/"
+              to="/products"
               className="home-button"
             >
-              Back to Home
+              Continue Shopping
             </Link>
 
           </div>
-
 
           {/* =================================================
               NOTE
@@ -441,11 +731,6 @@ function OrderSuccess() {
         </section>
 
       </main>
-
-
-      {/* =====================================================
-          SHARED FOOTER FROM APP.TSX
-      ===================================================== */}
 
       <Footer />
 

@@ -19,28 +19,36 @@ import ContactPage from "./ContactPage";
 import AdminLogin from "./AdminLogin";
 import AdminDashboard from "./AdminDashboard";
 import AdminProtectedRoute from "./AdminProtectedRoute";
+
 import Register from "./Register";
-import "./index.css";
 import Login from "./Login";
+
 import Account from "./Account";
 import MyOrders from "./MyOrders";
 import OrderDetails from "./OrderDetails";
+
+import "./index.css";
 
 ReactDOM.createRoot(
   document.getElementById("root")!
 ).render(
   <React.StrictMode>
     <BrowserRouter>
+
       <Routes>
 
-        {/* =========================
-                    CUSTOMER WEBSITE
-                ========================= */}
+        {/* =====================================================
+            CUSTOMER WEBSITE
+        ===================================================== */}
 
         <Route
           path="/"
           element={<App />}
         />
+
+        {/* =====================================================
+            PRODUCTS
+        ===================================================== */}
 
         <Route
           path="/products"
@@ -92,45 +100,102 @@ ReactDOM.createRoot(
           element={<ProductDetails />}
         />
 
+        {/* =====================================================
+            OUR STORY
+        ===================================================== */}
+
         <Route
           path="/our-story"
           element={<OurStory />}
         />
+
+        {/* =====================================================
+            CART
+        ===================================================== */}
 
         <Route
           path="/cart"
           element={<Cart />}
         />
 
+        {/* =====================================================
+            CHECKOUT
+        ===================================================== */}
+
         <Route
           path="/checkout"
           element={<Checkout />}
         />
 
+        {/* =====================================================
+            ORDER SUCCESS
+            Example:
+            /order-success/b803cf47-7f7b-4d8e-a782-7874a833ddc4
+        ===================================================== */}
+
         <Route
-          path="/order-success"
+          path="/order-success/:orderId"
           element={<OrderSuccess />}
         />
-        <Route path="/orders" element={<MyOrders />} />
+
+        {/* =====================================================
+            CUSTOMER ORDERS
+        ===================================================== */}
+
+        <Route
+          path="/orders"
+          element={<MyOrders />}
+        />
+
+        <Route
+          path="/orders/:id"
+          element={<OrderDetails />}
+        />
+
+        {/* =====================================================
+            ACCOUNT
+        ===================================================== */}
+
+        <Route
+          path="/account"
+          element={<Account />}
+        />
+
+        {/* =====================================================
+            CONTACT
+        ===================================================== */}
+
         <Route
           path="/contact"
           element={<ContactPage />}
         />
-        <Route path="/account" element={<Account />} />
 
-        {/* =========================
-                    ADMIN LOGIN
-                ========================= */}
+        {/* =====================================================
+            AUTHENTICATION
+        ===================================================== */}
+
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        {/* =====================================================
+            ADMIN LOGIN
+        ===================================================== */}
 
         <Route
           path="/admin/login"
           element={<AdminLogin />}
         />
 
-
-        {/* =========================
-                    PROTECTED ADMIN
-                ========================= */}
+        {/* =====================================================
+            PROTECTED ADMIN DASHBOARD
+        ===================================================== */}
 
         <Route
           path="/admin"
@@ -140,14 +205,10 @@ ReactDOM.createRoot(
             </AdminProtectedRoute>
           }
         />
-        <Route
-          path="/register"
-          element={<Register />}
-        />
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+
+        {/* =====================================================
+            ADMIN ORDERS
+        ===================================================== */}
 
         <Route
           path="/admin/orders"
@@ -157,11 +218,9 @@ ReactDOM.createRoot(
             </AdminProtectedRoute>
           }
         />
-        <Route
-          path="/orders/:id"
-          element={<OrderDetails />}
-        />
+
       </Routes>
+
     </BrowserRouter>
   </React.StrictMode>
 );
