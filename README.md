@@ -1,32 +1,55 @@
-# React + TypeScript + Vite
+# KEIAN Storefront
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React, TypeScript, and Vite storefront with Supabase authentication/data access
+and Supabase Edge Functions for Razorpay payments.
 
-Currently, two official plugins are available:
+## Project layout
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```text
+src/
+  app/                     Application route configuration
+  assets/images/           Original and optimized local images
+  features/
+    account/               Customer account pages and components
+    admin/                 Admin pages and components
+    auth/                  Customer auth pages and auth service
+    cart/                  Cart page and components
+    catalog/               Product listing/detail pages and components
+    checkout/              Checkout page and components
+    content/               Contact and story pages
+    home/                  Home page and components
+    orders/                Order pages, components, and domain types
+  shared/
+    components/            Shared layout and UI components
+    lib/                   Shared external-service clients
+  styles/                  Global and shared storefront styles
+  main.tsx                 Browser entry point
+supabase/
+  functions/                Payment Edge Functions
+scripts/                    Local maintenance utilities
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Use the `@/` import alias for modules inside `src`, for example
+`@/features/cart/pages/Cart`.
+
+## Development commands
+
+```sh
+npm run dev
+npm run build
+npm run lint
+npm run preview
+```
+
+## Storefront image assets
+
+Large local storefront images are served as generated WebP files from
+`src/assets/images/optimized`. Update the source list in
+`scripts/optimize-images.mjs` and run this command after changing a source:
+
+```sh
+npm run optimize:images
+```
+
+Application routes are lazy-loaded from `src/app/AppRoutes.tsx`; the Razorpay
+checkout script is loaded only when an online payment is started.
