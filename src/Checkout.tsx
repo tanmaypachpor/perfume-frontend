@@ -1,8 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import "./Checkout.css";
-
 import { Navbar, Footer } from "./App";
 import { supabase } from "./supabaseClient";
 
@@ -53,13 +51,10 @@ interface RazorpayOrderResponse {
   amount: number;
   currency: string;
   receipt: string;
-
   subtotal: number;
   shipping: number;
   total: number;
-
   items: RazorpayValidatedItem[];
-
   error?: string;
 }
 
@@ -77,27 +72,22 @@ interface RazorpayOptions {
   name: string;
   description: string;
   order_id: string;
-
   prefill: {
     name: string;
     email: string;
     contact: string;
   };
-
   notes?: {
     order_id?: string;
   };
-
   theme?: {
     color?: string;
   };
-
   handler: (response: {
     razorpay_payment_id: string;
     razorpay_order_id: string;
     razorpay_signature: string;
   }) => void;
-
   modal?: {
     ondismiss?: () => void;
   };
@@ -121,23 +111,21 @@ function Checkout() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
-
   const [userId, setUserId] = useState<string | null>(null);
 
   const [paymentMethod, setPaymentMethod] = useState<
     "COD" | "ONLINE"
   >("ONLINE");
 
-  const [customer, setCustomer] =
-    useState<CustomerDetails>({
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-      city: "",
-      state: "",
-      pincode: "",
-    });
+  const [customer, setCustomer] = useState<CustomerDetails>({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+  });
 
   const [error, setError] = useState("");
 
@@ -176,9 +164,7 @@ function Checkout() {
         error: cartError,
       } = await supabase
         .from("cart_items")
-        .select(
-          "id, user_id, product_id, quantity"
-        )
+        .select("id, user_id, product_id, quantity")
         .eq("user_id", user.id);
 
       if (cartError) {
@@ -223,8 +209,7 @@ function Checkout() {
       )
         .map((cartItem) => {
           const product = products?.find(
-            (item) =>
-              item.id === cartItem.product_id
+            (item) => item.id === cartItem.product_id
           );
 
           if (!product) {
@@ -240,10 +225,7 @@ function Checkout() {
 
       setCart(mergedCart);
     } catch (err) {
-      console.error(
-        "Checkout loading error:",
-        err
-      );
+      console.error("Checkout loading error:", err);
 
       setError(
         err instanceof Error
@@ -258,27 +240,26 @@ function Checkout() {
   /* =====================================================
      FRONTEND DISPLAY CALCULATIONS
 
-     These are only used for displaying the checkout page
-     and COD for now.
+     These calculations are used only for:
+     - Checkout UI
+     - COD
 
-     ONLINE PAYMENT AMOUNT IS CALCULATED AGAIN ON SERVER.
+     ONLINE PAYMENT:
+     Server calculates the final amount again.
   ===================================================== */
 
   const subtotal = cart.reduce(
     (sum, item) =>
-      sum +
-      Number(item.price) * item.quantity,
+      sum + Number(item.price) * item.quantity,
     0
   );
 
-  const shipping =
-    subtotal >= 1999 ? 0 : 99;
+  const shipping = subtotal >= 1999 ? 0 : 99;
 
   const total = subtotal + shipping;
 
   const totalItems = cart.reduce(
-    (sum, item) =>
-      sum + item.quantity,
+    (sum, item) => sum + item.quantity,
     0
   );
 
@@ -326,6 +307,7 @@ function Checkout() {
       return false;
     }
 
+    /* FIXED EMAIL REGEX */
     const emailRegex =
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -388,10 +370,20 @@ function Checkout() {
      CREATE RAZORPAY ORDER
 
      IMPORTANT:
-     We do NOT send amount from frontend.
+     Frontend does NOT send amount.
 
-     Edge Function calculates:
-     cart -> products -> prices -> subtotal -> shipping -> total
+     Server calculates:
+     cart
+       ↓
+     products
+       ↓
+     prices
+       ↓
+     subtotal
+       ↓
+     shipping
+       ↓
+     total
   ===================================================== */
 
   const createRazorpayOrder = async (
@@ -404,9 +396,7 @@ function Checkout() {
       } = await supabase.auth.getSession();
 
       if (sessionError) {
-        throw new Error(
-          sessionError.message
-        );
+        throw new Error(sessionError.message);
       }
 
       if (!session?.access_token) {
@@ -495,9 +485,7 @@ function Checkout() {
       } = await supabase.auth.getSession();
 
       if (sessionError) {
-        throw new Error(
-          sessionError.message
-        );
+        throw new Error(sessionError.message);
       }
 
       if (!session?.access_token) {
@@ -628,7 +616,7 @@ function Checkout() {
   /* =====================================================
      SAVE LOCAL ORDER
 
-     Optional local cache for order-success page.
+     Used by order-success page.
   ===================================================== */
 
   const saveLocalOrder = (
@@ -666,19 +654,13 @@ function Checkout() {
       city: customer.city,
       state: customer.state,
       pincode: customer.pincode,
-
       subtotal: orderSubtotal,
       shipping: orderShipping,
       total: orderTotal,
-
       currency: "INR",
-
       payment_status: paymentStatus,
       order_status: orderStatus,
-
-      created_at:
-        new Date().toISOString(),
-
+      created_at: new Date().toISOString(),
       items,
     };
 
@@ -692,9 +674,7 @@ function Checkout() {
      COD ORDER
 
      COD currently uses frontend calculations.
-
-     We can harden COD with the same server-side
-     calculation after the online payment flow is confirmed.
+     We are leaving this as-is for now.
   ===================================================== */
 
   const placeCODOrder = async (
@@ -712,22 +692,17 @@ function Checkout() {
         .insert({
           id: orderId,
           user_id: userId,
-
           customer_name: customer.name,
           customer_email: customer.email,
           customer_phone: customer.phone,
-
           address: customer.address,
           city: customer.city,
           state: customer.state,
           pincode: customer.pincode,
-
           subtotal,
           shipping,
           total,
-
           currency: "INR",
-
           payment_status: "PENDING",
           order_status: "CONFIRMED",
         });
@@ -760,7 +735,8 @@ function Checkout() {
   /* =====================================================
      ONLINE RAZORPAY ORDER
 
-     Server is the source of truth for:
+     SERVER IS SOURCE OF TRUTH FOR:
+
      - subtotal
      - shipping
      - total
@@ -800,30 +776,18 @@ function Checkout() {
     ------------------------------------------------- */
 
     const serverSubtotal =
-      Number(
-        razorpayOrder.subtotal
-      );
+      Number(razorpayOrder.subtotal);
 
     const serverShipping =
-      Number(
-        razorpayOrder.shipping
-      );
+      Number(razorpayOrder.shipping);
 
     const serverTotal =
-      Number(
-        razorpayOrder.total
-      );
+      Number(razorpayOrder.total);
 
     if (
-      !Number.isFinite(
-        serverSubtotal
-      ) ||
-      !Number.isFinite(
-        serverShipping
-      ) ||
-      !Number.isFinite(
-        serverTotal
-      ) ||
+      !Number.isFinite(serverSubtotal) ||
+      !Number.isFinite(serverShipping) ||
+      !Number.isFinite(serverTotal) ||
       serverTotal <= 0
     ) {
       throw new Error(
@@ -852,25 +816,19 @@ function Checkout() {
       .insert({
         id: orderId,
         user_id: userId,
-
         customer_name: customer.name,
         customer_email: customer.email,
         customer_phone: customer.phone,
-
         address: customer.address,
         city: customer.city,
         state: customer.state,
         pincode: customer.pincode,
-
         subtotal: serverSubtotal,
         shipping: serverShipping,
         total: serverTotal,
-
         currency: "INR",
-
         razorpay_order_id:
           razorpayOrder.id,
-
         payment_status: "PENDING",
         order_status: "PENDING",
       });
@@ -883,7 +841,7 @@ function Checkout() {
 
     /* -------------------------------------------------
        STEP 4
-       Save SERVER-VALIDATED order items.
+       Save server-validated order items.
     ------------------------------------------------- */
 
     await saveOrderItems(
@@ -907,29 +865,32 @@ function Checkout() {
        Razorpay checkout options.
     ------------------------------------------------- */
 
+    const razorpayKey =
+      import.meta.env.VITE_RAZORPAY_KEY_ID;
+
+    if (!razorpayKey) {
+      throw new Error(
+        "Razorpay Key ID is missing. Check your .env.local file."
+      );
+    }
+
     const options: RazorpayOptions = {
-      key:
-        import.meta.env
-          .VITE_RAZORPAY_KEY_ID,
+      key: razorpayKey,
 
       /*
-       * IMPORTANT:
-       * Amount comes from Razorpay order created
-       * by the server.
+       * Amount comes from the Razorpay order
+       * created by the server.
        */
-      amount:
-        razorpayOrder.amount,
+      amount: razorpayOrder.amount,
 
-      currency:
-        razorpayOrder.currency,
+      currency: razorpayOrder.currency,
 
       name: "KEIAN",
 
       description:
         "Premium Fragrance Order",
 
-      order_id:
-        razorpayOrder.id,
+      order_id: razorpayOrder.id,
 
       prefill: {
         name: customer.name,
@@ -983,8 +944,8 @@ function Checkout() {
 
           /* --------------------------------------------
              STEP 9
-             Clear cart only after successful
-             payment verification.
+             Clear cart only after payment
+             verification succeeds.
           -------------------------------------------- */
 
           await clearCart();
@@ -998,13 +959,7 @@ function Checkout() {
             state: {
               orderId,
               paymentMethod: "ONLINE",
-
-              /*
-               * IMPORTANT:
-               * Use server total, not frontend total.
-               */
               total: serverTotal,
-
               paymentId:
                 response.razorpay_payment_id,
             },
@@ -1079,15 +1034,13 @@ function Checkout() {
       /*
        * Generate a unique order ID.
        *
-       * This is the order ID,
+       * This is the KEIAN order ID,
        * NOT the user ID.
        */
       const orderId =
         crypto.randomUUID();
 
-      if (
-        paymentMethod === "COD"
-      ) {
+      if (paymentMethod === "COD") {
         await placeCODOrder(orderId);
       } else {
         await placeOnlineOrder(orderId);
@@ -1410,8 +1363,7 @@ function Checkout() {
 
                   <label
                     className={`payment-option ${
-                      paymentMethod ===
-                      "ONLINE"
+                      paymentMethod === "ONLINE"
                         ? "selected"
                         : ""
                     }`}
@@ -1421,8 +1373,7 @@ function Checkout() {
                       name="paymentMethod"
                       value="ONLINE"
                       checked={
-                        paymentMethod ===
-                        "ONLINE"
+                        paymentMethod === "ONLINE"
                       }
                       onChange={() =>
                         setPaymentMethod(
@@ -1451,8 +1402,7 @@ function Checkout() {
 
                   <label
                     className={`payment-option ${
-                      paymentMethod ===
-                      "COD"
+                      paymentMethod === "COD"
                         ? "selected"
                         : ""
                     }`}
@@ -1462,8 +1412,7 @@ function Checkout() {
                       name="paymentMethod"
                       value="COD"
                       checked={
-                        paymentMethod ===
-                        "COD"
+                        paymentMethod === "COD"
                       }
                       onChange={() =>
                         setPaymentMethod(
@@ -1537,7 +1486,6 @@ function Checkout() {
                       </div>
 
                       <div className="checkout-product-info">
-
                         <h3>
                           {item.name}
                         </h3>
@@ -1550,15 +1498,12 @@ function Checkout() {
                         <strong>
                           ₹
                           {(
-                            Number(
-                              item.price
-                            ) *
+                            Number(item.price) *
                             item.quantity
                           ).toLocaleString(
                             "en-IN"
                           )}
                         </strong>
-
                       </div>
                     </div>
                   ))}
@@ -1628,8 +1573,7 @@ function Checkout() {
                 >
                   {placingOrder
                     ? "PROCESSING..."
-                    : paymentMethod ===
-                      "ONLINE"
+                    : paymentMethod === "ONLINE"
                     ? "PAY SECURELY"
                     : "PLACE ORDER"}
                 </button>
