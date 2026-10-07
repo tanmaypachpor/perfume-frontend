@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "@/features/content/pages/ContactPage.css";
+import { supabase } from "@/shared/lib/supabaseClient";
 import {
   FaInstagram,
   FaFacebookF,
@@ -12,15 +13,54 @@ import {
 function ContactPage() {
   const [submitted, setSubmitted] =
     useState(false);
+  const [submitting, setSubmitting] =
+    useState(false);
+  const [submitError, setSubmitError] =
+    useState("");
 
-  const handleSubmit = (
+  const handleSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
-    setSubmitted(true);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const message = {
+      name: String(formData.get("name") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      phone: String(formData.get("phone") ?? ""),
+      subject: String(formData.get("subject") ?? ""),
+      message: String(formData.get("message") ?? ""),
+    };
 
-    event.currentTarget.reset();
+    setSubmitting(true);
+    setSubmitted(false);
+    setSubmitError("");
+
+    try {
+      const { error } = await supabase.functions.invoke(
+        "contact-email",
+        { body: message }
+      );
+
+      if (error) {
+        console.error("Contact form submission failed:", error.message);
+        setSubmitError(
+          "We couldn't send your message. Please try again."
+        );
+        return;
+      }
+
+      setSubmitted(true);
+      form.reset();
+    } catch (error) {
+      console.error("Contact form request failed:", error);
+      setSubmitError(
+        "We couldn't send your message. Please check your connection and try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -216,9 +256,15 @@ function ContactPage() {
             {/* SUCCESS MESSAGE */}
 
             {submitted && (
-              <div className="contact-success">
+              <div className="contact-success" role="status">
                 Thank you for contacting KEIAN.
                 We will get back to you soon.
+              </div>
+            )}
+
+            {submitError && (
+              <div className="contact-error" role="alert">
+                {submitError}
               </div>
             )}
 
@@ -356,8 +402,9 @@ function ContactPage() {
               <button
                 type="submit"
                 className="contact-submit"
+                disabled={submitting}
               >
-                SEND MESSAGE
+                {submitting ? "SENDING..." : "SEND MESSAGE"}
 
                 <span>
                   →
