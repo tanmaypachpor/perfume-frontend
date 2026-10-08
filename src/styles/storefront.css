@@ -887,22 +887,20 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 ========================================================= */
 
 @keyframes hero-background-drift {
-
   0% {
-    background-size: 100% 100%;
+    background-size: cover;
     background-position: 50% 50%;
   }
-
   50% {
-    background-size: 103% 103%;
+    background-size: 104% 104%;
     background-position: 51% 49%;
   }
-
   100% {
-    background-size: 106% 106%;
+    background-size: 108% 108%;
     background-position: 48% 51%;
   }
 }
+
 
 @keyframes hero-light-sweep {
 
@@ -4302,3 +4300,115 @@ body .footer.site-footer .footer-bottom span:first-child {
 .site-navbar .nav-links.mobile-menu-open {
   background: #f7f4ed !important;
 }
+
+/* =========================================================
+   FULL-SCREEN HERO VIEWPORT & AUTOMATIC BLOCK PUSH DOWN
+========================================================= */
+
+.hero {
+  /* Forces the section to be exactly the height of the user's screen */
+  height: 100vh !important;
+  min-height: 100vh !important;
+  
+  /* Centers the inner content vertically within the full screen space */
+  display: flex !important;
+  align-items: center !important;
+  
+  /* Locks the image aspect ratio safely to prevent all stretching */
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+/* Adjusts the text layout block inside the full screen space */
+.hero-content {
+  /* Adds top cushioning so text sits beautifully below your transparent nav */
+  padding-top: 90px !important; 
+}
+
+/* Syncs the original drift animation parameters with the new cover layout */
+@keyframes hero-background-drift {
+  0% {
+    background-size: cover !important;
+    background-position: 50% 50% !important;
+  }
+  50% {
+    background-size: 104% 104% !important;
+    background-position: 51% 49% !important;
+  }
+  100% {
+    background-size: 108% 108% !important;
+    background-position: 48% 51% !important;
+  }
+}
+
+/* Mobile responsive layout overrides */
+/* =========================================================
+   RESPONSIVE HERO SPREAD & ACCURATE MOBILE RATIO LOCK
+========================================================= */
+
+/* 1. DESKTOP: Keep the premium full-screen first-fold experience */
+@media (min-width: 769px) {
+  .hero {
+    height: 100vh !important;
+    min-height: 680px !important;
+    display: flex !important;
+    align-items: center !important;
+    background-size: cover !important;
+    background-position: center !important;
+  }
+  .hero-content {
+    padding-top: 90px !important; 
+  }
+}
+
+/* 2. TABLET & MOBILE: Spread naturally without extreme elongation */
+@media (max-width: 768px) {
+  .hero {
+    /* Break out of the forced 100vh screen stretching */
+    height: auto !important;
+    min-height: 520px !important; 
+    
+    /* Create an appropriate, well-proportioned vertical spread */
+    padding-top: 110px !important;  /* Safe breathing space below transparent nav */
+    padding-bottom: 60px !important; /* Elegant cushion below the action buttons */
+    
+    /* Spreads the image across the background window symmetrically */
+    background-size: cover !important;
+    background-position: 65% center !important;
+    
+    display: block !important; /* Allows layout to stack and breathe naturally */
+  }
+
+  .hero-content {
+    width: 100% !important;
+    max-width: 560px !important;
+    padding: 0 !important; /* Uses parent padding to stay perfectly positioned */
+  }
+}
+
+/* 3. SMALL PHONES: Tailor content padding to match compact screens */
+@media (max-width: 480px) {
+  .hero {
+    min-height: 480px !important;
+    padding-top: 95px !important;  /* Snug, balanced fit for 54px mobile navbar */
+    padding-bottom: 50px !important;
+    background-position: 68% center !important;
+  }
+}
+
+/* 4. ANIMATION SYNC: Keep background image zoom completely un-distorted */
+@keyframes hero-background-drift {
+  0% {
+    background-size: cover !important;
+    background-position: 50% 50% !important;
+  }
+  50% {
+    background-size: 104% 104% !important;
+    background-position: 51% 49% !important;
+  }
+  100% {
+    background-size: 108% 108% !important;
+    background-position: 48% 51% !important;
+  }
+}
+
