@@ -1,22 +1,21 @@
 import { useState } from "react";
 import "@/features/content/pages/ContactPage.css";
 import { supabase } from "@/shared/lib/supabaseClient";
+
 import {
   FaInstagram,
   FaFacebookF,
   FaPinterestP,
   FaEnvelope,
   FaPhone,
-  FaMapMarkerAlt,
+  FaArrowRight,
+  FaCheck,
 } from "react-icons/fa";
 
 function ContactPage() {
-  const [submitted, setSubmitted] =
-    useState(false);
-  const [submitting, setSubmitting] =
-    useState(false);
-  const [submitError, setSubmitError] =
-    useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const handleSubmit = async (
     event: React.FormEvent<HTMLFormElement>
@@ -25,6 +24,7 @@ function ContactPage() {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
+
     const message = {
       name: String(formData.get("name") ?? ""),
       email: String(formData.get("email") ?? ""),
@@ -40,21 +40,32 @@ function ContactPage() {
     try {
       const { error } = await supabase.functions.invoke(
         "contact-email",
-        { body: message }
+        {
+          body: message,
+        }
       );
 
       if (error) {
-        console.error("Contact form submission failed:", error.message);
+        console.error(
+          "Contact form submission failed:",
+          error.message
+        );
+
         setSubmitError(
           "We couldn't send your message. Please try again."
         );
+
         return;
       }
 
       setSubmitted(true);
       form.reset();
     } catch (error) {
-      console.error("Contact form request failed:", error);
+      console.error(
+        "Contact form request failed:",
+        error
+      );
+
       setSubmitError(
         "We couldn't send your message. Please check your connection and try again."
       );
@@ -64,389 +75,264 @@ function ContactPage() {
   };
 
   return (
-    <div className="contact-page">
+    <main className="contact-page">
 
-      {/* =====================================================
-          CONTACT HERO
-      ===================================================== */}
+      {/* HEADER */}
+      <section className="contact-header">
+        <span className="section-label">
+          CONTACT KEIAN
+        </span>
 
-      <section className="contact-hero">
+        <h1>
+          We'd love to
+          <em>hear from you.</em>
+        </h1>
 
-        <div className="contact-hero-content">
-
-          <span className="section-label">
-            GET IN TOUCH
-          </span>
-
-          <h1>
-            We'd Love To{" "}
-            <em>
-              Hear From You.
-            </em>
-          </h1>
-
-          <p>
-            Whether you have a question about our
-            fragrances, your order, or simply want
-            to know more about KEIAN, we're here
-            to help.
-          </p>
-
-        </div>
-
+        <p>
+          Have a question about a fragrance, your order,
+          delivery, or anything else? Send us a message
+          and our team will get back to you.
+        </p>
       </section>
 
-      {/* =====================================================
-          CONTACT SECTION
-      ===================================================== */}
+      {/* CONTACT INFO */}
+      <div className="contact-quick-info">
 
-      <section className="contact-section">
+        <a href="mailto:info@keian.com">
+          <FaEnvelope />
+          <span>info@keian.com</span>
+        </a>
 
-        <div className="contact-container">
+        <a href="tel:+919898552297">
+          <FaPhone />
+          <span>+91 9898552297</span>
+        </a>
 
-          {/* =================================================
-              CONTACT INFORMATION
-          ================================================= */}
+      </div>
 
-          <div className="contact-info">
+      {/* FORM */}
+      <section className="contact-form-section">
 
-            <span className="section-label">
-              CONTACT KEIAN
-            </span>
+        <div className="contact-form-wrapper">
 
-            <h2>
-              Let's Start a{" "}
-              <em>
-                Conversation.
-              </em>
-            </h2>
-
-            <p className="contact-intro">
-              Have a question, suggestion, or need
-              assistance? Send us a message and our
-              team will get back to you as soon as
-              possible.
-            </p>
-
-            {/* LOCATION */}
-
-            <div className="contact-info-item">
-
-              <div className="contact-icon">
-                <FaMapMarkerAlt />
-              </div>
-
-              <div>
-
-                <h4>
-                  VISIT US
-                </h4>
-
-                <p>
-                  KEIAN Fragrances
-                  <br />
-                  Pune, Maharashtra
-                  <br />
-                  India
-                </p>
-
-              </div>
-
-            </div>
-
-            {/* EMAIL */}
-
-            <div className="contact-info-item">
-
-              <div className="contact-icon">
-                <FaEnvelope />
-              </div>
-
-              <div>
-
-                <h4>
-                  EMAIL US
-                </h4>
-
-                <a href="mailto:info@keian.com">
-                  info@keian.com
-                </a>
-
-              </div>
-
-            </div>
-
-            {/* PHONE */}
-
-            <div className="contact-info-item">
-
-              <div className="contact-icon">
-                <FaPhone />
-              </div>
-
-              <div>
-
-                <h4>
-                  CALL US
-                </h4>
-
-                <a href="tel:+919999999999">
-                  +91 99999 99999
-                </a>
-
-              </div>
-
-            </div>
-
-            {/* SOCIAL MEDIA */}
-
-            <div className="contact-social">
-
-              <h4>
-                FOLLOW KEIAN
-              </h4>
-
-              <div className="contact-social-links">
-
-                <a
-                  href="#instagram"
-                  aria-label="Instagram"
-                >
-                  <FaInstagram />
-                </a>
-
-                <a
-                  href="#facebook"
-                  aria-label="Facebook"
-                >
-                  <FaFacebookF />
-                </a>
-
-                <a
-                  href="#pinterest"
-                  aria-label="Pinterest"
-                >
-                  <FaPinterestP />
-                </a>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          {/* =================================================
-              CONTACT FORM
-          ================================================= */}
-
-          <div className="contact-form-wrapper">
-
-            <div className="contact-form-header">
-
-              <span>
-                SEND US A MESSAGE
+          <div className="form-header">
+            <div>
+              <span className="form-eyebrow">
+                WRITE TO US
               </span>
 
-              <h3>
-                How Can We Help?
-              </h3>
+              <h2>
+                How can we
+                <em>help?</em>
+              </h2>
+            </div>
+
+            <span className="form-mark">
+              K
+            </span>
+          </div>
+
+          <p className="form-description">
+            Fill in the details below and tell us
+            what's on your mind.
+          </p>
+
+          {submitted && (
+            <div
+              className="contact-success"
+              role="status"
+            >
+              <div className="success-icon">
+                <FaCheck />
+              </div>
+
+              <div>
+                <strong>
+                  Message received.
+                </strong>
+
+                <p>
+                  Thank you for contacting KEIAN.
+                  We'll get back to you soon.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {submitError && (
+            <div
+              className="contact-error"
+              role="alert"
+            >
+              {submitError}
+            </div>
+          )}
+
+          <form
+            className="contact-form"
+            onSubmit={handleSubmit}
+          >
+
+            <div className="contact-form-row">
+
+              <div className="form-group">
+                <label htmlFor="contact-name">
+                  FULL NAME
+                </label>
+
+                <input
+                  id="contact-name"
+                  type="text"
+                  name="name"
+                  placeholder="Your name"
+                  autoComplete="name"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="contact-email">
+                  EMAIL ADDRESS
+                </label>
+
+                <input
+                  id="contact-email"
+                  type="email"
+                  name="email"
+                  placeholder="Your email"
+                  autoComplete="email"
+                  required
+                />
+              </div>
 
             </div>
 
-            {/* SUCCESS MESSAGE */}
-
-            {submitted && (
-              <div className="contact-success" role="status">
-                Thank you for contacting KEIAN.
-                We will get back to you soon.
-              </div>
-            )}
-
-            {submitError && (
-              <div className="contact-error" role="alert">
-                {submitError}
-              </div>
-            )}
-
-            <form
-              className="contact-form"
-              onSubmit={handleSubmit}
-            >
-
-              {/* NAME + EMAIL */}
-
-              <div className="contact-form-row">
-
-                <div className="form-group">
-
-                  <label htmlFor="contact-name">
-                    FULL NAME
-                  </label>
-
-                  <input
-                    id="contact-name"
-                    type="text"
-                    name="name"
-                    placeholder="Your name"
-                    autoComplete="name"
-                    required
-                  />
-
-                </div>
-
-                <div className="form-group">
-
-                  <label htmlFor="contact-email">
-                    EMAIL ADDRESS
-                  </label>
-
-                  <input
-                    id="contact-email"
-                    type="email"
-                    name="email"
-                    placeholder="Your email"
-                    autoComplete="email"
-                    required
-                  />
-
-                </div>
-
-              </div>
-
-              {/* PHONE + SUBJECT */}
-
-              <div className="contact-form-row">
-
-                <div className="form-group">
-
-                  <label htmlFor="contact-phone">
-                    PHONE NUMBER
-                  </label>
-
-                  <input
-                    id="contact-phone"
-                    type="tel"
-                    name="phone"
-                    placeholder="+91 XXXXX XXXXX"
-                    autoComplete="tel"
-                  />
-
-                </div>
-
-                <div className="form-group">
-
-                  <label htmlFor="contact-subject">
-                    SUBJECT
-                  </label>
-
-                  <select
-                    id="contact-subject"
-                    name="subject"
-                    defaultValue=""
-                    required
-                  >
-
-                    <option
-                      value=""
-                      disabled
-                    >
-                      Select a subject
-                    </option>
-
-                    <option value="order">
-                      Order Enquiry
-                    </option>
-
-                    <option value="product">
-                      Product Enquiry
-                    </option>
-
-                    <option value="shipping">
-                      Shipping & Delivery
-                    </option>
-
-                    <option value="return">
-                      Returns & Exchange
-                    </option>
-
-                    <option value="general">
-                      General Enquiry
-                    </option>
-
-                  </select>
-
-                </div>
-
-              </div>
-
-              {/* MESSAGE */}
+            <div className="contact-form-row">
 
               <div className="form-group">
-
-                <label htmlFor="contact-message">
-                  YOUR MESSAGE
+                <label htmlFor="contact-phone">
+                  PHONE NUMBER
                 </label>
 
-                <textarea
-                  id="contact-message"
-                  name="message"
-                  rows={6}
-                  placeholder="Tell us how we can help..."
-                  required
-                ></textarea>
-
+                <input
+                  id="contact-phone"
+                  type="tel"
+                  name="phone"
+                  placeholder="+91 XXXXX XXXXX"
+                  autoComplete="tel"
+                />
               </div>
 
-              {/* SUBMIT BUTTON */}
+              <div className="form-group">
+                <label htmlFor="contact-subject">
+                  SUBJECT
+                </label>
+
+                <select
+                  id="contact-subject"
+                  name="subject"
+                  defaultValue=""
+                  required
+                >
+                  <option value="" disabled>
+                    Select a subject
+                  </option>
+
+                  <option value="order">
+                    Order Enquiry
+                  </option>
+
+                  <option value="product">
+                    Product Enquiry
+                  </option>
+
+                  <option value="shipping">
+                    Shipping & Delivery
+                  </option>
+
+                  <option value="return">
+                    Returns & Exchange
+                  </option>
+
+                  <option value="general">
+                    General Enquiry
+                  </option>
+                </select>
+              </div>
+
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="contact-message">
+                YOUR MESSAGE
+              </label>
+
+              <textarea
+                id="contact-message"
+                name="message"
+                rows={5}
+                placeholder="Tell us how we can help..."
+                required
+              />
+            </div>
+
+            <div className="form-submit-area">
 
               <button
                 type="submit"
                 className="contact-submit"
                 disabled={submitting}
               >
-                {submitting ? "SENDING..." : "SEND MESSAGE"}
-
                 <span>
-                  →
+                  {submitting
+                    ? "SENDING..."
+                    : "SEND MESSAGE"}
                 </span>
 
+                <FaArrowRight />
               </button>
 
-            </form>
+              <p>
+                Your message is sent securely
+                to the KEIAN team.
+              </p>
 
-          </div>
+            </div>
 
+          </form>
         </div>
 
       </section>
 
-      {/* =====================================================
-          BOTTOM SECTION
-      ===================================================== */}
+      {/* SOCIAL */}
+      <footer className="contact-footer">
 
-      <section className="contact-bottom">
-
-        <span className="section-label">
-          THE KEIAN EXPERIENCE
+        <span>
+          FOLLOW KEIAN
         </span>
 
-        <h2>
-          Your Scent.
-          <br />
-          <em>
-            Your Story.
-          </em>
-        </h2>
+        <div className="contact-social-links">
 
-        <p>
-          Every conversation helps us create a
-          better fragrance experience for you.
-        </p>
+          <a href="#instagram" aria-label="Instagram">
+            <FaInstagram />
+          </a>
 
-      </section>
+          <a href="#facebook" aria-label="Facebook">
+            <FaFacebookF />
+          </a>
 
-    </div>
+          <a href="#pinterest" aria-label="Pinterest">
+            <FaPinterestP />
+          </a>
+
+        </div>
+
+      </footer>
+
+    </main>
   );
 }
 
 export default ContactPage;
+
+
