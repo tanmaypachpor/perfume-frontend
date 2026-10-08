@@ -1,9 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaShoppingBag, FaInstagram, FaFacebookF, FaPinterestP, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
+import {
+  FaShoppingBag,
+  FaInstagram,
+  FaFacebookF,
+  FaPinterestP,
+  FaEnvelope,
+  FaPhone,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
+
 import logo1 from "@/assets/images/logo.webp";
 import logofooter from "@/assets/images/logo001.webp";
+
 import { supabase } from "@/shared/lib/supabaseClient";
+
 import "@/styles/storefront.css";
 
 /* =========================================================
@@ -21,6 +32,13 @@ export function Navbar() {
     useState(false);
 
   const [loggingOut, setLoggingOut] =
+    useState(false);
+
+  /* =====================================================
+     MOBILE MENU
+  ===================================================== */
+
+  const [mobileMenuOpen, setMobileMenuOpen] =
     useState(false);
 
   const navigate = useNavigate();
@@ -125,6 +143,64 @@ export function Navbar() {
   }, []);
 
   /* =====================================================
+     CLOSE MOBILE MENU WHEN CLICKING OUTSIDE
+  ===================================================== */
+
+  useEffect(() => {
+    const handleMobileMenuOutside = (
+      event: MouseEvent
+    ) => {
+      const target =
+        event.target as HTMLElement;
+
+      if (
+        !target.closest(
+          ".mobile-menu-button"
+        ) &&
+        !target.closest(".nav-links")
+      ) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleMobileMenuOutside
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleMobileMenuOutside
+      );
+    };
+  }, []);
+
+  /* =====================================================
+     CLOSE MOBILE MENU ON DESKTOP
+  ===================================================== */
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener(
+      "resize",
+      handleResize
+    );
+
+    return () => {
+      window.removeEventListener(
+        "resize",
+        handleResize
+      );
+    };
+  }, []);
+
+  /* =====================================================
      SECTION NAVIGATION
   ===================================================== */
 
@@ -133,6 +209,10 @@ export function Navbar() {
     sectionId: string
   ) => {
     event.preventDefault();
+
+    /* Close mobile menu */
+
+    setMobileMenuOpen(false);
 
     if (window.location.pathname === "/") {
       document
@@ -160,6 +240,28 @@ export function Navbar() {
   };
 
   /* =====================================================
+     LOGIN
+  ===================================================== */
+
+  const handleLogin = () => {
+    setMobileMenuOpen(false);
+    setAccountOpen(false);
+
+    navigate("/login");
+  };
+
+  /* =====================================================
+     REGISTER
+  ===================================================== */
+
+  const handleRegister = () => {
+    setMobileMenuOpen(false);
+    setAccountOpen(false);
+
+    navigate("/register");
+  };
+
+  /* =====================================================
      LOGOUT
   ===================================================== */
 
@@ -181,6 +283,7 @@ export function Navbar() {
 
       setUser(null);
       setAccountOpen(false);
+      setMobileMenuOpen(false);
 
       navigate("/");
     } catch (error) {
@@ -193,21 +296,30 @@ export function Navbar() {
     }
   };
 
+  /* =====================================================
+     RENDER
+  ===================================================== */
+
   return (
     <header
       className={`navbar site-navbar ${
         isScrolled ? "scrolled" : ""
       }`}
     >
+
       {/* =================================================
           LOGO
       ================================================= */}
 
       <div className="nav-top-row">
+
         <a
           href="/"
           className="logo"
           aria-label="Keian home"
+          onClick={() =>
+            setMobileMenuOpen(false)
+          }
         >
           <img
             src={logo1}
@@ -216,27 +328,83 @@ export function Navbar() {
             height="94"
           />
         </a>
+
       </div>
+
+      {/* =================================================
+          LOGO TEXT
+      ================================================= */}
 
       <span className="logo-text">
         KEIAN
       </span>
 
       {/* =================================================
+          MOBILE HAMBURGER
+      ================================================= */}
+
+      <button
+        type="button"
+        className={`mobile-menu-button ${
+          mobileMenuOpen
+            ? "active"
+            : ""
+        }`}
+        onClick={() =>
+          setMobileMenuOpen(
+            (current) => !current
+          )
+        }
+        aria-label={
+          mobileMenuOpen
+            ? "Close navigation menu"
+            : "Open navigation menu"
+        }
+        aria-expanded={mobileMenuOpen}
+        aria-controls="main-navigation"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      {/* =================================================
           NAVIGATION
       ================================================= */}
 
       <nav
-        className="nav-links"
+        id="main-navigation"
+        className={`nav-links ${
+          mobileMenuOpen
+            ? "mobile-menu-open"
+            : ""
+        }`}
         aria-label="Main navigation"
       >
-        <a href="/">
+
+        {/* HOME */}
+
+        <a
+          href="/"
+          onClick={() =>
+            setMobileMenuOpen(false)
+          }
+        >
           Home
         </a>
 
-        <a href="/products">
+        {/* SHOP */}
+
+        <a
+          href="/products"
+          onClick={() =>
+            setMobileMenuOpen(false)
+          }
+        >
           Shop
         </a>
+
+        {/* COLLECTIONS */}
 
         <a
           href="/collections"
@@ -250,6 +418,8 @@ export function Navbar() {
           Collections
         </a>
 
+        {/* OUR STORY */}
+
         <a
           href="/#about"
           onClick={(event) =>
@@ -261,6 +431,7 @@ export function Navbar() {
         >
           Our Story
         </a>
+
       </nav>
 
       {/* =================================================
@@ -275,14 +446,13 @@ export function Navbar() {
 
         {!user && (
           <>
+
             {/* LOGIN */}
 
             <button
               type="button"
               className="nav-auth-button nav-login-button"
-              onClick={() => {
-                navigate("/login");
-              }}
+              onClick={handleLogin}
             >
               LOGIN
             </button>
@@ -292,12 +462,11 @@ export function Navbar() {
             <button
               type="button"
               className="nav-auth-button nav-register-button"
-              onClick={() => {
-                navigate("/register");
-              }}
+              onClick={handleRegister}
             >
               REGISTER
             </button>
+
           </>
         )}
 
@@ -345,6 +514,8 @@ export function Navbar() {
                   type="button"
                   onClick={() => {
                     setAccountOpen(false);
+                    setMobileMenuOpen(false);
+
                     navigate("/account");
                   }}
                 >
@@ -363,6 +534,8 @@ export function Navbar() {
                   type="button"
                   onClick={() => {
                     setAccountOpen(false);
+                    setMobileMenuOpen(false);
+
                     navigate("/orders");
                   }}
                 >
@@ -413,6 +586,7 @@ export function Navbar() {
           className="nav-bag-button"
           aria-label="Shopping bag"
           onClick={() => {
+            setMobileMenuOpen(false);
             navigate("/cart");
           }}
         >
@@ -420,6 +594,7 @@ export function Navbar() {
         </button>
 
       </div>
+
     </header>
   );
 }
@@ -434,7 +609,9 @@ export function Footer() {
 
       <div className="footer-top">
 
-        {/* BRAND */}
+        {/* =================================================
+            BRAND
+        ================================================= */}
 
         <div className="footer-brand">
 
@@ -461,7 +638,9 @@ export function Footer() {
 
         </div>
 
-        {/* SHOP */}
+        {/* =================================================
+            SHOP
+        ================================================= */}
 
         <div className="footer-column">
 
@@ -503,7 +682,9 @@ export function Footer() {
 
         </div>
 
-        {/* ABOUT */}
+        {/* =================================================
+            ABOUT
+        ================================================= */}
 
         <div className="footer-column">
 
@@ -521,7 +702,9 @@ export function Footer() {
 
         </div>
 
-        {/* FOLLOW */}
+        {/* =================================================
+            FOLLOW
+        ================================================= */}
 
         <div className="footer-column footer-social">
 
@@ -538,7 +721,6 @@ export function Footer() {
             <span>
               Instagram
             </span>
-
           </a>
 
           <a
@@ -550,7 +732,6 @@ export function Footer() {
             <span>
               Facebook
             </span>
-
           </a>
 
           <a
@@ -562,12 +743,13 @@ export function Footer() {
             <span>
               Pinterest
             </span>
-
           </a>
 
         </div>
 
-        {/* CONTACT */}
+        {/* =================================================
+            CONTACT
+        ================================================= */}
 
         <div className="footer-column footer-contact">
 
@@ -594,14 +776,14 @@ export function Footer() {
           </div>
 
           <a
-            href="mailto:info@keian.com"
+            href="mailto: info@keianinovex.com"
             className="contact-item"
           >
 
             <FaEnvelope />
 
             <span>
-              info@keian.com
+              info@keianinovex.com
             </span>
 
           </a>
@@ -623,7 +805,9 @@ export function Footer() {
 
       </div>
 
-      {/* FOOTER BOTTOM */}
+      {/* =================================================
+          FOOTER BOTTOM
+      ================================================= */}
 
       <div className="footer-bottom">
 

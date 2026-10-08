@@ -366,11 +366,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "HIM"
+              className={`best-seller-tab ${activeCategory === "HIM"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("HIM")
               }
@@ -380,11 +379,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "HER"
+              className={`best-seller-tab ${activeCategory === "HER"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("HER")
               }
@@ -394,11 +392,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "ATTAR"
+              className={`best-seller-tab ${activeCategory === "ATTAR"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("ATTAR")
               }
@@ -408,11 +405,10 @@ function HomePage() {
 
             <button
               type="button"
-              className={`best-seller-tab ${
-                activeCategory === "GIFTING"
+              className={`best-seller-tab ${activeCategory === "GIFTING"
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveCategory("GIFTING")
               }

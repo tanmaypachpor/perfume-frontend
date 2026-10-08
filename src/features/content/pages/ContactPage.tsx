@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "@/features/content/pages/ContactPage.css";
 import { supabase } from "@/shared/lib/supabaseClient";
 
@@ -13,6 +14,8 @@ import {
 } from "react-icons/fa";
 
 function ContactPage() {
+  const navigate = useNavigate();
+
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -79,6 +82,17 @@ function ContactPage() {
 
       {/* HEADER */}
       <section className="contact-header">
+
+        {/* BACK TO HOME */}
+        <button
+          type="button"
+          className="back-home-button"
+          onClick={() => navigate("/")}
+        >
+          <FaArrowRight className="back-home-icon" />
+          <span>BACK TO HOME</span>
+        </button>
+
         <span className="section-label">
           CONTACT KEIAN
         </span>
@@ -93,14 +107,15 @@ function ContactPage() {
           delivery, or anything else? Send us a message
           and our team will get back to you.
         </p>
+
       </section>
 
       {/* CONTACT INFO */}
       <div className="contact-quick-info">
 
-        <a href="mailto:info@keian.com">
+        <a href="mailto: info@keianinovex.com">
           <FaEnvelope />
-          <span>info@keian.com</span>
+          <span> info@keianinovex.com</span>
         </a>
 
         <a href="tel:+919898552297">
@@ -116,6 +131,7 @@ function ContactPage() {
         <div className="contact-form-wrapper">
 
           <div className="form-header">
+
             <div>
               <span className="form-eyebrow">
                 WRITE TO US
@@ -127,9 +143,6 @@ function ContactPage() {
               </h2>
             </div>
 
-            <span className="form-mark">
-              K
-            </span>
           </div>
 
           <p className="form-description">
@@ -137,6 +150,7 @@ function ContactPage() {
             what's on your mind.
           </p>
 
+          {/* SUCCESS MESSAGE */}
           {submitted && (
             <div
               className="contact-success"
@@ -159,6 +173,7 @@ function ContactPage() {
             </div>
           )}
 
+          {/* ERROR MESSAGE */}
           {submitError && (
             <div
               className="contact-error"
@@ -168,6 +183,7 @@ function ContactPage() {
             </div>
           )}
 
+          {/* CONTACT FORM */}
           <form
             className="contact-form"
             onSubmit={handleSubmit}
@@ -175,7 +191,9 @@ function ContactPage() {
 
             <div className="contact-form-row">
 
+              {/* NAME */}
               <div className="form-group">
+
                 <label htmlFor="contact-name">
                   FULL NAME
                 </label>
@@ -188,9 +206,12 @@ function ContactPage() {
                   autoComplete="name"
                   required
                 />
+
               </div>
 
+              {/* EMAIL */}
               <div className="form-group">
+
                 <label htmlFor="contact-email">
                   EMAIL ADDRESS
                 </label>
@@ -203,13 +224,16 @@ function ContactPage() {
                   autoComplete="email"
                   required
                 />
+
               </div>
 
             </div>
 
             <div className="contact-form-row">
 
+              {/* PHONE */}
               <div className="form-group">
+
                 <label htmlFor="contact-phone">
                   PHONE NUMBER
                 </label>
@@ -221,9 +245,12 @@ function ContactPage() {
                   placeholder="+91 XXXXX XXXXX"
                   autoComplete="tel"
                 />
+
               </div>
 
+              {/* SUBJECT */}
               <div className="form-group">
+
                 <label htmlFor="contact-subject">
                   SUBJECT
                 </label>
@@ -234,6 +261,7 @@ function ContactPage() {
                   defaultValue=""
                   required
                 >
+
                   <option value="" disabled>
                     Select a subject
                   </option>
@@ -257,12 +285,16 @@ function ContactPage() {
                   <option value="general">
                     General Enquiry
                   </option>
+
                 </select>
+
               </div>
 
             </div>
 
+            {/* MESSAGE */}
             <div className="form-group">
+
               <label htmlFor="contact-message">
                 YOUR MESSAGE
               </label>
@@ -274,8 +306,10 @@ function ContactPage() {
                 placeholder="Tell us how we can help..."
                 required
               />
+
             </div>
 
+            {/* SUBMIT */}
             <div className="form-submit-area">
 
               <button
@@ -283,6 +317,7 @@ function ContactPage() {
                 className="contact-submit"
                 disabled={submitting}
               >
+
                 <span>
                   {submitting
                     ? "SENDING..."
@@ -290,6 +325,7 @@ function ContactPage() {
                 </span>
 
                 <FaArrowRight />
+
               </button>
 
               <p>
@@ -300,6 +336,7 @@ function ContactPage() {
             </div>
 
           </form>
+
         </div>
 
       </section>
@@ -313,15 +350,24 @@ function ContactPage() {
 
         <div className="contact-social-links">
 
-          <a href="#instagram" aria-label="Instagram">
+          <a
+            href="#instagram"
+            aria-label="Instagram"
+          >
             <FaInstagram />
           </a>
 
-          <a href="#facebook" aria-label="Facebook">
+          <a
+            href="#facebook"
+            aria-label="Facebook"
+          >
             <FaFacebookF />
           </a>
 
-          <a href="#pinterest" aria-label="Pinterest">
+          <a
+            href="#pinterest"
+            aria-label="Pinterest"
+          >
             <FaPinterestP />
           </a>
 
@@ -334,5 +380,3 @@ function ContactPage() {
 }
 
 export default ContactPage;
-
-
