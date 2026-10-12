@@ -1,13 +1,14 @@
 :root {
-  --black: #11100f;
-  --dark: #181614;
-  --cream: #f5f1e9;
-  --cream-dark: #ebe5da;
-  --gold: #b7965a;
-  --gold-light: #d6bd87;
+  --black: #0A111E;
+  --dark: #0A111E;
+  --cream: #F9F8F3;
+  --cream-dark: #ECEAE1;
+  --gold: #C5A059;
+  --gold-light: #D4B26F;
   --white: #ffffff;
-  --muted: #827c73;
-  --border: rgba(183, 150, 90, 0.25);
+  --muted: #4A5568;
+  --red-accent: #8B1E22;
+  --border: rgba(197, 160, 89, 0.28);
 }
 
 
@@ -30,9 +31,9 @@ body .navbar.site-navbar {
 
 /* ========================================================= SCROLLED NAVBAR ========================================================= */
 body .navbar.site-navbar.scrolled {
-  background: #11100f;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: var(--black);
+  border-bottom: 1px solid rgba(197, 160, 89, 0.15);
+  box-shadow: 0 4px 20px rgba(10, 17, 30, 0.4);
 }
 
 /* ========================================================= LOGO CONTAINER ========================================================= */
@@ -72,7 +73,7 @@ body .navbar.site-navbar .logo-text {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 5px;
-  color: #e5dfd3;
+  color: var(--cream);
   pointer-events: none;
 }
 
@@ -89,7 +90,7 @@ body .navbar.site-navbar .nav-links {
 
 body .navbar.site-navbar .nav-links a {
   position: relative;
-  color: #d3cec6;
+  color: var(--cream);
   font-size: 16px;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -99,7 +100,7 @@ body .navbar.site-navbar .nav-links a {
 }
 
 body .navbar.site-navbar .nav-links a:hover {
-  color: #ffffff;
+  color: var(--gold-light);
 }
 
 /* ========================================================= NAVIGATION UNDERLINE ========================================================= */
@@ -110,7 +111,7 @@ body .navbar.site-navbar .nav-links a::after {
   bottom: -8px;
   width: 0;
   height: 1px;
-  background: var(--gold-light);
+  background: var(--gold);
   transition: width 0.3s ease;
 }
 
@@ -142,9 +143,9 @@ body .navbar.site-navbar .nav-auth-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(229, 223, 211, 0.45);
+  border: 1px solid rgba(249, 248, 243, 0.45);
   background: transparent;
-  color: #e5dfd3;
+  color: var(--cream);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -157,27 +158,27 @@ body .navbar.site-navbar .nav-auth-button {
 /* ========================================================= LOGIN ========================================================= */
 body .navbar.site-navbar .nav-login-button {
   background: transparent;
-  color: #e5dfd3;
-  border-color: rgba(229, 223, 211, 0.45);
+  color: var(--cream);
+  border-color: rgba(249, 248, 243, 0.45);
 }
 
 body .navbar.site-navbar .nav-login-button:hover {
   background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  border-color: #ffffff;
+  color: var(--white);
+  border-color: var(--gold-light);
 }
 
 /* ========================================================= REGISTER ========================================================= */
 body .navbar.site-navbar .nav-register-button {
-  background: #e5dfd3;
-  color: #11100f;
-  border-color: #e5dfd3;
+  background: var(--red-accent);
+  color: var(--white);
+  border-color: var(--red-accent);
 }
 
 body .navbar.site-navbar .nav-register-button:hover {
-  background: var(--gold-light);
-  color: #11100f;
-  border-color: var(--gold-light);
+  background: #a32328;
+  color: var(--white);
+  border-color: #a32328;
 }
 
 /* ========================================================= BUTTON ACTIVE STATE ========================================================= */
@@ -193,18 +194,18 @@ body .navbar.site-navbar .nav-bag-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(229, 223, 211, 0.30);
+  border: 1px solid rgba(249, 248, 243, 0.30);
   background: transparent;
-  color: #e5dfd3;
+  color: var(--cream);
   font-size: 15px;
   line-height: 1;
   transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
 }
 
 body .navbar.site-navbar .nav-bag-button:hover {
-  background: #e5dfd3;
-  color: #11100f;
-  border-color: #e5dfd3;
+  background: var(--gold);
+  color: var(--black);
+  border-color: var(--gold);
 }
 
 body .navbar.site-navbar .nav-bag-button:active {
@@ -213,38 +214,38 @@ body .navbar.site-navbar .nav-bag-button:active {
 
 /* ========================================================= SCROLLED NAVBAR AUTH COLORS ========================================================= */
 body .navbar.site-navbar.scrolled .nav-auth-button {
-  color: #e5dfd3;
+  color: var(--cream);
 }
 
 body .navbar.site-navbar.scrolled .nav-login-button {
-  border-color: rgba(229, 223, 211, 0.40);
+  border-color: rgba(249, 248, 243, 0.40);
 }
 
 body .navbar.site-navbar.scrolled .nav-login-button:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: #ffffff;
-  color: #ffffff;
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
 body .navbar.site-navbar.scrolled .nav-register-button {
-  background: #e5dfd3;
-  color: #11100f;
-  border-color: #e5dfd3;
+  background: var(--red-accent);
+  color: var(--white);
+  border-color: var(--red-accent);
 }
 
 body .navbar.site-navbar.scrolled .nav-register-button:hover {
-  background: var(--gold-light);
-  border-color: var(--gold-light);
+  background: #a32328;
+  border-color: #a32328;
 }
 
 body .navbar.site-navbar.scrolled .nav-bag-button {
-  color: #e5dfd3;
+  color: var(--cream);
 }
 
 body .navbar.site-navbar.scrolled .nav-bag-button:hover {
-  background: #e5dfd3;
-  color: #11100f;
-  border-color: #e5dfd3;
+  background: var(--gold);
+  color: var(--black);
+  border-color: var(--gold);
 }
 
 /* ========================================================= TABLET ========================================================= */
@@ -379,7 +380,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   padding: 0 5% 0 8% !important;
 
-  color: #ffffff;
+  color: var(--white);
 
   background-repeat: no-repeat;
   background-size: cover;
@@ -403,9 +404,9 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   background:
     linear-gradient(90deg,
-      rgba(0, 0, 0, 0.62) 0%,
-      rgba(0, 0, 0, 0.38) 45%,
-      rgba(0, 0, 0, 0.12) 100%);
+      rgba(10, 17, 30, 0.82) 0%,
+      rgba(10, 17, 30, 0.55) 45%,
+      rgba(10, 17, 30, 0.20) 100%);
 
   pointer-events: none;
 }
@@ -423,7 +424,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   background: linear-gradient(115deg,
       transparent 38%,
-      rgba(226, 195, 132, 0.08) 48%,
+      rgba(197, 160, 89, 0.15) 48%,
       rgba(255, 255, 255, 0.05) 52%,
       transparent 62%);
 
@@ -504,6 +505,8 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   text-transform: uppercase;
 
+  color: var(--cream);
+
   overflow-wrap: break-word;
 }
 
@@ -520,7 +523,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 }
 
 .hero h1 em {
-  color: var(--gold-light);
+  color: var(--gold);
 
   font-style: italic;
   font-weight: 300;
@@ -541,7 +544,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   margin: 10px 0 22px;
 
-  color: #b4aea6;
+  color: var(--cream-dark);
 
   font-size: 13px;
 
@@ -577,7 +580,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   padding: 15px 36px !important;
 
-  color: #1a120e !important;
+  color: var(--white) !important;
 
   font-size: 10.5px !important;
   font-weight: 600 !important;
@@ -586,13 +589,14 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   text-transform: uppercase;
 
-  background: #cbad73 !important;
+  background: var(--red-accent) !important;
 
   border: none;
 
   cursor: pointer;
 
   transition:
+    background 0.35s ease,
     opacity 0.45s ease,
     transform 0.45s ease,
     box-shadow 0.45s ease !important;
@@ -601,7 +605,9 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .primary-button:hover {
   opacity: 1;
 
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.28);
+  background: #a32328 !important;
+
+  box-shadow: 0 18px 34px rgba(139, 30, 34, 0.40);
 
   transform: translateY(-4px);
 }
@@ -613,13 +619,13 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .secondary-button {
   padding: 0 0 7px 15px;
 
-  color: #aaa49b;
+  color: var(--cream-dark);
 
   font-size: 8px;
 
   letter-spacing: 2px;
 
-  border-bottom: 1px solid #655e54;
+  border-bottom: 1px solid var(--gold);
 
   transition:
     color 0.45s ease,
@@ -628,9 +634,9 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 }
 
 .secondary-button:hover {
-  color: #ffffff;
+  color: var(--gold-light);
 
-  border-color: var(--gold);
+  border-color: var(--gold-light);
 
   transform: translateY(-3px);
 }
@@ -677,23 +683,17 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
     background-size: cover;
 
-    /*
-      Keep the important part of the banner visible.
-      Adjust this if your subject is positioned differently.
-    */
     background-position: 65% center;
 
     animation-duration: 34s;
   }
 
-  /* Stronger mobile overlay for text readability */
-
   .hero::before {
     background:
       linear-gradient(180deg,
-        rgba(0, 0, 0, 0.35) 0%,
-        rgba(0, 0, 0, 0.58) 60%,
-        rgba(0, 0, 0, 0.72) 100%);
+        rgba(10, 17, 30, 0.50) 0%,
+        rgba(10, 17, 30, 0.75) 60%,
+        rgba(10, 17, 30, 0.90) 100%);
   }
 
   .hero-content {
@@ -771,10 +771,6 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
     padding: 0 6% !important;
 
-    /*
-      Portrait mobile needs a different crop
-      from desktop.
-    */
     background-position: 68% center;
   }
 
@@ -1015,11 +1011,11 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .trust-bar {
   min-height: 105px;
   padding: 25px 7%;
-  background: #e9e2d6;
+  background: var(--cream-dark);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   align-items: center;
-  border-bottom: 1px solid #d7cebf;
+  border-bottom: 1px solid var(--border);
 }
 
 .trust-bar>div {
@@ -1030,7 +1026,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   grid-template-rows: 1fr 1fr;
   column-gap: 12px;
   align-items: center;
-  border-right: 1px solid #d3cabc;
+  border-right: 1px solid var(--border);
 }
 
 .trust-bar>div:last-child {
@@ -1046,10 +1042,11 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .trust-bar strong {
   font-size: 15px;
   letter-spacing: 1.5px;
+  color: var(--black);
 }
 
 .trust-bar small {
-  color: #888077;
+  color: var(--muted);
   font-size: 10px;
 }
 
@@ -1085,6 +1082,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   font-size: clamp(50px, 5vw, 72px);
   font-weight: 400;
   line-height: 0.9;
+  color: var(--black);
 }
 
 .section-header h2 em {
@@ -1118,9 +1116,9 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   display: block;
   min-height: 0;
   height: auto;
-  color: white;
+  color: var(--white);
   text-decoration: none;
-  background: #302a23;
+  background: var(--black);
   transition:
     transform 0.4s ease,
     box-shadow 0.4s ease;
@@ -1129,7 +1127,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .collection-card:hover {
   transform: translateY(-8px);
   box-shadow:
-    0 18px 35px rgba(0, 0, 0, 0.15);
+    0 18px 35px rgba(10, 17, 30, 0.25);
 }
 
 
@@ -1154,7 +1152,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   height: 350px;
   overflow: hidden;
   display: block;
-  color: #ffffff;
+  color: var(--white);
   text-decoration: none;
   background: var(--dark);
   transition: transform 0.4s ease;
@@ -1203,10 +1201,10 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   inset: 0;
 
   background: linear-gradient(to top,
-      rgba(0, 0, 0, 0.85) 0%,
-      rgba(0, 0, 0, 0.48) 35%,
-      rgba(0, 0, 0, 0.12) 70%,
-      rgba(0, 0, 0, 0.02) 100%);
+      rgba(10, 17, 30, 0.88) 0%,
+      rgba(10, 17, 30, 0.50) 35%,
+      rgba(10, 17, 30, 0.12) 70%,
+      rgba(10, 17, 30, 0.02) 100%);
 
   z-index: 1;
   pointer-events: none;
@@ -1224,7 +1222,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   z-index: 2;
 
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.85);
 
   font-family: "Cormorant Garamond", serif;
   font-size: 18px;
@@ -1243,7 +1241,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   z-index: 3;
 
-  color: #ffffff;
+  color: var(--white);
 }
 
 
@@ -1256,11 +1254,11 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   margin-bottom: 8px;
 
-  color: var(--gold-light);
+  color: var(--gold);
 
   font-family: "Montserrat", sans-serif;
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 3px;
   line-height: 1;
 
@@ -1275,7 +1273,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .collection-card .category-overlay h3 {
   margin: 0 0 8px;
 
-  color: #ffffff;
+  color: var(--white);
 
   font-family: "Cormorant Garamond", serif;
   font-size: 38px;
@@ -1297,7 +1295,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .collection-card .category-overlay p {
   margin: 0;
 
-  color: #d0cbc4;
+  color: var(--cream);
 
   font-family: "Montserrat", sans-serif;
   font-size: 11px;
@@ -1313,26 +1311,26 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
 .collection-card:nth-child(1) {
   background: linear-gradient(135deg,
-      #30291f,
-      #846e50);
+      #0A111E,
+      #1b2a47);
 }
 
 .collection-card:nth-child(2) {
   background: linear-gradient(135deg,
-      #38261a,
-      #80603d);
+      #8B1E22,
+      #5a1316);
 }
 
 .collection-card:nth-child(3) {
   background: linear-gradient(135deg,
-      #5b4a3d,
-      #b49578);
+      #C5A059,
+      #8a6d36);
 }
 
 .collection-card:nth-child(4) {
   background: linear-gradient(135deg,
-      #4b3020,
-      #a27243);
+      #131f36,
+      #8B1E22);
 }
 
 
@@ -1342,32 +1340,32 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
 .category-men {
   background: linear-gradient(135deg,
-      #30291f,
-      #846e50);
+      #0A111E,
+      #1b2a47);
 }
 
 .category-women {
   background: linear-gradient(135deg,
-      #8b6060,
-      #d8afa8);
+      #8B1E22,
+      #5a1316);
 }
 
 .category-unisex {
   background: linear-gradient(135deg,
-      #656158,
-      #aaa28d);
+      #C5A059,
+      #8a6d36);
 }
 
 .category-oud {
   background: linear-gradient(135deg,
-      #4b3020,
-      #a27243);
+      #131f36,
+      #8B1E22);
 }
 
 .category-bakhoor {
   background: linear-gradient(135deg,
-      #38261a,
-      #80603d);
+      #0A111E,
+      #8B1E22);
 }
 
 
@@ -1417,7 +1415,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 ========================================================= */
 
 .products-section {
-  background: #ebe4d8;
+  background: var(--cream-dark);
 }
 
 
@@ -1441,6 +1439,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   font-size: clamp(50px, 5vw, 72px);
   font-weight: 400;
   line-height: 1;
+  color: var(--black);
 }
 
 .best-sellers-header h2 em {
@@ -1481,13 +1480,13 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   position: relative;
   min-width: 120px;
   padding: 13px 28px;
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid #d8c5a3;
+  background: var(--cream);
+  border: 1px solid rgba(197, 160, 89, 0.45);
   border-radius: 2px;
-  color: #55504a;
+  color: var(--black);
   font-family: "Montserrat", sans-serif;
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 2.2px;
   text-transform: uppercase;
   cursor: pointer;
@@ -1530,31 +1529,31 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 /* Hover */
 
 .best-seller-tab:hover {
-  background: #1c1c1c;
-  border-color: #1c1c1c;
-  color: var(--gold-light);
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--gold);
   transform: translateY(-3px);
 
   box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.12);
+    0 8px 20px rgba(10, 17, 30, 0.2);
 }
 
 
 /* Active */
 
 .best-seller-tab.active {
-  background: #1c1c1c;
-  border-color: #1c1c1c;
-  color: var(--gold-light);
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--gold);
 
   box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.15);
+    0 6px 18px rgba(10, 17, 30, 0.25);
 }
 
 .best-seller-tab.active:hover {
-  background: #111;
-  border-color: #111;
-  color: #e3c68d;
+  background: var(--red-accent);
+  border-color: var(--red-accent);
+  color: var(--white);
   transform: translateY(-3px);
 }
 
@@ -1596,7 +1595,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   transform: translateY(-5px);
 
   box-shadow:
-    0 15px 30px rgba(0, 0, 0, 0.1);
+    0 15px 30px rgba(10, 17, 30, 0.12);
 }
 
 
@@ -1623,38 +1622,34 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .product-noir {
   background:
     linear-gradient(145deg,
-      #d9d0c2,
-      #c5b8a5);
+      #ECEAE1,
+      #dcd9cb);
 }
 
 .product-rose {
   background:
     linear-gradient(145deg,
-      #e7d7d0,
-      #d4b4ad);
+      #f5e6e7,
+      #e2bcbe);
 }
 
 .product-oud {
   background:
     linear-gradient(145deg,
-      #d3c0a7,
-      #b49a78);
+      #ECEAE1,
+      #C5A059);
 }
 
 .product-bloom {
   background:
     linear-gradient(145deg,
-      #ead9d6,
-      #d8bbb7);
+      #f5e8e8,
+      #e0c2c4);
 }
 
 
 /* =========================================================
    DATABASE PRODUCT IMAGE
-========================================================= */
-
-/* =========================================================
-   DATABASE PRODUCT IMAGE + HOVER IMAGE
 ========================================================= */
 
 .product-image-wrapper {
@@ -1724,11 +1719,11 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .product-card:has(.bakhoor-product) .product-visual {
   background:
     radial-gradient(circle at 50% 38%,
-      rgba(183, 150, 90, 0.18),
+      rgba(197, 160, 89, 0.18),
       transparent 38%),
     linear-gradient(145deg,
-      #d8c9b5,
-      #bda88a);
+      #ECEAE1,
+      #C5A059);
 }
 
 
@@ -1744,10 +1739,11 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   padding: 7px 10px;
 
-  background: var(--black);
-  color: white;
+  background: var(--red-accent);
+  color: var(--white);
 
   font-size: 7px;
+  font-weight: 600;
   letter-spacing: 1.5px;
 }
 
@@ -1768,19 +1764,19 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   border: none;
 
   background:
-    rgba(255, 255, 255, 0.6);
+    rgba(255, 255, 255, 0.85);
 
   border-radius: 50%;
 
   font-size: 20px;
-  color: #514a42;
+  color: var(--black);
 
   transition: 0.3s;
 }
 
 .wishlist-button:hover {
-  background: var(--black);
-  color: white;
+  background: var(--red-accent);
+  color: var(--white);
 }
 
 
@@ -1794,7 +1790,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   align-items: center;
 
   filter:
-    drop-shadow(15px 20px 20px rgba(0, 0, 0, 0.22));
+    drop-shadow(15px 20px 20px rgba(10, 17, 30, 0.22));
 
   transition:
     transform 0.5s ease;
@@ -1810,9 +1806,9 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   background:
     linear-gradient(90deg,
-      #655536,
-      #d1b16b,
-      #705a38);
+      #0A111E,
+      #131f36,
+      #0A111E);
 
   border-radius: 3px 3px 0 0;
 }
@@ -1821,7 +1817,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   width: 40px;
   height: 25px;
 
-  background: #b7975e;
+  background: #C5A059;
 }
 
 .mini-body {
@@ -1837,36 +1833,36 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   background:
     linear-gradient(90deg,
-      #151311,
-      #554838,
-      #1b1815);
+      #F9F8F3,
+      #ECEAE1,
+      #F9F8F3);
 
   border:
-    1px solid rgba(80, 65, 40, 0.7);
+    1px solid rgba(197, 160, 89, 0.5);
 }
 
 .product-rose .mini-body {
   background:
     linear-gradient(90deg,
-      #6f3e42,
-      #b86d70,
-      #69383c);
+      #8B1E22,
+      #a32328,
+      #8B1E22);
 }
 
 .product-oud .mini-body {
   background:
     linear-gradient(90deg,
-      #332016,
-      #805333,
-      #351f14);
+      #0A111E,
+      #131f36,
+      #0A111E);
 }
 
 .product-bloom .mini-body {
   background:
     linear-gradient(90deg,
-      #703f47,
-      #c0777e,
-      #673940);
+      #8B1E22,
+      #a32328,
+      #8B1E22);
 }
 
 .mini-body span {
@@ -1874,7 +1870,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
     "Cormorant Garamond",
     serif;
 
-  color: var(--gold-light);
+  color: var(--gold);
   font-size: 28px;
 }
 
@@ -1904,7 +1900,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   justify-content: flex-end;
 
   filter:
-    drop-shadow(15px 20px 20px rgba(0, 0, 0, 0.25));
+    drop-shadow(15px 20px 20px rgba(10, 17, 30, 0.25));
 
   transition:
     transform 0.5s ease;
@@ -1925,23 +1921,23 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   background:
     linear-gradient(145deg,
-      #d5b477,
-      #72502f 45%,
-      #c09a5e);
+      #C5A059,
+      #8a6d36 45%,
+      #C5A059);
 
   border:
-    1px solid rgba(255, 226, 169, 0.5);
+    1px solid rgba(255, 255, 255, 0.5);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  color: #f1d69e;
+  color: #F9F8F3;
   font-size: 13px;
 
   box-shadow:
     inset 0 3px 6px rgba(255, 255, 255, 0.2),
-    0 7px 14px rgba(0, 0, 0, 0.25);
+    0 7px 14px rgba(10, 17, 30, 0.25);
 }
 
 .burner-top span {
@@ -1959,24 +1955,24 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   background:
     linear-gradient(90deg,
-      #4a2f1d,
-      #a47745 45%,
-      #563820);
+      #0A111E,
+      #1d2d4a 45%,
+      #0A111E);
 
   border-radius:
     7px 7px 18px 18px;
 
   border-left:
-    1px solid rgba(232, 199, 137, 0.4);
+    1px solid rgba(197, 160, 89, 0.4);
 
   border-right:
-    1px solid rgba(232, 199, 137, 0.25);
+    1px solid rgba(197, 160, 89, 0.25);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  color: #e3c486;
+  color: var(--gold);
 
   font-family:
     "Cormorant Garamond",
@@ -1998,7 +1994,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   height: 32px;
 
   border:
-    1px solid rgba(231, 196, 130, 0.3);
+    1px solid rgba(197, 160, 89, 0.3);
 
   border-radius: 50%;
 }
@@ -2016,12 +2012,12 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   background:
     linear-gradient(90deg,
-      #49301d,
-      #b1844e 50%,
-      #4a301c);
+      #0A111E,
+      #C5A059 50%,
+      #0A111E);
 
   border:
-    1px solid rgba(226, 190, 126, 0.3);
+    1px solid rgba(197, 160, 89, 0.3);
 }
 
 
@@ -2038,7 +2034,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   top: 75px;
 
   border-left:
-    2px solid rgba(245, 230, 203, 0.38);
+    2px solid rgba(249, 248, 243, 0.48);
 
   border-radius: 50%;
 
@@ -2153,12 +2149,12 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   border: none;
 
-  background:
-    rgba(17, 16, 15, 0.94);
+  background: var(--red-accent);
 
-  color: white;
+  color: var(--white);
 
   font-size: 9px;
+  font-weight: 600;
   letter-spacing: 2px;
 
   transition: 0.4s ease;
@@ -2167,7 +2163,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .quick-add span {
   margin-left: 15px;
 
-  color: var(--gold-light);
+  color: var(--white);
 
   font-size: 16px;
 }
@@ -2188,7 +2184,8 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .product-details>span {
   color: var(--gold);
 
-  font-size: 7px;
+  font-size: 8px;
+  font-weight: 600;
   letter-spacing: 2px;
 }
 
@@ -2201,12 +2198,13 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   font-size: 28px;
   font-weight: 500;
+  color: var(--black);
 }
 
 .product-details p {
   color: var(--muted);
 
-  font-size: 9px;
+  font-size: 10px;
 
   margin-bottom: 4px;
 }
@@ -2216,7 +2214,9 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   margin-top: 15px;
 
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--red-accent);
 }
 
 
@@ -2268,9 +2268,9 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   background: transparent;
 
   border:
-    1px solid #1c1c1c;
+    1px solid var(--black);
 
-  color: #1c1c1c;
+  color: var(--black);
 
   font-family:
     "Montserrat",
@@ -2298,7 +2298,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   position: absolute;
   inset: 0;
 
-  background: #1c1c1c;
+  background: var(--black);
 
   transform: scaleX(0);
 
@@ -2321,12 +2321,12 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 }
 
 .view-all-fragrances a:hover {
-  color: var(--gold-light);
+  color: var(--gold);
 
   transform: translateY(-3px);
 
   box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.12);
+    0 8px 20px rgba(10, 17, 30, 0.18);
 }
 
 
@@ -2337,16 +2337,16 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .bakhoor-section {
   background:
     linear-gradient(180deg,
-      #ebe4d8 0%,
-      #e5d9c8 100%);
+      #F9F8F3 0%,
+      #ECEAE1 100%);
 }
 
 .bakhoor-section .section-label {
-  color: #987445;
+  color: var(--red-accent);
 }
 
 .bakhoor-section .section-header h2 em {
-  color: #987445;
+  color: var(--red-accent);
 }
 
 
@@ -2372,11 +2372,14 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   padding: 16px 25px;
 
   border:
-    1px solid #3a352f;
+    1px solid var(--black);
 
   font-size: 9px;
+  font-weight: 600;
 
   letter-spacing: 2px;
+
+  color: var(--black);
 
   transition: 0.3s;
 }
@@ -2387,7 +2390,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
 .outline-button:hover {
   background: var(--black);
-  color: white;
+  color: var(--white);
 }
 
 /* =========================================================
@@ -2402,13 +2405,11 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   background:
     radial-gradient(circle at 75% 50%,
-      #584238 0%,
-      #3d2b25 30%,
-      #291c18 55%,
-      #1e1410 78%,
-      #140d0a 100%);
+      #131f36 0%,
+      #0A111E 40%,
+      #05080f 100%);
 
-  color: white;
+  color: var(--white);
 }
 
 .story-image {
@@ -2423,11 +2424,11 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   background:
     radial-gradient(circle,
-      rgba(190, 156, 94, 0.18),
+      rgba(197, 160, 89, 0.18),
       transparent 55%),
     linear-gradient(145deg,
-      #29231d,
-      #12110f);
+      #131f36,
+      #0A111E);
 }
 
 .story-image img {
@@ -2450,11 +2451,11 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 
   background:
     linear-gradient(145deg,
-      rgba(18, 17, 15, 0.45),
-      rgba(18, 17, 15, 0.15),
-      rgba(18, 17, 15, 0.65)),
+      rgba(10, 17, 30, 0.55),
+      rgba(10, 17, 30, 0.25),
+      rgba(10, 17, 30, 0.75)),
     radial-gradient(circle at center,
-      rgba(190, 156, 94, 0.12),
+      rgba(197, 160, 89, 0.12),
       transparent 60%);
 
   z-index: 1;
@@ -2471,7 +2472,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   align-items: center;
   justify-content: center;
 
-  border: 1px solid rgba(214, 189, 135, 0.25);
+  border: 1px solid rgba(197, 160, 89, 0.25);
 }
 
 .story-frame::before,
@@ -2480,13 +2481,13 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   position: absolute;
   width: 70%;
   height: 70%;
-  border: 1px solid rgba(214, 189, 135, 0.1);
+  border: 1px solid rgba(197, 160, 89, 0.1);
 }
 
 .story-frame span {
   font-family: "Cormorant Garamond", serif;
   font-size: 180px;
-  color: rgba(214, 189, 135, 0.15);
+  color: rgba(197, 160, 89, 0.15);
 }
 
 .story-content {
@@ -2501,10 +2502,11 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   font-size: clamp(55px, 6vw, 82px);
   font-weight: 400;
   line-height: 0.88;
+  color: var(--cream);
 }
 
 .story-content h2 em {
-  color: var(--gold-light);
+  color: var(--gold);
 }
 
 .gold-line {
@@ -2517,7 +2519,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .story-content p {
   max-width: 480px;
   margin-bottom: 18px;
-  color: #98928a;
+  color: var(--cream-dark);
   font-size: 18px;
   line-height: 1.9;
 }
@@ -2526,8 +2528,9 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   display: inline-flex;
   gap: 25px;
   margin-top: 20px;
-  color: var(--gold-light);
+  color: var(--gold);
   font-size: 15px;
+  font-weight: 500;
   letter-spacing: 2px;
   border-bottom: 1px solid var(--gold);
   padding-bottom: 8px;
@@ -2550,6 +2553,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   font-size: clamp(65px, 7vw, 95px);
   font-weight: 400;
   line-height: 0.9;
+  color: var(--black);
 }
 
 .newsletter h2 em {
@@ -2569,7 +2573,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   height: 62px;
   margin: auto;
   display: flex;
-  border-bottom: 1px solid #8c857a;
+  border-bottom: 1px solid var(--gold);
 }
 
 .newsletter-form input {
@@ -2578,7 +2582,7 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
   border: none;
   outline: none;
   background: transparent;
-  color: #222;
+  color: var(--black);
   font-size: 14px;
 }
 
@@ -2590,14 +2594,15 @@ body .navbar.site-navbar.scrolled .nav-bag-button:hover {
 .newsletter-form button {
   border: none;
   background: transparent;
-  color: #302c27;
+  color: var(--black);
   font-size: 11px;
+  font-weight: 600;
   letter-spacing: 2px;
 }
 
 .newsletter-form button span {
   margin-left: 20px;
-  color: var(--gold);
+  color: var(--red-accent);
   font-size: 20px;
 }
 
@@ -2616,7 +2621,7 @@ body .footer.site-footer .footer-social a svg {
   width: 17px;
   height: 17px;
   flex-shrink: 0;
-  color: #c9a96a;
+  color: var(--gold);
   position: relative;
   top: 2px;
   transition: color 0.3s ease, transform 0.3s ease;
@@ -2627,26 +2632,26 @@ body .footer.site-footer .footer-contact .contact-item svg {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-  color: #c9a96a;
+  color: var(--gold);
   transition: color 0.3s ease, transform 0.3s ease;
 }
 
 /* Social hover */
 body .footer.site-footer .footer-social a:hover svg {
-  color: #d2b477;
+  color: var(--red-accent);
   transform: translateY(-2px);
 }
 
 /* Contact hover */
 body .footer.site-footer .footer-contact a.contact-item:hover svg {
-  color: #d2b477;
+  color: var(--red-accent);
   transform: translateX(2px);
 }
 
 /* Contact text */
 body .footer.site-footer .footer-contact .contact-item {
   width: fit-content;
-  color: #9d958c;
+  color: var(--cream-dark);
   font-family: "Montserrat", sans-serif;
   font-size: 14px;
   font-weight: 400;
@@ -2657,17 +2662,17 @@ body .footer.site-footer .footer-contact .contact-item {
 
 /* Address is a div, not a link */
 body .footer.site-footer .footer-contact>div.contact-item {
-  color: #9d958c;
+  color: var(--cream-dark);
 }
 
 /* Keep address icon gold */
 body .footer.site-footer .footer-contact>div.contact-item svg {
-  color: #c9a96a;
+  color: var(--gold);
 }
 
 /* Contact link hover */
 body .footer.site-footer .footer-contact a.contact-item:hover {
-  color: #d2b477;
+  color: var(--gold);
 }
 
 /* =========================================================
@@ -2675,10 +2680,6 @@ body .footer.site-footer .footer-contact a.contact-item:hover {
 ========================================================= */
 
 @media (max-width: 800px) {
-
-  /*.nav-links {
-    display: none;
-  }*/
 
   .hero {
     min-height: auto;
@@ -2764,9 +2765,7 @@ body .footer.site-footer .footer-contact a.contact-item:hover {
 
   body .navbar.site-navbar {
     height: auto;
-    /* Removes the 70px limit constraint allowing background to expand */
     padding: 16px 4% 16px 4%;
-    /* Keeps padding balanced on mobile viewports */
   }
 
   /* MOBILE NAV ACTIONS */
@@ -2837,7 +2836,7 @@ body .footer.site-footer .footer-contact a.contact-item:hover {
 
   .trust-bar>div {
     border-right: none;
-    border-bottom: 1px solid #d3cabc;
+    border-bottom: 1px solid var(--border);
     padding: 12px 0;
   }
 
@@ -2957,8 +2956,8 @@ body .footer.site-footer .footer-contact a.contact-item:hover {
 
 body .footer.site-footer {
   width: 100%;
-  background: #11100f;
-  color: #fff;
+  background: var(--black);
+  color: var(--white);
   padding: 70px 7% 25px;
   box-sizing: border-box;
 }
@@ -3012,7 +3011,7 @@ body .footer.site-footer .footer-logo img {
 body .footer.site-footer .footer-brand p {
   margin: 0;
   max-width: 320px;
-  color: #9d958c;
+  color: var(--cream-dark);
   font-family: "Cormorant Garamond", serif;
   font-size: 21px;
   line-height: 1.6;
@@ -3034,7 +3033,7 @@ body .footer.site-footer .footer-column {
 
 body .footer.site-footer .footer-column h4 {
   margin: 0 0 9px 0;
-  color: #c9a96a;
+  color: var(--gold);
   font-family: "Montserrat", sans-serif;
   font-size: 14px;
   font-weight: 600;
@@ -3049,7 +3048,7 @@ body .footer.site-footer .footer-column a {
   width: fit-content;
   margin: 0;
   padding: 0;
-  color: #9d958c;
+  color: var(--cream-dark);
   font-family: "Montserrat", sans-serif;
   font-size: 14px;
   font-weight: 400;
@@ -3060,7 +3059,7 @@ body .footer.site-footer .footer-column a {
 }
 
 body .footer.site-footer .footer-column a:hover {
-  color: #d2b477;
+  color: var(--gold);
   transform: translateX(3px);
 }
 
@@ -3079,7 +3078,7 @@ body .footer.site-footer .footer-contact {
 
 body .footer.site-footer .footer-contact h4 {
   margin: 0 0 9px 0;
-  color: #c9a96a;
+  color: var(--gold);
   font-family: "Montserrat", sans-serif;
   font-size: 14px;
   font-weight: 600;
@@ -3090,7 +3089,7 @@ body .footer.site-footer .footer-contact h4 {
 body .footer.site-footer .footer-contact p {
   margin: 0;
   padding: 0;
-  color: #9d958c;
+  color: var(--cream-dark);
   font-family: "Montserrat", sans-serif;
   font-size: 14px;
   font-weight: 400;
@@ -3110,7 +3109,7 @@ body .footer.site-footer .footer-bottom {
   margin: 0 auto;
   padding-top: 22px;
 
-  border-top: 1px solid #2a2724;
+  border-top: 1px solid rgba(197, 160, 89, 0.2);
 
   display: flex;
   align-items: center;
@@ -3118,7 +3117,7 @@ body .footer.site-footer .footer-bottom {
 
   gap: 20px;
 
-  color: #77716a;
+  color: var(--cream-dark);
   font-family: "Montserrat", sans-serif;
   font-size: 9px;
   font-weight: 400;
@@ -3429,12 +3428,12 @@ body .footer.site-footer .footer-bottom span:first-child {
 
   width: 215px;
 
-  background: #f7f4ec;
+  background: var(--cream);
 
-  border: 1px solid rgba(44, 43, 35, 0.14);
+  border: 1px solid rgba(10, 17, 30, 0.14);
 
   box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.14);
+    0 20px 50px rgba(10, 17, 30, 0.14);
 
   padding: 8px;
 
@@ -3488,7 +3487,7 @@ body .footer.site-footer .footer-bottom span:first-child {
 
   letter-spacing: 1.6px;
 
-  color: #25251d;
+  color: var(--black);
 
   cursor: pointer;
 
@@ -3503,7 +3502,7 @@ body .footer.site-footer .footer-bottom span:first-child {
 ========================================================= */
 
 .account-dropdown button:hover {
-  background: rgba(42, 42, 32, 0.055);
+  background: rgba(10, 17, 30, 0.055);
 }
 
 
@@ -3530,7 +3529,7 @@ body .footer.site-footer .footer-bottom span:first-child {
 .account-dropdown-divider {
   height: 1px;
 
-  background: rgba(42, 42, 32, 0.12);
+  background: rgba(10, 17, 30, 0.12);
 
   margin: 5px 8px;
 }
@@ -3541,11 +3540,11 @@ body .footer.site-footer .footer-bottom span:first-child {
 ========================================================= */
 
 .account-dropdown .logout-dropdown-button {
-  color: #7c4038;
+  color: var(--red-accent);
 }
 
 .account-dropdown .logout-dropdown-button:hover {
-  background: rgba(124, 64, 56, 0.07);
+  background: rgba(139, 30, 34, 0.08);
 }
 
 
@@ -3635,11 +3634,6 @@ body .footer.site-footer .footer-bottom span:first-child {
 
 @media (max-width: 768px) {
 
-  /* -------------------------------------------------------
-     NAVBAR
-     ORIGINAL BACKGROUND IS PRESERVED
-  ------------------------------------------------------- */
-
   .site-navbar {
     position: fixed;
 
@@ -3712,7 +3706,7 @@ body .footer.site-footer .footer-bottom span:first-child {
     background: transparent !important;
     border: none !important;
 
-    color: #a8874d !important;
+    color: var(--gold) !important;
 
     cursor: pointer;
     flex-shrink: 0;
@@ -3731,7 +3725,7 @@ body .footer.site-footer .footer-bottom span:first-child {
     width: 20px;
     height: 1px;
 
-    background: #a8874d !important;
+    background: var(--gold) !important;
 
     transition:
       transform 0.3s ease,
@@ -3788,7 +3782,7 @@ body .footer.site-footer .footer-bottom span:first-child {
     padding: 7px 3px !important;
     margin: 0 !important;
 
-    color: #a8874d !important;
+    color: var(--gold) !important;
 
     background: transparent !important;
 
@@ -3813,7 +3807,7 @@ body .footer.site-footer .footer-bottom span:first-child {
   .nav-login-button:hover,
   .nav-register-button:hover,
   .account-button:hover {
-    color: #a8874d !important;
+    color: var(--gold) !important;
   }
 
 
@@ -3822,7 +3816,7 @@ body .footer.site-footer .footer-bottom span:first-child {
   .account-button .account-arrow {
     margin-left: 4px;
 
-    color: #a8874d !important;
+    color: var(--gold) !important;
   }
 
 
@@ -3837,10 +3831,6 @@ body .footer.site-footer .footer-bottom span:first-child {
 
   /* =======================================================
      MOBILE MENU
-     
-     CLOSED BY DEFAULT
-     
-     NO BACKGROUND WHEN CLOSED
   ======================================================= */
 
   .site-navbar .nav-links {
@@ -3862,13 +3852,11 @@ body .footer.site-footer .footer-bottom span:first-child {
 
     box-sizing: border-box;
 
-    /* No background while closed */
-
     border-top:
-      1px solid rgba(168, 135, 77, 0.20);
+      1px solid rgba(197, 160, 89, 0.20);
 
     box-shadow:
-      0 12px 30px rgba(0, 0, 0, 0.10);
+      0 12px 30px rgba(10, 17, 30, 0.10);
 
     z-index: 999;
 
@@ -3885,8 +3873,6 @@ body .footer.site-footer .footer-bottom span:first-child {
 
   /* =======================================================
      OPEN MOBILE DROPDOWN
-     
-     IVORY BACKGROUND APPEARS ONLY WHEN OPEN
   ======================================================= */
 
   .site-navbar .nav-links.mobile-menu-open {
@@ -3899,11 +3885,7 @@ body .footer.site-footer .footer-bottom span:first-child {
 
     pointer-events: auto;
 
-    /* ===============================================
-       DROPDOWN BACKGROUND
-       =============================================== */
-
-    background: #f7f4ed !important;
+    background: var(--cream) !important;
 
     animation:
       keianMobileMenuOpen 0.25s ease forwards;
@@ -3934,11 +3916,6 @@ body .footer.site-footer .footer-bottom span:first-child {
 
   /* =======================================================
      MOBILE MENU LINKS
-     
-     HOME
-     SHOP
-     COLLECTIONS
-     OUR STORY
   ======================================================= */
 
   .site-navbar .nav-links a {
@@ -3951,7 +3928,7 @@ body .footer.site-footer .footer-bottom span:first-child {
     padding: 14px 0 !important;
     margin: 0 !important;
 
-    color: #a8874d !important;
+    color: var(--black) !important;
 
     opacity: 1 !important;
     visibility: visible !important;
@@ -3959,7 +3936,8 @@ body .footer.site-footer .footer-bottom span:first-child {
     background: transparent !important;
 
     font-size: 10px !important;
-    font-weight: 500;
+
+    font-weight: 600;
 
     letter-spacing: 2px;
 
@@ -3972,7 +3950,7 @@ body .footer.site-footer .footer-bottom span:first-child {
     text-decoration: none !important;
 
     border-bottom:
-      1px solid rgba(168, 135, 77, 0.18);
+      1px solid rgba(197, 160, 89, 0.18);
 
     white-space: nowrap;
 
@@ -3992,7 +3970,7 @@ body .footer.site-footer .footer-bottom span:first-child {
   /* HOVER */
 
   .site-navbar .nav-links a:hover {
-    color: #a8874d !important;
+    color: var(--red-accent) !important;
 
     padding-left: 8px !important;
   }
@@ -4037,13 +4015,13 @@ body .footer.site-footer .footer-bottom span:first-child {
 
     gap: 4px;
 
-    color: #a8874d !important;
+    color: var(--gold) !important;
   }
 
   .mobile-menu-button span {
     width: 18px;
 
-    background: #a8874d !important;
+    background: var(--gold) !important;
   }
 
 
@@ -4062,7 +4040,7 @@ body .footer.site-footer .footer-bottom span:first-child {
       1px !important;
 
     color:
-      #a8874d !important;
+      var(--gold) !important;
   }
 
 
@@ -4073,7 +4051,7 @@ body .footer.site-footer .footer-bottom span:first-child {
 
     font-size: 7px;
 
-    color: #a8874d !important;
+    color: var(--gold) !important;
   }
 
 
@@ -4104,14 +4082,14 @@ body .footer.site-footer .footer-bottom span:first-child {
       2px;
 
     color:
-      #a8874d !important;
+      var(--black) !important;
   }
 
 
   /* OPEN DROPDOWN BACKGROUND */
 
   .site-navbar .nav-links.mobile-menu-open {
-    background: #f7f4ed !important;
+    background: var(--cream) !important;
   }
 }
 
@@ -4144,13 +4122,13 @@ body .footer.site-footer .footer-bottom span:first-child {
     width: 32px;
     height: 32px;
 
-    color: #a8874d !important;
+    color: var(--gold) !important;
   }
 
   .mobile-menu-button span {
     width: 17px;
 
-    background: #a8874d !important;
+    background: var(--gold) !important;
   }
 
 
@@ -4166,7 +4144,7 @@ body .footer.site-footer .footer-bottom span:first-child {
       0.8px !important;
 
     color:
-      #a8874d !important;
+      var(--gold) !important;
   }
 
 
@@ -4174,7 +4152,7 @@ body .footer.site-footer .footer-bottom span:first-child {
 
   .account-button .account-arrow {
     color:
-      #a8874d !important;
+      var(--gold) !important;
   }
 
 
@@ -4203,14 +4181,14 @@ body .footer.site-footer .footer-bottom span:first-child {
       1.8px;
 
     color:
-      #a8874d !important;
+      var(--black) !important;
   }
 
 
   /* OPEN DROPDOWN BACKGROUND */
 
   .site-navbar .nav-links.mobile-menu-open {
-    background: #f7f4ed !important;
+    background: var(--cream) !important;
   }
 }
 
@@ -4235,14 +4213,14 @@ body .footer.site-footer .footer-bottom span:first-child {
     height: 30px;
 
     color:
-      #a8874d !important;
+      var(--gold) !important;
   }
 
   .mobile-menu-button span {
     width: 16px;
 
     background:
-      #a8874d !important;
+      var(--gold) !important;
   }
 
 
@@ -4258,7 +4236,7 @@ body .footer.site-footer .footer-bottom span:first-child {
       0.6px !important;
 
     color:
-      #a8874d !important;
+      var(--gold) !important;
   }
 
 
@@ -4286,19 +4264,19 @@ body .footer.site-footer .footer-bottom span:first-child {
       12px 0 !important;
 
     color:
-      #a8874d !important;
+      var(--black) !important;
   }
 
 
   /* OPEN DROPDOWN BACKGROUND */
 
   .site-navbar .nav-links.mobile-menu-open {
-    background: #f7f4ed !important;
+    background: var(--cream) !important;
   }
 }
 
 .site-navbar .nav-links.mobile-menu-open {
-  background: #f7f4ed !important;
+  background: var(--cream) !important;
 }
 
 /* =========================================================
@@ -4306,26 +4284,20 @@ body .footer.site-footer .footer-bottom span:first-child {
 ========================================================= */
 
 .hero {
-  /* Forces the section to be exactly the height of the user's screen */
   height: 100vh !important;
   min-height: 100vh !important;
   
-  /* Centers the inner content vertically within the full screen space */
   display: flex !important;
   align-items: center !important;
   
-  /* Locks the image aspect ratio safely to prevent all stretching */
   background-size: cover !important;
   background-position: center !important;
 }
 
-/* Adjusts the text layout block inside the full screen space */
 .hero-content {
-  /* Adds top cushioning so text sits beautifully below your transparent nav */
   padding-top: 90px !important; 
 }
 
-/* Syncs the original drift animation parameters with the new cover layout */
 @keyframes hero-background-drift {
   0% {
     background-size: cover !important;
@@ -4341,12 +4313,10 @@ body .footer.site-footer .footer-bottom span:first-child {
   }
 }
 
-/* Mobile responsive layout overrides */
 /* =========================================================
    RESPONSIVE HERO SPREAD & ACCURATE MOBILE RATIO LOCK
 ========================================================= */
 
-/* 1. DESKTOP: Keep the premium full-screen first-fold experience */
 @media (min-width: 769px) {
   .hero {
     height: 100vh !important;
@@ -4361,42 +4331,36 @@ body .footer.site-footer .footer-bottom span:first-child {
   }
 }
 
-/* 2. TABLET & MOBILE: Spread naturally without extreme elongation */
 @media (max-width: 768px) {
   .hero {
-    /* Break out of the forced 100vh screen stretching */
     height: auto !important;
     min-height: 520px !important; 
     
-    /* Create an appropriate, well-proportioned vertical spread */
-    padding-top: 110px !important;  /* Safe breathing space below transparent nav */
-    padding-bottom: 60px !important; /* Elegant cushion below the action buttons */
+    padding-top: 110px !important;  
+    padding-bottom: 60px !important; 
     
-    /* Spreads the image across the background window symmetrically */
     background-size: cover !important;
     background-position: 65% center !important;
     
-    display: block !important; /* Allows layout to stack and breathe naturally */
+    display: block !important; 
   }
 
   .hero-content {
     width: 100% !important;
     max-width: 560px !important;
-    padding: 0 !important; /* Uses parent padding to stay perfectly positioned */
+    padding: 0 !important; 
   }
 }
 
-/* 3. SMALL PHONES: Tailor content padding to match compact screens */
 @media (max-width: 480px) {
   .hero {
     min-height: 480px !important;
-    padding-top: 95px !important;  /* Snug, balanced fit for 54px mobile navbar */
+    padding-top: 95px !important;  
     padding-bottom: 50px !important;
     background-position: 68% center !important;
   }
 }
 
-/* 4. ANIMATION SYNC: Keep background image zoom completely un-distorted */
 @keyframes hero-background-drift {
   0% {
     background-size: cover !important;
@@ -4411,4 +4375,3 @@ body .footer.site-footer .footer-bottom span:first-child {
     background-position: 48% 51% !important;
   }
 }
-
