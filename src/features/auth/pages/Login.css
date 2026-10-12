@@ -1,3 +1,4 @@
+
 /* =========================================================
    KEIAN LOGIN PAGE
 ========================================================= */
@@ -8,7 +9,7 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-
+    box-sizing: border-box;
     background:
         radial-gradient(
             circle at top left,
@@ -16,8 +17,6 @@
             transparent 35%
         ),
         #f6f3ea;
-
-    box-sizing: border-box;
 }
 
 /* =========================================================
@@ -27,17 +26,11 @@
 .login-card {
     width: 100%;
     max-width: 470px;
-
-    background: #ffffff;
-
     padding: 48px 45px;
-
-    border: 1px solid rgba(75, 81, 64, 0.12);
-
-    box-shadow:
-        0 20px 60px rgba(29, 33, 28, 0.08);
-
     box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid rgba(75, 81, 64, 0.12);
+    box-shadow: 0 20px 60px rgba(29, 33, 28, 0.08);
 }
 
 /* =========================================================
@@ -45,33 +38,21 @@
 ========================================================= */
 
 .login-brand {
-    text-align: center;
-
     margin-bottom: 8px;
-
     color: #1d211c;
-
-    font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-
+    text-align: center;
+    font-family: Georgia, "Times New Roman", serif;
     font-size: 32px;
     font-weight: 500;
-
     letter-spacing: 0.18em;
 }
 
 .login-subtitle {
-    text-align: center;
-
     margin: 0 0 30px;
-
     color: #77786f;
-
+    text-align: center;
     font-size: 10px;
     font-weight: 500;
-
     letter-spacing: 0.28em;
 }
 
@@ -81,27 +62,17 @@
 
 .login-card h1 {
     margin: 0;
-
-    text-align: center;
-
     color: #282923;
-
-    font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-
+    text-align: center;
+    font-family: Georgia, "Times New Roman", serif;
     font-size: 30px;
     font-weight: 400;
 }
 
 .login-description {
     margin: 10px 0 32px;
-
-    text-align: center;
-
     color: #77786f;
-
+    text-align: center;
     font-size: 14px;
     line-height: 1.7;
 }
@@ -118,6 +89,7 @@
 
 /* =========================================================
    INPUT GROUP
+   Supports the existing FormField component
 ========================================================= */
 
 .login-input-group {
@@ -128,33 +100,23 @@
 
 .login-input-group label {
     color: #282923;
-
     font-size: 11px;
     font-weight: 600;
-
     letter-spacing: 0.1em;
-
     text-transform: uppercase;
 }
 
 .login-input-group input {
     width: 100%;
     height: 48px;
-
     padding: 0 15px;
-
     box-sizing: border-box;
-
     border: 1px solid #d9d7cf;
-
     background: #faf9f5;
-
     color: #282923;
-
+    font-family: inherit;
     font-size: 14px;
-
     outline: none;
-
     transition:
         border-color 0.25s ease,
         box-shadow 0.25s ease,
@@ -163,15 +125,41 @@
 
 .login-input-group input:focus {
     background: #ffffff;
-
     border-color: #4b5140;
-
-    box-shadow:
-        0 0 0 3px rgba(75, 81, 64, 0.08);
+    box-shadow: 0 0 0 3px rgba(75, 81, 64, 0.08);
 }
 
 .login-input-group input::placeholder {
     color: #aaa9a1;
+}
+
+/* =========================================================
+   FORGOT PASSWORD
+========================================================= */
+
+.login-forgot-password {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -10px;
+    margin-bottom: -4px;
+}
+
+.login-forgot-password a {
+    color: #4b5140;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.login-forgot-password a:hover {
+    color: #9b804c;
+    text-decoration: underline;
+}
+
+.login-forgot-password a:focus-visible {
+    outline: 2px solid #9b804c;
+    outline-offset: 4px;
 }
 
 /* =========================================================
@@ -180,16 +168,12 @@
 
 .login-error {
     padding: 12px 14px;
-
     background: #fff3f1;
-
     border: 1px solid #e7c5c0;
-
     color: #9b3d3d;
-
     font-size: 13px;
-
     line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 /* =========================================================
@@ -198,42 +182,35 @@
 
 .login-button {
     width: 100%;
-    height: 50px;
-
+    min-height: 50px;
     margin-top: 4px;
-
+    padding: 12px 16px;
     border: 1px solid #1d211c;
-
     background: #1d211c;
-
     color: #ffffff;
-
+    font-family: inherit;
     font-size: 11px;
     font-weight: 600;
-
     letter-spacing: 0.16em;
-
     cursor: pointer;
-
     transition:
         background 0.25s ease,
+        border-color 0.25s ease,
         color 0.25s ease,
         transform 0.2s ease;
 }
 
-.login-button:hover {
+.login-button:hover:not(:disabled) {
     background: #4b5140;
-
     border-color: #4b5140;
 }
 
-.login-button:active {
+.login-button:active:not(:disabled) {
     transform: translateY(1px);
 }
 
 .login-button:disabled {
     opacity: 0.6;
-
     cursor: not-allowed;
 }
 
@@ -243,32 +220,25 @@
 
 .login-register {
     display: flex;
-
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-
     gap: 5px;
-
     margin-top: 28px;
-
     padding-top: 24px;
-
     border-top: 1px solid #e5e3dc;
-
     color: #77786f;
-
     font-size: 13px;
 }
 
 .login-register a {
     color: #4b5140;
-
     font-weight: 600;
-
     text-decoration: none;
 }
 
 .login-register a:hover {
+    color: #9b804c;
     text-decoration: underline;
 }
 
@@ -278,20 +248,14 @@
 
 .login-home {
     display: block;
-
     margin-top: 22px;
-
-    text-align: center;
-
     color: #77786f;
-
+    text-align: center;
     font-size: 11px;
-
     letter-spacing: 0.1em;
-
     text-transform: uppercase;
-
     text-decoration: none;
+    transition: color 0.2s ease;
 }
 
 .login-home:hover {
@@ -303,7 +267,6 @@
 ========================================================= */
 
 @media (max-width: 600px) {
-
     .login-page {
         padding: 25px 15px;
     }
@@ -318,5 +281,23 @@
 
     .login-card h1 {
         font-size: 26px;
+    }
+
+    .login-description {
+        margin-bottom: 26px;
+    }
+}
+
+@media (max-width: 360px) {
+    .login-card {
+        padding: 30px 18px;
+    }
+
+    .login-brand {
+        font-size: 24px;
+    }
+
+    .login-card h1 {
+        font-size: 24px;
     }
 }

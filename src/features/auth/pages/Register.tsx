@@ -1,6 +1,8 @@
+
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import { FormField } from "@/shared/components/ui/FormField";
 import { signUpWithEmailPassword } from "@/features/auth/services/authService";
 import "@/features/auth/pages/Register.css";
@@ -50,9 +52,7 @@ function Register() {
             return;
         }
 
-        // Extra email validation
-        const emailPattern =
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailPattern.test(cleanEmail)) {
             setError("Please enter a valid email address.");
@@ -72,11 +72,6 @@ function Register() {
         try {
             setLoading(true);
 
-            console.log(
-                "Registering email:",
-                cleanEmail
-            );
-
             const {
                 data,
                 error: signUpError,
@@ -88,31 +83,20 @@ function Register() {
             });
 
             if (signUpError) {
-                console.error(
-                    "Supabase signup error:",
-                    signUpError
-                );
+                const message = signUpError.message.toLowerCase();
 
-                if (
-                    signUpError.message
-                        .toLowerCase()
-                        .includes("invalid email")
-                ) {
+                if (message.includes("invalid email")) {
                     throw new Error(
                         "Please enter a valid email address."
                     );
                 }
 
                 if (
-                    signUpError.message
-                        .toLowerCase()
-                        .includes("already registered") ||
-                    signUpError.message
-                        .toLowerCase()
-                        .includes("already exists")
+                    message.includes("already registered") ||
+                    message.includes("already exists")
                 ) {
                     throw new Error(
-                        "This email is already registered. Please sign in instead."
+                        "This email may already be registered. Please sign in or try password recovery."
                     );
                 }
 
@@ -121,12 +105,38 @@ function Register() {
 
             if (!data.user) {
                 throw new Error(
-                    "Unable to create your account."
+                    "Unable to create your account. Please try again."
                 );
             }
 
+            // Avoid treating an existing account as a new registration.
+            if (
+                data.user.identities &&
+                data.user.identities.length === 0
+            ) {
+                throw new Error(
+                    "This email may already be registered. Please sign in instead."
+                );
+            }
+
+            // If email confirmation is enabled, signup normally
+            // returns no session until the email has been verified.
+            if (!data.session) {
+                setSuccess(
+                    "Account created. Please check your email for the 6-digit verification code."
+                );
+
+                navigate("/verify-otp", {
+                    state: { email: cleanEmail },
+                });
+
+                return;
+            }
+
+            // If confirmation is disabled, Supabase may create
+            // a session immediately. Do not pretend OTP was sent.
             setSuccess(
-                "Account created successfully. You can now sign in."
+                "Your account was created. Email verification is currently not required."
             );
 
             setFullName("");
@@ -135,30 +145,15 @@ function Register() {
             setPassword("");
             setConfirmPassword("");
 
-            setTimeout(() => {
-                navigate("/login");
-            }, 1500);
+            navigate("/login", { replace: true });
+        } catch (err: unknown) {
+            console.error("Registration failed.");
 
-        } catch (err) {
-            console.error(
-                "Registration error:",
-                err
-            );
-
-            if (
-                err &&
-                typeof err === "object" &&
-                "message" in err
-            ) {
-                setError(
-                    String(
-                        (err as { message?: unknown })
-                            .message
-                    )
-                );
+            if (err instanceof Error) {
+                setError(err.message);
             } else {
                 setError(
-                    "Unable to create account. Please try again."
+                    "Unable to create your account. Please try again."
                 );
             }
         } finally {
@@ -168,18 +163,13 @@ function Register() {
 
     return (
         <div className="register-page">
-
             <div className="register-brand-section">
-
                 <div className="register-brand">
                     KEIAN
                 </div>
 
                 <div className="register-brand-content">
-
-                    <span>
-                        THE ART OF FRAGRANCE
-                    </span>
+                    <span>THE ART OF FRAGRANCE</span>
 
                     <h1>
                         Discover your
@@ -191,17 +181,12 @@ function Register() {
                         experience a world of refined
                         fragrances.
                     </p>
-
                 </div>
-
             </div>
 
             <div className="register-form-section">
-
                 <div className="register-form-container">
-
                     <div className="register-header">
-
                         <span className="register-eyebrow">
                             WELCOME TO KEIAN
                         </span>
@@ -214,17 +199,22 @@ function Register() {
                             Join KEIAN and manage your
                             orders with ease.
                         </p>
-
                     </div>
 
                     {error && (
-                        <div className="register-message register-error">
+                        <div
+                            className="register-message register-error"
+                            role="alert"
+                        >
                             {error}
                         </div>
                     )}
 
                     {success && (
-                        <div className="register-message register-success">
+                        <div
+                            className="register-message register-success"
+                            role="status"
+                        >
                             {success}
                         </div>
                     )}
@@ -233,7 +223,6 @@ function Register() {
                         onSubmit={handleRegister}
                         className="register-form"
                     >
-
                         <FormField
                             id="fullName"
                             label="FULL NAME"
@@ -241,9 +230,7 @@ function Register() {
                             placeholder="Enter your full name"
                             value={fullName}
                             onChange={(event) =>
-                                setFullName(
-                                    event.target.value
-                                )
+                                setFullName(event.target.value)
                             }
                             autoComplete="name"
                             disabled={loading}
@@ -275,9 +262,7 @@ function Register() {
                             placeholder="Enter your email address"
                             value={email}
                             onChange={(event) =>
-                                setEmail(
-                                    event.target.value
-                                )
+                                setEmail(event.target.value)
                             }
                             autoComplete="email"
                             disabled={loading}
@@ -291,9 +276,7 @@ function Register() {
                             placeholder="Create a password"
                             value={password}
                             onChange={(event) =>
-                                setPassword(
-                                    event.target.value
-                                )
+                                setPassword(event.target.value)
                             }
                             autoComplete="new-password"
                             disabled={loading}
@@ -307,9 +290,7 @@ function Register() {
                             placeholder="Confirm your password"
                             value={confirmPassword}
                             onChange={(event) =>
-                                setConfirmPassword(
-                                    event.target.value
-                                )
+                                setConfirmPassword(event.target.value)
                             }
                             autoComplete="new-password"
                             disabled={loading}
@@ -321,7 +302,6 @@ function Register() {
                             className="register-button"
                             disabled={loading}
                         >
-
                             {loading ? (
                                 <>
                                     <span className="register-spinner" />
@@ -333,13 +313,10 @@ function Register() {
                                     <span>→</span>
                                 </>
                             )}
-
                         </button>
-
                     </form>
 
                     <div className="register-login">
-
                         <span>
                             Already have an account?
                         </span>
@@ -347,7 +324,6 @@ function Register() {
                         <Link to="/login">
                             Sign In
                         </Link>
-
                     </div>
 
                     <Link
@@ -356,13 +332,11 @@ function Register() {
                     >
                         ← Back to KEIAN
                     </Link>
-
                 </div>
-
             </div>
-
         </div>
     );
 }
 
 export default Register;
+

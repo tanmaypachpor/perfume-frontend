@@ -1,3 +1,4 @@
+
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 
@@ -16,23 +17,29 @@ const Login = lazy(() => import("@/features/auth/pages/Login"));
 const Account = lazy(() => import("@/features/account/pages/Account"));
 const MyOrders = lazy(() => import("@/features/orders/pages/MyOrders"));
 const OrderDetails = lazy(() => import("@/features/orders/pages/OrderDetails"));
-const AdminProtectedRoute = lazy(() => import("@/features/admin/pages/AdminProtectedRoute"));
+const AdminProtectedRoute = lazy(
+  () => import("@/features/admin/pages/AdminProtectedRoute")
+);
+const VerifyOtp = lazy(() => import("@/features/auth/pages/VerifyOtp"));
+const ForgotPassword = lazy(
+  () => import("@/features/auth/pages/ForgotPassword")
+);
+const ResetPassword = lazy(
+  () => import("@/features/auth/pages/ResetPassword")
+);
 
 export default function AppRoutes() {
   return (
     <Suspense
       fallback={
-        <main
-          className="route-loading"
-          role="status"
-          aria-live="polite"
-        >
+        <main className="route-loading" role="status" aria-live="polite">
           Loading…
         </main>
       }
     >
       <Routes>
         <Route path="/" element={<App />} />
+
         <Route path="/products" element={<ProductPage />} />
         <Route path="/products/him" element={<ProductPage />} />
         <Route path="/products/her" element={<ProductPage />} />
@@ -43,16 +50,25 @@ export default function AppRoutes() {
         <Route path="/products/gift-sets" element={<ProductPage />} />
         <Route path="/products/bakhoor" element={<ProductPage />} />
         <Route path="/products/:id" element={<ProductDetails />} />
+
         <Route path="/our-story" element={<OurStory />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+
         <Route path="/orders" element={<MyOrders />} />
         <Route path="/orders/:id" element={<OrderDetails />} />
         <Route path="/account" element={<Account />} />
         <Route path="/contact" element={<ContactPage />} />
+
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
+
+        {/* Password recovery routes */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
           path="/admin"
