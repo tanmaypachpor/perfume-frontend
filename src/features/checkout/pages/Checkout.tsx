@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import type {
   ChangeEvent,
@@ -129,15 +130,26 @@ function loadRazorpayScript(): Promise<void> {
   }
 
   if (!razorpayScriptPromise) {
-    razorpayScriptPromise = new Promise<void>((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.async = true;
-      script.onload = () => resolve();
-      script.onerror = () =>
-        reject(new Error("Unable to load Razorpay checkout."));
-      document.head.appendChild(script);
-    }).catch((error: unknown) => {
+    razorpayScriptPromise = new Promise<void>(
+      (resolve, reject) => {
+        const script = document.createElement("script");
+
+        script.src =
+          "https://checkout.razorpay.com/v1/checkout.js";
+
+        script.async = true;
+        script.onload = () => resolve();
+
+        script.onerror = () =>
+          reject(
+            new Error(
+              "Unable to load Razorpay checkout."
+            )
+          );
+
+        document.head.appendChild(script);
+      }
+    ).catch((error: unknown) => {
       razorpayScriptPromise = null;
       throw error;
     });
@@ -207,9 +219,7 @@ function Checkout() {
         error: cartError,
       } = await supabase
         .from("cart_items")
-        .select(
-          "id, user_id, product_id, quantity"
-        )
+        .select("id, user_id, product_id, quantity")
         .eq("user_id", user.id);
 
       if (cartError) {
@@ -254,8 +264,7 @@ function Checkout() {
       )
         .map((cartItem) => {
           const product = products?.find(
-            (item) =>
-              item.id === cartItem.product_id
+            (item) => item.id === cartItem.product_id
           );
 
           if (!product) {
@@ -271,10 +280,7 @@ function Checkout() {
 
       setCart(mergedCart);
     } catch (err) {
-      console.error(
-        "Checkout loading error:",
-        err
-      );
+      console.error("Checkout loading error:", err);
 
       setError(
         err instanceof Error
@@ -289,29 +295,22 @@ function Checkout() {
   /* =====================================================
      FRONTEND DISPLAY CALCULATIONS
 
-     Used for:
-     - Checkout display
-     - COD
-
      ONLINE PAYMENT:
      Server calculates the final amount again.
   ===================================================== */
 
   const subtotal = cart.reduce(
     (sum, item) =>
-      sum +
-      Number(item.price) * item.quantity,
+      sum + Number(item.price) * item.quantity,
     0
   );
 
-  const shipping =
-    subtotal >= 1999 ? 0 : 99;
+  const shipping = subtotal >= 1999 ? 0 : 99;
 
   const total = subtotal + shipping;
 
   const totalItems = cart.reduce(
-    (sum, item) =>
-      sum + item.quantity,
+    (sum, item) => sum + item.quantity,
     0
   );
 
@@ -320,9 +319,7 @@ function Checkout() {
   ===================================================== */
 
   const handleInputChange = (
-    e: ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement
-    >
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
@@ -338,9 +335,7 @@ function Checkout() {
 
   const validateCheckout = () => {
     if (!userId) {
-      setError(
-        "Please login before placing an order."
-      );
+      setError("Please login before placing your order.");
       return false;
     }
 
@@ -359,20 +354,15 @@ function Checkout() {
       return false;
     }
 
-    const emailRegex =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(customer.email)) {
-      setError(
-        "Please enter a valid email address."
-      );
+      setError("Please enter a valid email address.");
       return false;
     }
 
     if (!customer.phone.trim()) {
-      setError(
-        "Please enter your phone number."
-      );
+      setError("Please enter your phone number.");
       return false;
     }
 
@@ -408,9 +398,7 @@ function Checkout() {
     const pincodeRegex = /^\d{6}$/;
 
     if (!pincodeRegex.test(customer.pincode)) {
-      setError(
-        "Please enter a valid 6-digit pincode."
-      );
+      setError("Please enter a valid 6-digit pincode.");
       return false;
     }
 
@@ -445,9 +433,7 @@ function Checkout() {
     } = await supabase.functions.invoke(
       "create-razorpay-order",
       {
-        body: {
-          orderId,
-        },
+        body: { orderId },
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -473,10 +459,7 @@ function Checkout() {
       );
     }
 
-    if (
-      !Array.isArray(data.items) ||
-      data.items.length === 0
-    ) {
+    if (!Array.isArray(data.items) || data.items.length === 0) {
       throw new Error(
         "No valid order items were returned by the server."
       );
@@ -537,8 +520,7 @@ function Checkout() {
 
     if (!data?.success) {
       throw new Error(
-        data?.error ||
-          "Payment verification failed."
+        data?.error || "Payment verification failed."
       );
     }
 
@@ -606,38 +588,89 @@ function Checkout() {
   };
 
   /* =====================================================
+     SEND ORDER CONFIRMATION EMAIL
+  ===================================================== */
+
+  const sendOrderConfirmation = async (
+    orderId: string
+  ): Promise<void> => {
+    try {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError || !session?.access_token) {
+        console.error(
+          "Order email skipped: no valid session.",
+          sessionError
+        );
+        return;
+      }
+
+      const {
+        data,
+        error: functionError,
+      } = await supabase.functions.invoke(
+        "send-order-confirmation",
+        {
+          body: { orderId },
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        }
+      );
+
+      if (functionError || !data?.success) {
+        console.error(
+          "Order confirmation email failed:",
+          functionError?.message ||
+            data?.error ||
+            data?.message ||
+            "Unknown email error"
+        );
+        return;
+      }
+
+      console.log(
+        "Order confirmation email sent successfully."
+      );
+    } catch (err) {
+      console.error(
+        "Order confirmation email error:",
+        err
+      );
+    }
+  };
+
+  /* =====================================================
      COD ORDER
   ===================================================== */
 
-  const placeCODOrder = async (
-    orderId: string
-  ) => {
+  const placeCODOrder = async (orderId: string) => {
     if (!userId) {
-      throw new Error(
-        "User is not authenticated."
-      );
+      throw new Error("User is not authenticated.");
     }
 
-    const { error: orderError } =
-      await supabase
-        .from("orders")
-        .insert({
-          id: orderId,
-          user_id: userId,
-          customer_name: customer.name,
-          customer_email: customer.email,
-          customer_phone: customer.phone,
-          address: customer.address,
-          city: customer.city,
-          state: customer.state,
-          pincode: customer.pincode,
-          subtotal,
-          shipping,
-          total,
-          currency: "INR",
-          payment_status: "PENDING",
-          order_status: "CONFIRMED",
-        });
+    const { error: orderError } = await supabase
+      .from("orders")
+      .insert({
+        id: orderId,
+        user_id: userId,
+        customer_name: customer.name,
+        customer_email: customer.email,
+        customer_phone: customer.phone,
+        address: customer.address,
+        city: customer.city,
+        state: customer.state,
+        pincode: customer.pincode,
+        subtotal,
+        shipping,
+        total,
+        currency: "INR",
+        payment_status: "COD",
+        order_status: "CONFIRMED",
+      });
 
     if (orderError) {
       throw new Error(
@@ -647,12 +680,11 @@ function Checkout() {
 
     await saveOrderItems(orderId);
 
+    // Send the confirmation email after saving the order.
+    await sendOrderConfirmation(orderId);
+
     await clearCart();
 
-    /*
-      IMPORTANT:
-      Use the exact database order ID in the URL.
-    */
     navigate(`/order-success/${orderId}`, {
       replace: true,
     });
@@ -662,13 +694,9 @@ function Checkout() {
      ONLINE RAZORPAY ORDER
   ===================================================== */
 
-  const placeOnlineOrder = async (
-    orderId: string
-  ) => {
+  const placeOnlineOrder = async (orderId: string) => {
     if (!userId) {
-      throw new Error(
-        "User is not authenticated."
-      );
+      throw new Error("User is not authenticated.");
     }
 
     /* STEP 1: Create Razorpay order */
@@ -676,10 +704,7 @@ function Checkout() {
     const razorpayOrder =
       await createRazorpayOrder(orderId);
 
-    if (
-      !razorpayOrder ||
-      !razorpayOrder.id
-    ) {
+    if (!razorpayOrder?.id) {
       throw new Error(
         "Unable to create Razorpay payment order."
       );
@@ -687,14 +712,9 @@ function Checkout() {
 
     /* STEP 2: Server totals */
 
-    const serverSubtotal =
-      Number(razorpayOrder.subtotal);
-
-    const serverShipping =
-      Number(razorpayOrder.shipping);
-
-    const serverTotal =
-      Number(razorpayOrder.total);
+    const serverSubtotal = Number(razorpayOrder.subtotal);
+    const serverShipping = Number(razorpayOrder.shipping);
+    const serverTotal = Number(razorpayOrder.total);
 
     if (
       !Number.isFinite(serverSubtotal) ||
@@ -709,9 +729,7 @@ function Checkout() {
 
     /* STEP 3: Create KEIAN order */
 
-    const {
-      error: orderError,
-    } = await supabase
+    const { error: orderError } = await supabase
       .from("orders")
       .insert({
         id: orderId,
@@ -727,8 +745,7 @@ function Checkout() {
         shipping: serverShipping,
         total: serverTotal,
         currency: "INR",
-        razorpay_order_id:
-          razorpayOrder.id,
+        razorpay_order_id: razorpayOrder.id,
         payment_status: "PENDING",
         order_status: "PENDING",
       });
@@ -746,7 +763,7 @@ function Checkout() {
       razorpayOrder.items
     );
 
-    /* STEP 5: Razorpay script */
+    /* STEP 5: Load Razorpay script */
 
     await loadRazorpayScript();
 
@@ -769,16 +786,10 @@ function Checkout() {
 
     const options: RazorpayOptions = {
       key: razorpayKey,
-
       amount: razorpayOrder.amount,
-
       currency: razorpayOrder.currency,
-
       name: "KEIAN",
-
-      description:
-        "Premium Fragrance Order",
-
+      description: "Premium Fragrance Order",
       order_id: razorpayOrder.id,
 
       prefill: {
@@ -811,32 +822,33 @@ function Checkout() {
             response.razorpay_signature
           );
 
-          /* STEP 8: Clear cart */
+          /*
+           * The verification function must confirm
+           * payment and update the order to PAID.
+           */
+
+          /* STEP 8: Send confirmation email */
+
+          await sendOrderConfirmation(orderId);
+
+          /* STEP 9: Clear cart */
 
           await clearCart();
 
-          /*
-            IMPORTANT:
-            Do NOT use localStorage here.
-            The success page gets the exact
-            order directly from Supabase.
-          */
+          /* STEP 10: Navigate to success page */
 
-          navigate(
-            `/order-success/${orderId}`,
-            {
-              replace: true,
-            }
-          );
-        } catch (error) {
+          navigate(`/order-success/${orderId}`, {
+            replace: true,
+          });
+        } catch (err) {
           console.error(
             "Payment verification error:",
-            error
+            err
           );
 
           setError(
-            error instanceof Error
-              ? error.message
+            err instanceof Error
+              ? err.message
               : "Payment verification failed."
           );
 
@@ -857,10 +869,9 @@ function Checkout() {
       },
     };
 
-    /* STEP 9: Open Razorpay */
+    /* STEP 11: Open Razorpay */
 
-    const razorpay =
-      new window.Razorpay(options);
+    const razorpay = new window.Razorpay(options);
 
     razorpay.open();
   };
@@ -869,9 +880,7 @@ function Checkout() {
      PLACE ORDER
   ===================================================== */
 
-  const handlePlaceOrder = async (
-    e: FormEvent
-  ) => {
+  const handlePlaceOrder = async (e: FormEvent) => {
     e.preventDefault();
 
     setError("");
@@ -890,27 +899,19 @@ function Checkout() {
     try {
       setPlacingOrder(true);
 
-      /*
-        This is the unique KEIAN order ID.
-      */
-
-      const orderId =
-        crypto.randomUUID();
+      const orderId = crypto.randomUUID();
 
       if (paymentMethod === "COD") {
         await placeCODOrder(orderId);
       } else {
         await placeOnlineOrder(orderId);
       }
-    } catch (error) {
-      console.error(
-        "Place order error:",
-        error
-      );
+    } catch (err) {
+      console.error("Place order error:", err);
 
       setError(
-        error instanceof Error
-          ? error.message
+        err instanceof Error
+          ? err.message
           : "Something went wrong while placing your order."
       );
 
@@ -929,10 +930,7 @@ function Checkout() {
 
         <div className="checkout-loading">
           <div className="checkout-spinner"></div>
-
-          <p>
-            Loading checkout...
-          </p>
+          <p>Loading checkout...</p>
         </div>
 
         <Footer />
@@ -950,21 +948,16 @@ function Checkout() {
         <Navbar />
 
         <section className="checkout-empty">
-          <h1>
-            Your Cart Is Empty
-          </h1>
+          <h1>Your Cart Is Empty</h1>
 
           <p>
-            Add some fragrances to your
-            cart before proceeding to
-            checkout.
+            Add some fragrances to your cart before
+            proceeding to checkout.
           </p>
 
           <button
             type="button"
-            onClick={() =>
-              navigate("/products")
-            }
+            onClick={() => navigate("/products")}
           >
             SHOP PERFUMES
           </button>
@@ -976,7 +969,7 @@ function Checkout() {
   }
 
   /* =====================================================
-     UI
+     CHECKOUT UI
   ===================================================== */
 
   return (
@@ -984,24 +977,18 @@ function Checkout() {
       <Navbar />
 
       <main className="checkout-page">
-
         <div className="checkout-container">
-
           <div className="checkout-header">
-
             <span className="checkout-eyebrow">
               KEIAN
             </span>
 
-            <h1>
-              Checkout
-            </h1>
+            <h1>Checkout</h1>
 
             <p>
-              Complete your details to
-              place your fragrance order.
+              Complete your details to place your
+              fragrance order.
             </p>
-
           </div>
 
           {error && (
@@ -1014,13 +1001,9 @@ function Checkout() {
             className="checkout-layout"
             onSubmit={handlePlaceOrder}
           >
-
-            {/* =================================================
-                LEFT SIDE
-            ================================================= */}
+            {/* LEFT SIDE */}
 
             <div className="checkout-left">
-
               <CheckoutCustomerAndAddress
                 customer={customer}
                 onChange={handleInputChange}
@@ -1030,12 +1013,9 @@ function Checkout() {
                 paymentMethod={paymentMethod}
                 onPaymentMethodChange={setPaymentMethod}
               />
-
             </div>
 
-            {/* =================================================
-                RIGHT SIDE
-            ================================================= */}
+            {/* RIGHT SIDE */}
 
             <aside className="checkout-right">
               <CheckoutOrderSummary
@@ -1048,11 +1028,8 @@ function Checkout() {
                 paymentMethod={paymentMethod}
               />
             </aside>
-
           </form>
-
         </div>
-
       </main>
 
       <Footer />
