@@ -1,7 +1,7 @@
 :root {
-  font-family: "Montserrat", sans-serif;
-  color: #26231f;
-  background: #f5f1e9;
+  font-family: "Ibarra Real Nova", serif;
+  color: #0A111E;
+  background: #F9F8F3;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -20,7 +20,7 @@ html {
 body {
   width: 100%;
   min-width: 320px;
-  background: #f5f1e9;
+  background: #F9F8F3;
   overflow-x: clip; /* Safely handles horizontal screen bleeding without breaking standard sticky scrolling */
 }
 
@@ -52,6 +52,6 @@ a {
   display: grid;
   min-height: 100vh;
   place-items: center;
-  color: #26231f;
-  background: #f5f1e9;
+  color: #0A111E;
+  background: #F9F8F3;
 }
